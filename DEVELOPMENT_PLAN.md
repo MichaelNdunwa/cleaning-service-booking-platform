@@ -305,11 +305,11 @@ Set up the Odoo 18 Community environment, initialize the repo, scaffold custom m
 
 ### **Day 1–2: Environment Setup**
 
-* [ ] Install **Odoo 18 CE** from source in Debian/WSL.
-* [ ] Install PostgreSQL (with role `odoo_dev`).
-* [ ] Configure `odoo.conf` (custom addons path).
-* [ ] Create a new DB (`cleaning_dev_db`).
-* [ ] Verify Odoo runs on `http://localhost:8069`.
+* [x] Install **Odoo 18 CE** from source in Debian/WSL.
+* [x] Install PostgreSQL (with role `odoo_dev`).
+* [x] Configure `odoo.conf` (custom addons path).
+* [x] Create a new DB (`cleaning_dev_db`).
+* [x] Verify Odoo runs on `http://localhost:8069`.
 
 **Test:** Login with admin → confirm Apps menu visible.
 
@@ -317,11 +317,11 @@ Set up the Odoo 18 Community environment, initialize the repo, scaffold custom m
 
 ### **Day 3: Git + Repo Structure**
 
-* [ ] Create Git repo `michael_cleaning_app`.
-* [ ] Add `.gitignore` (exclude logs, pyc, **pycache**).
-* [ ] Add `README.md` (already drafted ✅).
-* [ ] Add `DEVELOPMENT_PLAN.md`.
-* [ ] Create `/custom_addons/` folder with subfolders for 3 modules:
+* [x] Create Git repo `cleaning-service-booking-platform`.
+* [x] Add `.gitignore` (exclude logs, pyc, **pycache**).
+* [x] Add `README.md` (already drafted ✅).
+* [x] Add `DEVELOPMENT_PLAN.md`.
+* [x] Create `/custom_addons/cleaning-service-booking-platform/` folder with subfolders for 3 modules:
 
   * `cleaning_booking`
   * `cleaning_ops`
@@ -333,8 +333,8 @@ Set up the Odoo 18 Community environment, initialize the repo, scaffold custom m
 
 ### **Day 4–5: Module Scaffolding**
 
-* [ ] Scaffold each module (`__manifest__.py`, `__init__.py`, `models/`, `views/`, `security/`).
-* [ ] In `cleaning_booking`:
+* [x] Scaffold each module (`__manifest__.py`, `__init__.py`, `models/`, `views/`, `security/`).
+* [x] In `cleaning_booking`:
 
   * Define model `clean.booking`:
 
