@@ -272,3 +272,123 @@ This plan defines sprints, timelines, and weekly checklists.
 * **Weeks 8:** Analytics (performance & margins)
 * **Week 9:** Polish, QA, Deployment
 
+---
+
+
+
+# 🗓 Week 1 – Foundations
+
+**Goal:**
+Set up the Odoo 18 Community environment, initialize the repo, scaffold custom modules, and create the **Booking** + **Add-on** models with menus and security.
+
+**Estimated Duration:** 1 week
+
+---
+
+## ✅ Deliverables
+
+* Odoo 18 CE installed locally (Debian/WSL).
+* Git repository initialized with three module scaffolds:
+
+  * `cleaning_booking`
+  * `cleaning_ops`
+  * `cleaning_payroll`
+* Basic `clean.booking` model with key fields.
+* Basic `clean.addon` model with relation to bookings.
+* Admin menu items: **Cleaning → Bookings, Add-ons**.
+* Security groups: Cleaning User, Cleaning Manager.
+* CI/CD basics: pre-commit config + Docker/venv setup.
+
+---
+
+## 📋 Weekly Checklist
+
+### **Day 1–2: Environment Setup**
+
+* [ ] Install **Odoo 18 CE** from source in Debian/WSL.
+* [ ] Install PostgreSQL (with role `odoo_dev`).
+* [ ] Configure `odoo.conf` (custom addons path).
+* [ ] Create a new DB (`cleaning_dev_db`).
+* [ ] Verify Odoo runs on `http://localhost:8069`.
+
+**Test:** Login with admin → confirm Apps menu visible.
+
+---
+
+### **Day 3: Git + Repo Structure**
+
+* [ ] Create Git repo `michael_cleaning_app`.
+* [ ] Add `.gitignore` (exclude logs, pyc, **pycache**).
+* [ ] Add `README.md` (already drafted ✅).
+* [ ] Add `DEVELOPMENT_PLAN.md`.
+* [ ] Create `/custom_addons/` folder with subfolders for 3 modules:
+
+  * `cleaning_booking`
+  * `cleaning_ops`
+  * `cleaning_payroll`
+
+**Test:** Push to remote → repo builds on another machine.
+
+---
+
+### **Day 4–5: Module Scaffolding**
+
+* [ ] Scaffold each module (`__manifest__.py`, `__init__.py`, `models/`, `views/`, `security/`).
+* [ ] In `cleaning_booking`:
+
+  * Define model `clean.booking`:
+
+    * Fields: `name`, `customer_id`, `service_type`, `size`, `bedrooms`, `bathrooms`, `date`, `slot`, `amount_total`, `state` (Draft/Confirmed/etc.).
+  * Define model `clean.addon`:
+
+    * Fields: `name`, `code`, `price`, `duration_delta`.
+  * Add M2M field `addons` on booking.
+* [ ] Create menus: **Cleaning → Bookings, Add-ons**.
+* [ ] Add security groups:
+
+  * **Cleaning User**: read/write bookings.
+  * **Cleaning Manager**: full control.
+
+**Test:**
+
+* Install `cleaning_booking` in Odoo.
+* Create a test booking and attach add-ons.
+* Confirm menu + access rights.
+
+---
+
+### **Day 6: Testing & CI/CD Basics**
+
+* [ ] Add **pre-commit hooks**:
+
+  * `black` (Python formatter)
+  * `flake8` (lint)
+  * `xml-lint` (optional for view files)
+* [ ] Add **Dockerfile / docker-compose.yml** (Odoo + Postgres).
+* [ ] Run containerized Odoo to ensure portability.
+* [ ] Document setup steps in README.md (`🚀 Setup` section).
+
+**Test:** Fresh clone → `docker-compose up` → system runs with modules installed.
+
+---
+
+### **Day 7: Wrap-Up**
+
+* [ ] Verify all models + menus work.
+* [ ] Verify Git push includes Week 1 progress.
+* [ ] Update DEVELOPMENT\_PLAN.md with **Week 1 completed tasks**.
+* [ ] Prepare for **Week 2 (Booking Funnel UI)**.
+
+---
+
+## 🎯 Success Criteria
+
+* Can **log in as Admin**, install `cleaning_booking`, and create bookings/add-ons in backend.
+* Git repo is clean and builds on any dev machine.
+* All tasks documented in DEVELOPMENT\_PLAN.md.
+
+---
+
+
+
+
