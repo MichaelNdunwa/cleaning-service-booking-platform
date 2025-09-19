@@ -343,8 +343,8 @@ Set up the Odoo 18 Community environment, initialize the repo, scaffold custom m
 
     * Fields: `name`, `code`, `price`, `duration_delta`.
   * Add M2M field `addons` on booking.
-* [ ] Create menus: **Cleaning → Bookings, Add-ons**.
-* [ ] Add security groups:
+* [x] Create menus: **Cleaning → Bookings, Add-ons**.
+* [x] Add security groups:
 
   * **Cleaning User**: read/write bookings.
   * **Cleaning Manager**: full control.
