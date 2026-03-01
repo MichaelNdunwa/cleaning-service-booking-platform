@@ -37,7 +37,7 @@ const steps = [
 
 /* ── Dotted-circle position per card index ── */
 const dottedCirclePosition = [
-    "bottom-[-56px] left-[-72px]",   // Card 0 — BOOK (bottom-left)
+    "bottom-[-37px] left-[-60px]",   // Card 0 — BOOK (bottom-left)
     "top-[-56px] left-[-56px]",      // Card 1 — CLEAN (top-left)
     "bottom-[-36px] right-[-48px]",  // Card 2 — FREEDOM (bottom-right)
 ] as const;
@@ -74,56 +74,62 @@ export default function HowItWorksSteps() {
             {/* ── Step cards grid ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-16 lg:gap-20">
                 {steps.map((item, index) => (
-                    <div key={item.label} className="flex flex-col items-start group">
-                        {/* Diamond wrapper — centered in column */}
-                        <div className="relative self-center z-10 block">
-                            {/* Outer diamond: sizing + hover transform */}
-                            <div className="w-[180px] h-[180px] rotate-45 flex items-center justify-center transition-transform duration-300 ease-in-out group-hover:scale-[1.07]">
-                                {/* Inner white card */}
-                                <div
-                                    className="w-[180px] h-[180px] rounded-[32px] bg-white flex items-center justify-center"
-                                    style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.09)" }}
-                                >
-                                    {/* Icon — counter-rotated to appear upright */}
+                    <div key={item.label} className="flex flex-col items-center group">
+                        {/* Container sized to diamond's bounding box (~255px) so left-aligned text starts at the diamond's left tip */}
+                        <div className="w-[255px] flex flex-col items-start">
+                            {/* Diamond wrapper — centered in container */}
+                            <div className="relative self-center z-10 block">
+                                {/* Outer diamond: sizing + hover transform */}
+                                <div className="w-[180px] h-[180px] rotate-45 flex items-center justify-center transition-transform duration-300 ease-in-out group-hover:scale-[1.07]">
+                                    {/* Inner white card */}
                                     <div
-                                        className="-rotate-45 relative"
-                                        style={{ width: item.iconWidth, height: item.iconHeight }}
+                                        className="w-[180px] h-[180px] rounded-[24px] bg-white flex items-center justify-center"
+                                        style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.09)" }}
                                     >
-                                        <Image
-                                            src={item.icon}
-                                            alt={item.label}
-                                            fill
-                                            className="object-contain"
-                                            sizes={`${Math.ceil(item.iconWidth)}px`}
-                                        />
+                                        {/* Icon — counter-rotated to appear upright */}
+                                        <div
+                                            className="-rotate-45 relative"
+                                            style={{ width: item.iconWidth, height: item.iconHeight }}
+                                        >
+                                            <Image
+                                                src={item.icon}
+                                                alt={item.label}
+                                                fill
+                                                className="object-contain"
+                                                sizes={`${Math.ceil(item.iconWidth)}px`}
+                                            />
+                                        </div>
                                     </div>
+                                </div>
+
+                                {/* Dotted circle decoration — positioned per card */}
+                                <div
+                                    className={`absolute w-[150px] h-[150px] z-[-1] pointer-events-none ${dottedCirclePosition[index]}`}
+                                    aria-hidden="true"
+                                >
+                                    <Image
+                                        src="/images/right-dotted-circle.png"
+                                        alt=""
+                                        fill
+                                        className="object-contain"
+                                        sizes="150px"
+                                    />
                                 </div>
                             </div>
 
-                            {/* Dotted circle decoration — positioned per card */}
-                            <div
-                                className={`absolute w-[150px] h-[150px] z-[-1] pointer-events-none ${dottedCirclePosition[index]}`}
-                                aria-hidden="true"
-                            >
-                                <Image
-                                    src="/images/right-dotted-circle.png"
-                                    alt=""
-                                    fill
-                                    className="object-contain"
-                                    sizes="150px"
-                                />
+                            {/* Text content shifted slightly right to account for the diamond's rounded corner inset */}
+                            <div className="ml-2 md:ml-3">
+                                {/* Step label */}
+                                <p className="text-[14px] font-[800] tracking-[0.1em] text-[#3B82F6] mb-3 mt-12">
+                                    {item.label}
+                                </p>
+
+                                {/* Step description */}
+                                <p className="text-[13px] text-neutral-400 leading-[1.8] max-w-[210px] font-medium tracking-wide">
+                                    {item.description}
+                                </p>
                             </div>
                         </div>
-
-                        {/* Step label */}
-                        <p className="text-[14px] font-[800] tracking-[0.1em] text-[#3B82F6] mb-3 mt-12">
-                            {item.label}
-                        </p>
-
-                        {/* Step description */}
-                        <p className="text-[13px] text-neutral-400 leading-[1.8] max-w-[210px] font-medium tracking-wide">
-                            {item.description}
-                        </p>
                     </div>
                 ))}
             </div>
