@@ -439,40 +439,13 @@ function BlogSection() {
 /* ── CTA Banner ── */
 function CTASection() {
   return (
-    <section className="py-16 lg:py-24 bg-white">
+    <section
+      className="w-full bg-cover bg-center bg-no-repeat relative flex flex-col items-center justify-center p-0 m-0"
+      style={{ backgroundImage: "url('/images/cta-banner-bg.png')" }}
+    >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="cta-banner rounded-3xl px-8 py-12 lg:px-16 lg:py-16 text-center relative overflow-hidden">
-          {/* Decorative elements */}
-          <div className="absolute top-0 left-0 w-40 h-40 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-60 h-60 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3" />
-
-          <div className="relative z-10">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mb-4 leading-tight">
-              Servicing 100K+ Users Across Your City
-            </h2>
-            <p className="text-blue-100 text-sm sm:text-base leading-relaxed mb-8 max-w-xl mx-auto">
-              Join thousands of satisfied customers who trust Shield for their
-              cleaning needs. Book your first clean today.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button
-                variant="primary"
-                size="lg"
-                href="/booking"
-                className="bg-white !text-brand-primary hover:bg-neutral-100 shadow-lg"
-              >
-                Book Now — It&apos;s Free
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                href="/about"
-                className="!border-white/40 !text-white hover:bg-white/10"
-              >
-                Learn More
-              </Button>
-            </div>
-          </div>
+        <div className="cta-banner rounded-3xl h-[350px] flex flex-col items-center justify-center px-8 text-center relative overflow-hidden">
+          
         </div>
       </div>
     </section>

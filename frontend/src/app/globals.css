@@ -225,7 +225,3 @@ body {
   background-repeat: no-repeat;
 }
 
-/* ── CTA Banner ── */
-.cta-banner {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, #1a3f6f 50%, var(--brand-accent) 100%);
-}
