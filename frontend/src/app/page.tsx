@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+import BookingBar from "@/components/BookingBar";
 
 /* ── Hero Section ── */
 function Hero() {
   return (
-    <section className="hero-section relative overflow-hidden">
+    <section className="hero-section relative overflow-visible">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 lg:pt-6 lg:pb-4 relative lg:mb-20">
 
         {/* ── Character Illustrations ── */}
@@ -102,69 +103,8 @@ function Hero() {
         </div>
 
         {/* ── Booking Bar ── */}
-        <div className="relative z-20 -mt-6 lg:-mt-10 animate-fade-in-up-delay-1">
-          <div className="max-w-2xl mx-auto">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-0 bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-neutral-100 overflow-hidden">
-
-              {/* Bedrooms dropdown */}
-              <div className="flex-1 relative border-b sm:border-b-0 sm:border-r border-neutral-100">
-                <select
-                  className="w-full px-5 py-4 text-sm text-neutral-700 bg-transparent outline-none appearance-none cursor-pointer font-medium"
-                  defaultValue="Two"
-                >
-                  <option>One</option>
-                  <option>Two</option>
-                  <option>Three</option>
-                  <option>Four</option>
-                  <option>Five+</option>
-                </select>
-                <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-
-              {/* Bathroom dropdown */}
-              <div className="flex-1 relative border-b sm:border-b-0 sm:border-r border-neutral-100">
-                <select
-                  className="w-full px-5 py-4 text-sm text-neutral-400 bg-transparent outline-none appearance-none cursor-pointer"
-                  defaultValue=""
-                >
-                  <option value="" disabled>Bathroom</option>
-                  <option>1 Bathroom</option>
-                  <option>2 Bathrooms</option>
-                  <option>3 Bathrooms</option>
-                  <option>4+ Bathrooms</option>
-                </select>
-                <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-
-              {/* Standard dropdown */}
-              <div className="flex-1 relative border-b sm:border-b-0 sm:border-r border-neutral-100">
-                <select
-                  className="w-full px-5 py-4 text-sm text-neutral-400 bg-transparent outline-none appearance-none cursor-pointer"
-                  defaultValue=""
-                >
-                  <option value="" disabled>Standard</option>
-                  <option>Standard</option>
-                  <option>Deep Clean</option>
-                  <option>Premium</option>
-                </select>
-                <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-
-              {/* CTA Button */}
-              <Link
-                href="/booking"
-                className="px-6 py-4 bg-brand-accent text-white text-sm font-semibold whitespace-nowrap text-center hover:bg-brand-accent-hover transition-colors duration-200"
-              >
-                Booking from $80
-              </Link>
-            </div>
-          </div>
+        <div className="relative z-50 -mt-6 lg:-mt-30 animate-fade-in-up-delay-1">
+          <BookingBar />
         </div>
       </div>
 
@@ -445,7 +385,7 @@ function CTASection() {
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="cta-banner rounded-3xl h-[350px] flex flex-col items-center justify-center px-8 text-center relative overflow-hidden">
-          
+
         </div>
       </div>
     </section>
