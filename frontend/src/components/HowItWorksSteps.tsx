@@ -13,17 +13,23 @@ import Image from "next/image";
 const steps = [
     {
         icon: "/images/calender-remainder.svg",
+        iconWidth: 82,
+        iconHeight: 97,
         label: "BOOK",
         description: "Tell us when and where you want your cleaning.",
     },
     {
         icon: "/images/cleaning-service.svg",
+        iconWidth: 84,
+        iconHeight: 107.42,
         label: "CLEAN",
         description:
             "A Professional cleaner comes over and cleans your place.",
     },
     {
         icon: "/images/sparkling.svg",
+        iconWidth: 84.8,
+        iconHeight: 99.73,
         label: "FREEDOM",
         description: "Enjoy your life and come back to a clean space!.",
     },
@@ -79,13 +85,16 @@ export default function HowItWorksSteps() {
                                     style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.09)" }}
                                 >
                                     {/* Icon — counter-rotated to appear upright */}
-                                    <div className="-rotate-45 w-[72px] h-[72px] relative">
+                                    <div
+                                        className="-rotate-45 relative"
+                                        style={{ width: item.iconWidth, height: item.iconHeight }}
+                                    >
                                         <Image
                                             src={item.icon}
                                             alt={item.label}
                                             fill
                                             className="object-contain"
-                                            sizes="72px"
+                                            sizes={`${Math.ceil(item.iconWidth)}px`}
                                         />
                                     </div>
                                 </div>
