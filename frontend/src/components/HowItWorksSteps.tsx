@@ -37,9 +37,9 @@ const steps = [
 
 /* ── Dotted-circle position per card index ── */
 const dottedCirclePosition = [
-    "bottom-[-37px] left-[-60px]",   // Card 0 — BOOK (bottom-left)
-    "top-[-56px] left-[-56px]",      // Card 1 — CLEAN (top-left)
-    "bottom-[-36px] right-[-48px]",  // Card 2 — FREEDOM (bottom-right)
+    "bottom-[-10px] left-[-65px]",   // Card 0 — BOOK (bottom-left area, shifted up from the bottom tip)
+    "top-[-65px] left-[-10px]",      // Card 1 — CLEAN (top-left area, matching horizontal gap size)
+    "bottom-[-10px] right-[-65px]",  // Card 2 — FREEDOM (bottom-right area, shifted up from the bottom tip)
 ] as const;
 
 export default function HowItWorksSteps() {
