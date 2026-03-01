@@ -47,26 +47,26 @@ export default function HowItWorksSteps() {
         <div className="relative overflow-visible">
             {/* ── Dashed curve paths connecting diamonds (desktop only) ── */}
             <div
-                className="hidden lg:block absolute top-[18%] left-[23%] z-0 pointer-events-none"
+                className="hidden lg:block absolute top-[5%] left-[19%] z-0 pointer-events-none"
                 aria-hidden="true"
             >
                 <Image
                     src="/images/curve-path.svg"
                     alt=""
-                    width={287}
-                    height={143}
+                    width={350}
+                    height={300}
                     className="object-contain"
                 />
             </div>
             <div
-                className="hidden lg:block absolute top-[18%] right-[23%] z-0 pointer-events-none"
+                className="hidden lg:block absolute top-[2%] right-[19%] z-0 pointer-events-none"
                 aria-hidden="true"
             >
                 <Image
                     src="/images/curve-path.svg"
                     alt=""
-                    width={287}
-                    height={143}
+                    width={350}
+                    height={300}
                     className="object-contain"
                 />
             </div>
