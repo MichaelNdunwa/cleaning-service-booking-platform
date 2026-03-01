@@ -31,25 +31,37 @@ const steps = [
 
 /* ── Dotted-circle position per card index ── */
 const dottedCirclePosition = [
-    "bottom-[-36px] left-[-48px]",   // Card 0 — BOOK
-    "top-[-36px] left-[-48px]",      // Card 1 — CLEAN
-    "bottom-[-28px] right-[-48px]",  // Card 2 — FREEDOM
+    "bottom-[-56px] left-[-72px]",   // Card 0 — BOOK (bottom-left)
+    "top-[-56px] left-[-56px]",      // Card 1 — CLEAN (top-left)
+    "bottom-[-36px] right-[-48px]",  // Card 2 — FREEDOM (bottom-right)
 ] as const;
 
 export default function HowItWorksSteps() {
     return (
         <div className="relative overflow-visible">
-            {/* ── Dashed curve path connecting diamonds (desktop only) ── */}
+            {/* ── Dashed curve paths connecting diamonds (desktop only) ── */}
             <div
-                className="hidden lg:block absolute top-[28%] left-[10%] right-[10%] z-0 pointer-events-none"
+                className="hidden lg:block absolute top-[18%] left-[23%] z-0 pointer-events-none"
                 aria-hidden="true"
             >
                 <Image
                     src="/images/curve-path.svg"
                     alt=""
-                    width={1000}
-                    height={120}
-                    className="w-full h-auto object-contain"
+                    width={287}
+                    height={143}
+                    className="object-contain"
+                />
+            </div>
+            <div
+                className="hidden lg:block absolute top-[18%] right-[23%] z-0 pointer-events-none"
+                aria-hidden="true"
+            >
+                <Image
+                    src="/images/curve-path.svg"
+                    alt=""
+                    width={287}
+                    height={143}
+                    className="object-contain"
                 />
             </div>
 
@@ -63,17 +75,17 @@ export default function HowItWorksSteps() {
                             <div className="w-[180px] h-[180px] rotate-45 flex items-center justify-center transition-transform duration-300 ease-in-out group-hover:scale-[1.07]">
                                 {/* Inner white card */}
                                 <div
-                                    className="w-[124px] h-[124px] rounded-[22px] bg-white flex items-center justify-center"
+                                    className="w-[180px] h-[180px] rounded-[32px] bg-white flex items-center justify-center"
                                     style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.09)" }}
                                 >
                                     {/* Icon — counter-rotated to appear upright */}
-                                    <div className="-rotate-45 w-[56px] h-[56px] relative">
+                                    <div className="-rotate-45 w-[72px] h-[72px] relative">
                                         <Image
                                             src={item.icon}
                                             alt={item.label}
                                             fill
                                             className="object-contain"
-                                            sizes="56px"
+                                            sizes="72px"
                                         />
                                     </div>
                                 </div>
@@ -81,7 +93,7 @@ export default function HowItWorksSteps() {
 
                             {/* Dotted circle decoration — positioned per card */}
                             <div
-                                className={`absolute w-[130px] h-[130px] z-[-1] pointer-events-none ${dottedCirclePosition[index]}`}
+                                className={`absolute w-[150px] h-[150px] z-[-1] pointer-events-none ${dottedCirclePosition[index]}`}
                                 aria-hidden="true"
                             >
                                 <Image
@@ -89,18 +101,18 @@ export default function HowItWorksSteps() {
                                     alt=""
                                     fill
                                     className="object-contain"
-                                    sizes="130px"
+                                    sizes="150px"
                                 />
                             </div>
                         </div>
 
                         {/* Step label */}
-                        <p className="text-[13px] font-extrabold tracking-[0.22em] text-[#2B6BE0] mb-2 mt-8">
+                        <p className="text-[14px] font-[800] tracking-[0.1em] text-[#3B82F6] mb-3 mt-12">
                             {item.label}
                         </p>
 
                         {/* Step description */}
-                        <p className="text-[14px] text-neutral-500 leading-relaxed max-w-[210px]">
+                        <p className="text-[13px] text-neutral-400 leading-[1.8] max-w-[210px] font-medium tracking-wide">
                             {item.description}
                         </p>
                     </div>
