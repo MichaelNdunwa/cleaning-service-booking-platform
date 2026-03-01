@@ -1,0 +1,228 @@
+@import "tailwindcss";
+
+/* ── Design Tokens ── */
+:root {
+  /* Primary Colors (from Figma) */
+  --brand-primary: #12153A;
+  /* Neutral 100 – for headings/dark text */
+  --brand-primary-light: #2B3641;
+  /* Neutral 200 */
+  --brand-primary-dark: #12153A;
+  --brand-accent: #1A78F2;
+  /* Blue 100 – primary action color */
+  --brand-accent-light: #6896D1;
+  /* Blue 900 – lighter accent */
+  --brand-accent-hover: #1565D8;
+  /* Slightly darker blue for hover */
+
+  /* Neutrals (from Figma) */
+  --neutral-50: #F4F7F9;
+  /* Grey 950 */
+  --neutral-100: #EAEEF3;
+  /* Grey 800 */
+  --neutral-200: #D3D8DD;
+  /* Grey 800 */
+  --neutral-300: #BCC2C8;
+  /* Grey 700 */
+  --neutral-400: #9FA7AF;
+  /* Grey 600 */
+  --neutral-500: #88939D;
+  /* Neutral 500 */
+  --neutral-600: #677582;
+  /* Neutral 400 */
+  --neutral-700: #4F6071;
+  /* Neutral 300 */
+  --neutral-800: #2B3641;
+  /* Neutral 200 */
+  --neutral-900: #12153A;
+  /* Neutral 100 */
+
+  /* Semantic */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #1A78F2;
+
+  /* Backgrounds */
+  --bg-primary: #ffffff;
+  --bg-secondary: #F4F7F9;
+  --bg-tertiary: #EAEEF3;
+  --bg-hero: #ffffff;
+
+  /* Text */
+  --text-primary: #12153A;
+  --text-secondary: #677582;
+  --text-muted: #88939D;
+  --text-inverse: #ffffff;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@theme inline {
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-light: var(--brand-primary-light);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent-light: var(--brand-accent-light);
+  --color-brand-accent-hover: var(--brand-accent-hover);
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  --font-sans: "Averta", "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* ── Base Styles ── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom Utility Classes ── */
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glassmorphism card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Animated gradient background */
+.gradient-bg {
+  background: var(--bg-hero);
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-bg::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  bottom: -50%;
+  left: -50%;
+  background: radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 50%, rgba(30, 58, 95, 0.03) 0%, transparent 50%);
+  animation: shimmer 8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-5%) translateY(-5%);
+  }
+
+  100% {
+    transform: translateX(5%) translateY(5%);
+  }
+}
+
+/* Hover card lift */
+.card-hover {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Focus rings */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--brand-accent);
+  outline-offset: 2px;
+}
+
+/* Section pattern background */
+.pattern-bg {
+  background-image: radial-gradient(circle at 1px 1px, var(--neutral-200) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* Smooth scroll indicator */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in-up-delay-1 {
+  animation: fadeInUp 0.6s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-2 {
+  animation: fadeInUp 0.6s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-3 {
+  animation: fadeInUp 0.6s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+/* ── Hero Section ── */
+.hero-section {
+  background: #ffffff;
+  position: relative;
+}
+
+/* ── Feature Diamond Icons ── */
+/* (Now using Tailwind rotate-45 / -rotate-45 utilities) */
+
+/* ── Dark Blog / Shield Report Section ── */
+.shield-report-section {
+  background: linear-gradient(135deg, #0f1b30 0%, #1a2d4d 50%, #152240 100%);
+}
+
+/* ── CTA Banner ── */
+.cta-banner {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, #1a3f6f 50%, var(--brand-accent) 100%);
+}

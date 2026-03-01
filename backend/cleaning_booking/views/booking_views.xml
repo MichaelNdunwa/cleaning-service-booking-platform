@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- ── Booking Tree View ── -->
+    <record id="view_clean_booking_tree" model="ir.ui.view">
+        <field name="name">clean.booking.tree</field>
+        <field name="model">clean.booking</field>
+        <field name="arch" type="xml">
+            <list string="Bookings" decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-danger="state == 'cancelled'" decoration-warning="state == 'in_progress'">
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="service_type_id"/>
+                <field name="booking_date"/>
+                <field name="time_slot_id"/>
+                <field name="frequency"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="payment_status"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-danger="state == 'cancelled'" decoration-warning="state == 'in_progress'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ── Booking Form View ── -->
+    <record id="view_clean_booking_form" model="ir.ui.view">
+        <field name="name">clean.booking.form</field>
+        <field name="model">clean.booking</field>
+        <field name="arch" type="xml">
+            <form string="Booking">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_schedule" string="Schedule" type="object" class="oe_highlight" invisible="state != 'confirmed'"/>
+                    <button name="action_start" string="Start" type="object" class="oe_highlight" invisible="state != 'scheduled'"/>
+                    <button name="action_done" string="Mark Done" type="object" class="oe_highlight" invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ('done', 'cancelled')"/>
+                    <button name="action_reset_draft" string="Reset to Draft" type="object" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,scheduled,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Customer">
+                            <field name="customer_id"/>
+                            <field name="customer_email"/>
+                            <field name="customer_phone"/>
+                        </group>
+                        <group string="Service">
+                            <field name="service_type_id"/>
+                            <field name="bedrooms"/>
+                            <field name="bathrooms"/>
+                            <field name="frequency"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Schedule">
+                            <field name="booking_date"/>
+                            <field name="time_slot_id"/>
+                        </group>
+                        <group string="Payment">
+                            <field name="base_amount"/>
+                            <field name="addons_amount"/>
+                            <field name="amount_total"/>
+                            <field name="payment_reference"/>
+                            <field name="payment_status"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Add-ons" name="addons">
+                            <field name="addon_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="Address" name="address">
+                            <group>
+                                <field name="address_line_1"/>
+                                <field name="address_line_2"/>
+                                <field name="city"/>
+                                <field name="postcode"/>
+                            </group>
+                            <group>
+                                <field name="access_instructions"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Customer notes..."/>
+                            <field name="internal_notes" placeholder="Internal notes (not visible to customer)..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Booking Kanban View ── -->
+    <record id="view_clean_booking_kanban" model="ir.ui.view">
+        <field name="name">clean.booking.kanban</field>
+        <field name="model">clean.booking</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="service_type_id"/>
+                <field name="booking_date"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+                <field name="payment_status"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <strong>
+                                <field name="name"/>
+                            </strong>
+                            <div>
+                                <field name="customer_id"/>
+                            </div>
+                            <div>
+                                <field name="service_type_id"/> — <field name="booking_date"/>
+                            </div>
+                            <div class="text-muted">
+                                £<field name="amount_total"/>
+                            </div>
+                            <div>
+                                <field name="payment_status" widget="badge"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_clean_booking_search" model="ir.ui.view">
+        <field name="name">clean.booking.search</field>
+        <field name="model">clean.booking</field>
+        <field name="arch" type="xml">
+            <search string="Search Bookings">
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="service_type_id"/>
+                <field name="postcode"/>
+                <separator/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="filter_scheduled" string="Scheduled" domain="[('state', '=', 'scheduled')]"/>
+                <filter name="filter_in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="filter_done" string="Done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter string="Booking Date" name="filter_booking_date" date="booking_date"/>
+                <separator/>
+                <filter name="filter_paid" string="Paid" domain="[('payment_status', '=', 'paid')]"/>
+                <filter name="filter_pending_payment" string="Pending Payment" domain="[('payment_status', '=', 'pending')]"/>
+                <group>
+                    <filter name="groupby_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="groupby_service" string="Service Type" context="{'group_by': 'service_type_id'}"/>
+                    <filter name="groupby_date" string="Date" context="{'group_by': 'booking_date:month'}"/>
+                    <filter name="groupby_customer" string="Customer" context="{'group_by': 'customer_id'}"/>
+                    <filter name="groupby_frequency" string="Frequency" context="{'group_by': 'frequency'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Booking Action ── -->
+    <record id="action_clean_booking" model="ir.actions.act_window">
+        <field name="name">Bookings</field>
+        <field name="res_model">clean.booking</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_clean_booking_search"/>
+        <field name="context">{'search_default_filter_draft': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No bookings yet!
+            </p>
+            <p>Create your first cleaning booking.</p>
+        </field>
+    </record>
+</odoo>
