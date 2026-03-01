@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import Button from "@/components/ui/Button";
 
 export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -33,7 +34,7 @@ export default function Navbar() {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="px-4 py-2 text-sm font-medium text-neutral-600 rounded-lg transition-all duration-200 hover:text-brand-primary hover:bg-neutral-50"
+                                className="px-4 py-2 text-sm font-medium text-neutral-600 rounded-lg transition-all duration-200 hover:text-[#3B82F6] hover:bg-transparent"
                             >
                                 {link.label}
                             </Link>
@@ -44,16 +45,17 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center gap-3">
                         <Link
                             href="/login"
-                            className="px-4 py-2 text-sm font-medium text-neutral-600 rounded-lg transition-colors duration-200 hover:text-brand-primary"
+                            className="px-4 py-2 text-sm font-medium text-neutral-600 rounded-lg transition-colors duration-200 hover:text-[#3B82F6] hover:bg-transparent"
                         >
                             Log in
                         </Link>
-                        <Link
+                        <Button
                             href="/signup"
-                            className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-accent rounded-lg shadow-sm transition-all duration-200 hover:bg-brand-accent-hover hover:shadow-md active:scale-[0.98]"
+                            variant="primary-outline-hover"
+                            className="px-5 py-2.5 text-sm"
                         >
                             Get Started
-                        </Link>
+                        </Button>
                     </div>
 
                     {/* Mobile menu button */}
@@ -95,7 +97,7 @@ export default function Navbar() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="px-4 py-2.5 text-sm font-medium text-neutral-600 rounded-lg hover:bg-neutral-50 hover:text-brand-primary transition-colors"
+                                    className="px-4 py-2.5 text-sm font-medium text-neutral-600 rounded-lg hover:bg-transparent hover:text-[#3B82F6] transition-colors"
                                     onClick={() => setMobileOpen(false)}
                                 >
                                     {link.label}
@@ -104,18 +106,19 @@ export default function Navbar() {
                             <div className="flex flex-col gap-2 pt-3 mt-2 border-t border-neutral-100">
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2.5 text-sm font-medium text-neutral-600 rounded-lg text-center hover:bg-neutral-50"
+                                    className="px-4 py-2.5 text-sm font-medium text-neutral-600 rounded-lg text-center hover:bg-transparent hover:text-[#3B82F6] transition-colors"
                                     onClick={() => setMobileOpen(false)}
                                 >
                                     Log in
                                 </Link>
-                                <Link
+                                <Button
                                     href="/signup"
-                                    className="px-4 py-2.5 text-sm font-semibold text-white bg-brand-accent rounded-lg text-center hover:bg-brand-accent-hover"
+                                    variant="primary-outline-hover"
+                                    fullWidth
                                     onClick={() => setMobileOpen(false)}
                                 >
                                     Get Started
-                                </Link>
+                                </Button>
                             </div>
                         </nav>
                     </div>

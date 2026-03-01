@@ -1,17 +1,19 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, AnchorHTMLAttributes } from "react";
 
-type Variant = "primary" | "secondary" | "outline" | "ghost";
+type Variant = "primary" | "secondary" | "outline" | "ghost" | "primary-outline-hover";
 type Size = "sm" | "md" | "lg";
 
 const variantStyles: Record<Variant, string> = {
     primary:
-        "bg-brand-accent text-white shadow-sm hover:bg-brand-accent-hover hover:shadow-md active:scale-[0.98]",
+        "bg-brand-accent text-white border-2 border-transparent shadow-sm hover:bg-brand-accent-hover hover:shadow-md active:scale-[0.98]",
     secondary:
-        "bg-brand-primary text-white shadow-sm hover:bg-brand-primary-light hover:shadow-md active:scale-[0.98]",
+        "bg-brand-primary text-white border-2 border-transparent shadow-sm hover:bg-brand-primary-light hover:shadow-md active:scale-[0.98]",
     outline:
         "border-2 border-brand-accent text-brand-accent hover:bg-brand-accent hover:text-white active:scale-[0.98]",
-    ghost: "text-neutral-600 hover:bg-neutral-100 hover:text-brand-primary",
+    ghost: "text-neutral-600 border-2 border-transparent hover:bg-neutral-100 hover:text-brand-primary",
+    "primary-outline-hover":
+        "bg-brand-accent text-white border-2 border-transparent shadow-sm hover:!bg-transparent hover:!text-[#3B82F6] hover:!border-[#3B82F6] hover:shadow-md active:scale-[0.98]",
 };
 
 const sizeStyles: Record<Size, string> = {

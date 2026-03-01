@@ -219,7 +219,10 @@ body {
 
 /* ── Dark Blog / Shield Report Section ── */
 .shield-report-section {
-  background: linear-gradient(135deg, #0f1b30 0%, #1a2d4d 50%, #152240 100%);
+  background-image: url('/images/shield-report-bg.png');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 /* ── CTA Banner ── */

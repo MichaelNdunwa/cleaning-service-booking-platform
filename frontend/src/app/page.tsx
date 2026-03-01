@@ -174,8 +174,6 @@ function Hero() {
   );
 }
 
-
-
 /* ── Why Choose Shield Section ── */
 function WhyChoose() {
   /* ── Step data ── */
@@ -333,50 +331,55 @@ function WhyChoose() {
 function BlogSection() {
   const posts = [
     {
-      title: "5 Easy & Effective Tips For A Hygenic Living Area",
-      date: "Feb 20, 2026",
-      readTime: "4 min read",
+      title: "How to Efficiently Clean & Organize Living Areas:",
+      summary: "November is here, and with it comes a fresh opportunity to tackle the clutter and dust that may have acc...",
+      authorName: "Laura Pelitia",
+      authorAvatar: "/images/blog-cleaning-tips.png", // Using existing image as placeholder avatar
+      date: "December 18, 2023",
       image: "/images/blog-cleaning-tips.png",
     },
     {
-      title: "How to Create a Self Cleaning Home",
-      date: "Feb 15, 2026",
-      readTime: "3 min read",
+      title: "How to Create a Self-Cleaning Home.",
+      summary: "Creating a home that practically cleans itself may sound like a dream, but with a little know-how and some...",
+      authorName: "Sebrina Ludowski",
+      authorAvatar: "/images/blog-self-cleaning.png",
+      date: "December 24, 2023",
       image: "/images/blog-self-cleaning.png",
     },
     {
-      title: "10 Easy Ways to Get Housekeeping Happy",
-      date: "Feb 10, 2026",
-      readTime: "5 min read",
+      title: "10 Easy Ways to Turn Homekeeping, Happy!",
+      summary: "Homekeeping can sometimes feel like a never-ending to-do list that zaps the joy right out of your day. But wh...",
+      authorName: "Katrina Gomez",
+      authorAvatar: "/images/blog-housekeeping.png",
+      date: "January 2, 2024",
       image: "/images/blog-housekeeping.png",
     },
   ];
 
   return (
-    <section className="shield-report-section py-16 lg:py-24 relative overflow-hidden">
-      {/* Subtle bg pattern */}
-      <div className="absolute inset-0 opacity-[0.04]">
-        <div className="absolute top-10 left-10 w-40 h-40 rounded-full border-2 border-white" />
-        <div className="absolute bottom-10 right-16 w-60 h-60 rounded-full border-2 border-white" />
-        <div className="absolute top-1/2 left-1/3 w-32 h-32 rounded-full border border-white" />
-      </div>
+    <section
+      className="shield-report-section py-16 lg:py-24 relative overflow-hidden bg-center bg-cover bg-no-repeat"
+      style={{ backgroundImage: "url('/images/shield-report-bg.png')" }}
+    >
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-3">
             The Shield Report
           </h2>
-          <div className="w-12 h-1 bg-brand-accent mx-auto rounded-full" />
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
           {posts.map((post) => (
             <article
               key={post.title}
-              className="group rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              className="group relative w-[300px] h-[382px] rounded-[10px] overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col"
             >
-              {/* Image */}
-              <div className="aspect-[16/10] relative overflow-hidden">
+              {/* Image with slanted cut at the bottom */}
+              <div
+                className="relative w-[300px] h-[174px] shrink-0 overflow-hidden bg-neutral-100"
+              // style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 )", zIndex: 1 }}
+              >
                 <Image
                   src={post.image}
                   alt={post.title}
@@ -384,34 +387,47 @@ function BlogSection() {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <div className="p-5 lg:p-6">
-                <h3 className="font-bold text-brand-primary text-sm sm:text-base leading-snug mb-3 group-hover:text-brand-accent transition-colors">
+
+              {/* Content area */}
+              <div className="flex flex-col flex-1 px-6 pb-6 pt-3 relative" style={{ zIndex: 2 }}>
+                <h3 className="font-bold text-[#1a202c] text-[16px] leading-[1.3] mb-2 group-hover:text-brand-accent transition-colors">
                   {post.title}
                 </h3>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs text-neutral-400">
-                    <span>{post.date}</span>
-                    <span>·</span>
-                    <span>{post.readTime}</span>
+
+                <p className="text-[13px] text-neutral-400 leading-[1.6] line-clamp-3 mb-auto">
+                  {post.summary}
+                </p>
+
+                {/* Author row */}
+                <div className="flex items-center gap-3 mt-4 pt-4">
+                  <div className="w-[34px] h-[34px] rounded-full relative overflow-hidden bg-neutral-200 shrink-0">
+                    <Image
+                      src={post.authorAvatar}
+                      alt={post.authorName}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                  <Link
-                    href="/blog"
-                    className="text-xs font-semibold text-brand-accent hover:text-brand-accent-hover transition-colors flex items-center gap-1"
-                  >
-                    Read More
-                    <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
+                  <div className="flex flex-col">
+                    <span className="text-[13px] font-bold text-[#1a202c] leading-tight">
+                      {post.authorName}
+                    </span>
+                    <span className="text-[11px] text-neutral-400 mt-0.5">
+                      {post.date}
+                    </span>
+                  </div>
                 </div>
               </div>
             </article>
           ))}
         </div>
 
-        {/* Bottom CTA */}
         <div className="text-center mt-10">
-          <Button variant="primary" size="lg" href="/blog">
+          <Button
+            variant="primary-outline-hover"
+            size="lg"
+            href="/blog"
+          >
             Read Latest Blog
           </Button>
         </div>
