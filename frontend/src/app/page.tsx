@@ -25,13 +25,13 @@ function Hero() {
         <div className="relative flex-1 lg:flex-none flex items-center justify-center lg:block">
 
           {/* Top-Center — Man hanging on rope with squeegee */}
-          <div className="absolute left-[3%] sm:left-[15%] top-0 lg:left-[38%] xl:left-[40%] lg:-translate-x-1/2 lg:-top-30 w-[140px] sm:w-[180px] lg:w-[240px] xl:w-[270px] h-[200px] sm:h-[260px] lg:h-[350px] xl:h-[390px] z-[3] animate-fade-in-up-delay-1">
+          <div className="absolute left-[3%] sm:left-[15%] top-0 lg:left-[38%] xl:left-[40%] lg:-translate-x-1/2 lg:-top-30 w-[160px] sm:w-[200px] lg:w-[240px] xl:w-[270px] h-[220px] sm:h-[280px] lg:h-[350px] xl:h-[390px] z-[3] animate-fade-in-up-delay-1">
             <Image
               src="/images/hero-cleaner-rope.png"
               alt="Cleaner hanging on rope with squeegee"
               fill
               className="object-contain object-top"
-              sizes="(max-width: 1024px) 180px, 280px"
+              sizes="(max-width: 1024px) 200px, 280px"
               priority
             />
           </div>
@@ -40,7 +40,7 @@ function Hero() {
 
             {/* Left — Woman on ladder cleaning window */}
             {/* INCREASED SIZE ON MOBILE AGAIN: w-[280px] -> h-[480px] AND MOVED RIGHT TO left-[22%] */}
-            <div className="absolute left-[22%] sm:left-[35%] bottom-0 lg:left-[2%] xl:left-[4%] w-[280px] sm:w-[320px] lg:w-[280px] xl:w-[340px] h-[480px] sm:h-[500px] lg:h-[460px] xl:h-[520px] z-[2] animate-fade-in-up">
+            <div className="absolute left-[2%] sm:left-[35%] bottom-[15%] lg:bottom-0 lg:left-[2%] xl:left-[4%] w-[260px] sm:w-[320px] lg:w-[280px] xl:w-[340px] h-[480px] sm:h-[500px] lg:h-[460px] xl:h-[520px] z-[2] animate-fade-in-up">
               <Image
                 src="/images/hero-cleaner-ladder.png"
                 alt="Cleaner on ladder wiping window"
@@ -52,7 +52,7 @@ function Hero() {
             </div>
 
             {/* Right — Man with vacuum cleaner */}
-            <div className="absolute right-[2%] sm:right-[10%] bottom-0 lg:right-[4%] xl:right-[6%] w-[150px] sm:w-[180px] lg:w-[270px] h-[240px] sm:h-[300px] lg:h-[450px] z-[2] animate-fade-in-up-delay-2">
+            <div className="absolute right-[-10%] sm:right-[10%] bottom-[15%] lg:bottom-0 lg:right-[4%] xl:right-[6%] w-[150px] sm:w-[180px] lg:w-[270px] h-[350px] sm:h-[300px] lg:h-[450px] z-[2] animate-fade-in-up-delay-2">
               <Image
                 src="/images/hero-cleaner-vacuum.png"
                 alt="Cleaner with vacuum"
