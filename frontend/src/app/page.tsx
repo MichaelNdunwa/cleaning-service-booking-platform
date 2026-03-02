@@ -10,22 +10,10 @@ function Hero() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 lg:pt-6 lg:pb-4 relative lg:mb-20">
 
         {/* ── Character Illustrations ── */}
-        <div className="relative min-h-[420px] lg:min-h-[520px] flex items-center justify-center">
-
-          {/* Left — Woman on ladder cleaning window */}
-          <div className="hidden lg:block absolute left-[2%] xl:left-[4%] bottom-0 w-[280px] xl:w-[340px] h-[460px] xl:h-[520px] z-[2] animate-fade-in-up">
-            <Image
-              src="/images/hero-cleaner-ladder.png"
-              alt="Cleaner on ladder wiping window"
-              fill
-              className="object-contain object-bottom"
-              sizes="340px"
-              priority
-            />
-          </div>
+        <div className="relative">
 
           {/* Top-Center — Man hanging on rope with squeegee */}
-          <div className="hidden lg:block absolute left-[38%] xl:left-[40%] -translate-x-1/2 -top-4 w-[240px] xl:w-[270px] h-[350px] xl:h-[390px] z-[3] animate-fade-in-up-delay-1">
+          <div className="hidden lg:block absolute left-[38%] xl:left-[40%] -translate-x-1/2 -top-30 w-[240px] xl:w-[270px] h-[350px] xl:h-[390px] z-[3] animate-fade-in-up-delay-1">
             <Image
               src="/images/hero-cleaner-rope.png"
               alt="Cleaner hanging on rope with squeegee"
@@ -36,74 +24,89 @@ function Hero() {
             />
           </div>
 
-          {/* Right — Man with vacuum cleaner */}
-          <div className="hidden lg:block absolute right-[4%] xl:right-[6%] bottom-0 w-[280px] xl:w-[340px] h-[470px] xl:h-[520px] z-[2] animate-fade-in-up-delay-2">
-            <Image
-              src="/images/hero-cleaner-vacuum.png"
-              alt="Cleaner with vacuum"
-              fill
-              className="object-contain object-bottom"
-              sizes="360px"
-              priority
-            />
-          </div>
+          <div className="relative min-h-[420px] lg:min-h-[520px] flex items-center justify-center mt-12 lg:mt-24">
 
-          {/* Left floor/shadow under ladder lady */}
-          <div className="hidden lg:block absolute left-[3%] xl:left-[5%] bottom-0 w-[280px] xl:w-[340px] h-[60px] xl:h-[70px] z-[1]" aria-hidden="true">
-            <Image
-              src="/images/left-floor.png"
-              alt=""
-              fill
-              className="object-contain object-bottom"
-              sizes="360px"
-            />
-          </div>
+            {/* Left — Woman on ladder cleaning window */}
+            <div className="hidden lg:block absolute left-[2%] xl:left-[4%] bottom-0 w-[280px] xl:w-[340px] h-[460px] xl:h-[520px] z-[2] animate-fade-in-up">
+              <Image
+                src="/images/hero-cleaner-ladder.png"
+                alt="Cleaner on ladder wiping window"
+                fill
+                className="object-contain object-bottom"
+                sizes="340px"
+                priority
+              />
+            </div>
 
-          {/* Left dotted circle pattern */}
-          <div className="hidden lg:block absolute left-[20%] xl:left-[22%] bottom-[20%] xl:bottom-[24%] w-[90px] xl:w-[110px] h-[90px] xl:h-[110px] z-[0]" aria-hidden="true">
-            <Image
-              src="/images/left-dotted-circle.png"
-              alt=""
-              fill
-              className="object-contain"
-              sizes="100px"
-            />
-          </div>
+            {/* Right — Man with vacuum cleaner */}
+            <div className="hidden lg:block absolute right-[4%] xl:right-[6%] bottom-0 w-[270px] h-[450px] z-[2] animate-fade-in-up-delay-2">
+              <Image
+                src="/images/hero-cleaner-vacuum.png"
+                alt="Cleaner with vacuum"
+                fill
+                className="object-contain object-bottom"
+                sizes="270px"
+                priority
+              />
+            </div>
 
-          {/* Right floor/shadow under vacuum man */}
-          <div className="hidden lg:block absolute right-[1%] xl:right-[3%] bottom-0 w-[320px] xl:w-[380px] h-[50px] xl:h-[60px] z-[1]" aria-hidden="true">
-            <Image
-              src="/images/right-floor.png"
-              alt=""
-              fill
-              className="object-contain object-bottom"
-              sizes="300px"
-            />
-          </div>
+            {/* Left floor/shadow under ladder lady */}
+            <div className="hidden lg:block absolute left-[3%] xl:left-[5%] bottom-0 w-[360px] h-[260px] z-[1]" aria-hidden="true">
+              <Image
+                src="/images/left-floor.png"
+                alt=""
+                fill
+                className="object-contain object-bottom"
+                sizes="360px"
+              />
+            </div>
 
-          {/* Right dotted circle pattern */}
-          <div className="hidden lg:block absolute right-[24%] xl:right-[26%] top-[55%] xl:top-[50%] w-[90px] xl:w-[110px] h-[90px] xl:h-[110px] z-[0]" aria-hidden="true">
-            <Image
-              src="/images/right-dotted-circle.png"
-              alt=""
-              fill
-              className="object-contain"
-              sizes="100px"
-            />
-          </div>
+            {/* Left dotted circle pattern */}
+            <div className="hidden lg:block absolute left-[20%] xl:left-[22%] bottom-[20%] xl:bottom-[24%] w-[90px] xl:w-[110px] h-[90px] xl:h-[110px] z-[0]" aria-hidden="true">
+              <Image
+                src="/images/left-dotted-circle.png"
+                alt=""
+                fill
+                className="object-contain"
+                sizes="100px"
+              />
+            </div>
 
-          {/* ── Center Content ── */}
-          <div className="text-center max-w-2xl mx-auto relative z-10 pt-20 lg:pt-28">
-            <h1 className="text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-[3rem] font-extrabold tracking-tight text-brand-primary leading-[1.15] mb-6">
-              Your One Stop Cleaning
-              <br />
-              Centre For All Needs
-            </h1>
+            {/* Right floor/shadow under vacuum man */}
+            <div className="hidden lg:block absolute right-[1%] xl:right-[3%] bottom-0 w-[320px] xl:w-[380px] h-[50px] xl:h-[60px] z-[1]" aria-hidden="true">
+              <Image
+                src="/images/right-floor.png"
+                alt=""
+                fill
+                className="object-contain object-bottom"
+                sizes="300px"
+              />
+            </div>
+
+            {/* Right dotted circle pattern */}
+            <div className="hidden lg:block absolute right-[24%] xl:right-[26%] top-[55%] xl:top-[50%] w-[90px] xl:w-[110px] h-[90px] xl:h-[110px] z-[0]" aria-hidden="true">
+              <Image
+                src="/images/right-dotted-circle.png"
+                alt=""
+                fill
+                className="object-contain"
+                sizes="100px"
+              />
+            </div>
+
+            {/* ── Center Content ── */}
+            <div className="text-center max-w-2xl mx-auto relative z-10">
+              <h1 className="text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-[3rem] font-bold tracking-tight text-brand-primary leading-[1.15] mb-6">
+                Your One Stop Cleaning
+                <br />
+                Centre For All Needs
+              </h1>
+            </div>
           </div>
         </div>
 
         {/* ── Booking Bar ── */}
-        <div className="relative z-50 -mt-6 lg:-mt-30 animate-fade-in-up-delay-1">
+        <div className="relative z-50 -mt-6 lg:-mt-50 animate-fade-in-up-delay-1">
           <BookingBar />
         </div>
       </div>
