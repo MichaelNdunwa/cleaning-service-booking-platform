@@ -16,7 +16,7 @@ export default function Navbar() {
     ];
 
     return (
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-neutral-100">
+        <header className="sticky top-0 z-[100] bg-white/80 backdrop-blur-lg border-b border-neutral-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 lg:h-18">
                     {/* Logo */}
@@ -61,35 +61,46 @@ export default function Navbar() {
                         </Button>
                     </div>
 
-                    {/* Mobile menu button */}
-                    <button
-                        className="md:hidden p-2 rounded-lg text-neutral-600 hover:bg-neutral-50 transition-colors"
-                        onClick={() => setMobileOpen(!mobileOpen)}
-                        aria-label="Toggle menu"
-                    >
-                        <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                    <div className="md:hidden flex items-center gap-2">
+                        {/* Mobile Log In Button */}
+                        <Button
+                            href="/login"
+                            variant="outline"
+                            className="!px-3 !py-1.5 !text-sm"
                         >
-                            {mobileOpen ? (
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
-                            ) : (
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 6h16M4 12h16M4 18h16"
-                                />
-                            )}
-                        </svg>
-                    </button>
+                            Log in
+                        </Button>
+
+                        {/* Mobile menu button */}
+                        <button
+                            className="p-2 rounded-lg text-neutral-600 hover:bg-neutral-50 transition-colors"
+                            onClick={() => setMobileOpen(!mobileOpen)}
+                            aria-label="Toggle menu"
+                        >
+                            <svg
+                                className="w-6 h-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                {mobileOpen ? (
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                ) : (
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 6h16M4 12h16M4 18h16"
+                                    />
+                                )}
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mobile Menu */}
@@ -106,14 +117,7 @@ export default function Navbar() {
                                     {link.label}
                                 </Link>
                             ))}
-                            <div className="flex flex-col gap-2 pt-3 mt-2 border-t border-neutral-100">
-                                <Link
-                                    href="/login"
-                                    className="px-4 py-2.5 text-sm font-medium text-neutral-600 rounded-lg text-center hover:bg-transparent hover:text-[#3B82F6] transition-colors"
-                                    onClick={() => setMobileOpen(false)}
-                                >
-                                    Log in
-                                </Link>
+                            <div className="pt-3 mt-2 border-t border-neutral-100">
                                 <Button
                                     href="/signup"
                                     variant="primary-outline-hover"
