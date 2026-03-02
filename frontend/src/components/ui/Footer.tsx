@@ -13,7 +13,7 @@ export default function Footer() {
                     <div className="lg:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4 relative h-6 w-24">
                             <Image
-                                src="/images/logo-1.png"
+                                src="/images/logo-2.png"
                                 alt="Shield Logo"
                                 fill
                                 className="object-contain object-left transition-transform duration-200 group-hover:scale-105"
