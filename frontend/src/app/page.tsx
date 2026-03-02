@@ -166,21 +166,21 @@ function WhyChoose() {
   ] as const;
 
   return (
-    <section className="py-16 lg:py-24 bg-white">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+    <section className="pt-0 pb-16 lg:py-24 bg-white">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-10 overflow-hidden sm:overflow-visible">
         {/* Top Row: Title + Description */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start mb-24 lg:mb-40">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-16 items-start mb-16 lg:mb-40 text-left lg:text-left">
           <div>
-            <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-brand-primary leading-tight">
+            <h2 className="text-4xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-[#0B1536] leading-tight mt-0 lg:mt-0">
               Why Choose
               <br />
               Shield ?
             </h2>
           </div>
           <div className="lg:pt-2">
-            <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+            <p className="text-[#3B4256] leading-relaxed text-[17px] sm:text-base">
               We understand your home is important to you. That&apos;s
-              why we focus on the quality of the clean. Our cleaners
+              why we focus on the quality of the cleaner. Our cleaners
               aren&apos;t contract workers - they are full-time employees.
               They care as much as we do.
             </p>
@@ -188,94 +188,112 @@ function WhyChoose() {
         </div>
 
         {/* Feature Diamonds with Curve Path */}
-        <div className="relative overflow-visible">
-          {/* ── Dashed curve paths connecting diamonds (desktop only) ── */}
-          <div
-            className="hidden lg:block absolute top-[5%] left-[19%] z-0 pointer-events-none"
-            aria-hidden="true"
-          >
-            <Image
-              src="/images/curve-path.svg"
-              alt=""
-              width={350}
-              height={300}
-              className="object-contain"
-            />
-          </div>
-          <div
-            className="hidden lg:block absolute top-[2%] right-[19%] z-0 pointer-events-none"
-            aria-hidden="true"
-          >
-            <Image
-              src="/images/curve-path.svg"
-              alt=""
-              width={350}
-              height={300}
-              className="object-contain"
-            />
-          </div>
+        <div className="relative overflow-x-auto overflow-y-visible snap-x snap-mandatory pt-16 sm:pt-0 pb-12 -mx-4 sm:mx-0 sm:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="relative w-full sm:w-auto mx-auto">
+            {/* ── Dashed curve paths connecting diamonds (Desktop only here) ── */}
+            <div
+              className="hidden sm:block absolute top-[5%] left-[19%] z-0 pointer-events-none"
+              aria-hidden="true"
+            >
+              <Image
+                src="/images/curve-path.svg"
+                alt=""
+                width={350}
+                height={300}
+                className="object-contain"
+              />
+            </div>
+            <div
+              className="hidden sm:block absolute top-[2%] right-[19%] z-0 pointer-events-none"
+              aria-hidden="true"
+            >
+              <Image
+                src="/images/curve-path.svg"
+                alt=""
+                width={350}
+                height={300}
+                className="object-contain"
+              />
+            </div>
 
-          {/* ── Step cards grid ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-16 lg:gap-20">
-            {steps.map((item, index) => (
-              <div key={item.label} className="flex flex-col items-center group">
-                {/* Container sized to diamond's bounding box (~255px) so left-aligned text starts at the diamond's left tip */}
-                <div className="w-[255px] flex flex-col items-start">
-                  {/* Diamond wrapper — centered in container */}
-                  <div className="relative self-center z-10 block">
-                    {/* Outer diamond: sizing + hover transform */}
-                    <div className="w-[180px] h-[180px] rotate-45 flex items-center justify-center transition-transform duration-300 ease-in-out group-hover:scale-[1.07]">
-                      {/* Inner white card */}
-                      <div
-                        className="w-[180px] h-[180px] rounded-[24px] bg-white flex items-center justify-center"
-                        style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.09)" }}
-                      >
-                        {/* Icon — counter-rotated to appear upright */}
-                        <div
-                          className="-rotate-45 relative"
-                          style={{ width: item.iconWidth, height: item.iconHeight }}
-                        >
-                          <Image
-                            src={item.icon}
-                            alt={item.label}
-                            fill
-                            className="object-contain"
-                            sizes={`${Math.ceil(item.iconWidth)}px`}
-                          />
-                        </div>
-                      </div>
-                    </div>
+            {/* ── Step cards grid ── */}
+            <div className="flex sm:grid sm:grid-cols-3 gap-0 sm:gap-20 w-fit sm:w-auto">
+              {steps.map((item, index) => (
+                <div key={item.label} className="w-screen sm:w-auto flex-shrink-0 flex flex-col items-center group snap-center relative">
 
-                    {/* Dotted circle decoration — positioned per card */}
+                  {/* Mobile Curve Paths connecting cards */}
+                  {index < 2 && (
                     <div
-                      className={`absolute w-[150px] h-[150px] z-[-1] pointer-events-none ${dottedCirclePosition[index]}`}
+                      className={`absolute ${index === 0 ? "top-[15%]" : "top-[10%]"} left-[50%] w-screen flex justify-center z-[5] pointer-events-none sm:hidden`}
                       aria-hidden="true"
                     >
                       <Image
-                        src="/images/right-dotted-circle.png"
+                        src="/images/curve-path.svg"
                         alt=""
-                        fill
-                        className="object-contain"
-                        sizes="150px"
+                        width={300}
+                        height={250}
+                        className="object-contain opacity-50"
                       />
                     </div>
-                  </div>
+                  )}
 
-                  {/* Text content shifted slightly right to account for the diamond's rounded corner inset */}
-                  <div className="ml-2 md:ml-3">
-                    {/* Step label */}
-                    <p className="text-[14px] font-[800] tracking-[0.1em] text-[#3B82F6] mb-3 mt-12">
-                      {item.label}
-                    </p>
+                  {/* Container sized to diamond's bounding box (~255px) */}
+                  <div className="w-[255px] flex flex-col items-center sm:items-start text-center sm:text-left relative z-10">
+                    {/* Diamond wrapper — centered in container */}
+                    <div className="relative self-center z-10 block">
+                      {/* Outer diamond: sizing + hover transform */}
+                      <div className="w-[180px] h-[180px] rotate-45 flex items-center justify-center transition-transform duration-300 ease-in-out group-hover:scale-[1.07]">
+                        {/* Inner white card */}
+                        <div
+                          className="w-[180px] h-[180px] rounded-[24px] bg-white flex items-center justify-center p-[2px] shadow-[0_12px_45px_rgba(0,0,0,0.12)] ring-1 ring-gray-100/50"
+                        >
+                          {/* Icon — counter-rotated to appear upright */}
+                          <div
+                            className="-rotate-45 relative"
+                            style={{ width: item.iconWidth, height: item.iconHeight }}
+                          >
+                            <Image
+                              src={item.icon}
+                              alt={item.label}
+                              fill
+                              className="object-contain"
+                              sizes={`${Math.ceil(item.iconWidth)}px`}
+                            />
+                          </div>
+                        </div>
+                      </div>
 
-                    {/* Step description */}
-                    <p className="text-[13px] text-neutral-400 leading-[1.8] max-w-[210px] font-medium tracking-wide">
-                      {item.description}
-                    </p>
+                      {/* Dotted circle decoration — positioned per card */}
+                      <div
+                        className={`absolute w-[150px] h-[150px] z-[-1] pointer-events-none ${dottedCirclePosition[index]}`}
+                        aria-hidden="true"
+                      >
+                        <Image
+                          src="/images/right-dotted-circle.png"
+                          alt=""
+                          fill
+                          className="object-contain"
+                          sizes="150px"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Text content directly centered under diamond on mobile */}
+                    <div className="mt-20 sm:mt-12 flex flex-col items-center sm:items-start ml-0 sm:ml-2 md:ml-3">
+                      {/* Step label */}
+                      <p className="text-[16px] sm:text-[14px] font-[800] tracking-[0.1em] text-[#2979FF] mb-3">
+                        {item.label}
+                      </p>
+
+                      {/* Step description */}
+                      <p className="text-[15px] sm:text-[13px] text-[#869ab8] leading-[1.8] max-w-[210px] font-medium tracking-wide">
+                        {item.description}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
