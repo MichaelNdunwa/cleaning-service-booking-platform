@@ -6,51 +6,64 @@ import BookingBar from "@/components/BookingBar";
 /* ── Hero Section ── */
 function Hero() {
   return (
-    <section className="hero-section relative overflow-visible">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 lg:pt-6 lg:pb-4 relative lg:mb-20">
+    <section className="hero-section relative overflow-visible min-h-[100vh] lg:min-h-0 flex flex-col lg:block bg-gradient-to-b from-white to-neutral-50 lg:bg-none">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4 sm:pt-10 sm:pb-8 lg:pt-6 lg:pb-4 relative lg:mb-20 flex-1 flex flex-col lg:block justify-center">
+
+        {/* ── Mobile Title & CTA ── */}
+        <div className="lg:hidden w-full text-center flex flex-col items-center justify-center mt-12 sm:mt-16 mb-6 z-10 px-2 space-y-6 lg:mt-0 lg:mb-8">
+          <h1 className="text-[46px] sm:text-[52px] font-bold tracking-tight text-brand-primary leading-[1.05] font-sans">
+            Your One Stop
+            <br />
+            Cleaning Centre
+          </h1>
+          <div className="w-full relative z-40">
+            <BookingBar />
+          </div>
+        </div>
 
         {/* ── Character Illustrations ── */}
-        <div className="relative">
+        <div className="relative flex-1 lg:flex-none flex items-center justify-center lg:block">
 
           {/* Top-Center — Man hanging on rope with squeegee */}
-          <div className="hidden lg:block absolute left-[38%] xl:left-[40%] -translate-x-1/2 -top-30 w-[240px] xl:w-[270px] h-[350px] xl:h-[390px] z-[3] animate-fade-in-up-delay-1">
+          <div className="absolute left-[3%] sm:left-[15%] top-0 lg:left-[38%] xl:left-[40%] lg:-translate-x-1/2 lg:-top-30 w-[140px] sm:w-[180px] lg:w-[240px] xl:w-[270px] h-[200px] sm:h-[260px] lg:h-[350px] xl:h-[390px] z-[3] animate-fade-in-up-delay-1">
             <Image
               src="/images/hero-cleaner-rope.png"
               alt="Cleaner hanging on rope with squeegee"
               fill
               className="object-contain object-top"
-              sizes="280px"
+              sizes="(max-width: 1024px) 180px, 280px"
               priority
             />
           </div>
 
-          <div className="relative min-h-[420px] lg:min-h-[520px] flex items-center justify-center mt-12 lg:mt-24">
+          <div className="relative min-h-[380px] sm:min-h-[460px] lg:min-h-[520px] w-full flex items-center justify-center mt-24 lg:mt-24">
 
             {/* Left — Woman on ladder cleaning window */}
-            <div className="hidden lg:block absolute left-[2%] xl:left-[4%] bottom-0 w-[280px] xl:w-[340px] h-[460px] xl:h-[520px] z-[2] animate-fade-in-up">
+            {/* INCREASED SIZE ON MOBILE AGAIN: w-[280px] -> h-[480px] AND MOVED RIGHT TO left-[22%] */}
+            <div className="absolute left-[22%] sm:left-[35%] bottom-0 lg:left-[2%] xl:left-[4%] w-[280px] sm:w-[320px] lg:w-[280px] xl:w-[340px] h-[480px] sm:h-[500px] lg:h-[460px] xl:h-[520px] z-[2] animate-fade-in-up">
               <Image
                 src="/images/hero-cleaner-ladder.png"
                 alt="Cleaner on ladder wiping window"
                 fill
                 className="object-contain object-bottom"
-                sizes="340px"
+                sizes="(max-width: 1024px) 320px, 340px"
                 priority
               />
             </div>
 
             {/* Right — Man with vacuum cleaner */}
-            <div className="hidden lg:block absolute right-[4%] xl:right-[6%] bottom-0 w-[270px] h-[450px] z-[2] animate-fade-in-up-delay-2">
+            <div className="absolute right-[2%] sm:right-[10%] bottom-0 lg:right-[4%] xl:right-[6%] w-[150px] sm:w-[180px] lg:w-[270px] h-[240px] sm:h-[300px] lg:h-[450px] z-[2] animate-fade-in-up-delay-2">
               <Image
                 src="/images/hero-cleaner-vacuum.png"
                 alt="Cleaner with vacuum"
                 fill
                 className="object-contain object-bottom"
-                sizes="270px"
+                sizes="(max-width: 1024px) 180px, 270px"
                 priority
               />
             </div>
 
-            {/* Left floor/shadow under ladder lady */}
+            {/* Left floor/shadow under ladder lady - hidden on mobile */}
             <div className="hidden lg:block absolute left-[3%] xl:left-[5%] bottom-0 w-[360px] h-[260px] z-[1]" aria-hidden="true">
               <Image
                 src="/images/left-floor.png"
@@ -61,7 +74,7 @@ function Hero() {
               />
             </div>
 
-            {/* Left dotted circle pattern */}
+            {/* Left dotted circle pattern - hidden on mobile */}
             <div className="hidden lg:block absolute left-[20%] xl:left-[22%] bottom-[20%] xl:bottom-[24%] w-[90px] xl:w-[110px] h-[90px] xl:h-[110px] z-[0]" aria-hidden="true">
               <Image
                 src="/images/left-dotted-circle.png"
@@ -72,7 +85,7 @@ function Hero() {
               />
             </div>
 
-            {/* Right floor/shadow under vacuum man */}
+            {/* Right floor/shadow under vacuum man - hidden on mobile */}
             <div className="hidden lg:block absolute right-[1%] xl:right-[3%] bottom-0 w-[320px] xl:w-[380px] h-[50px] xl:h-[60px] z-[1]" aria-hidden="true">
               <Image
                 src="/images/right-floor.png"
@@ -83,7 +96,7 @@ function Hero() {
               />
             </div>
 
-            {/* Right dotted circle pattern */}
+            {/* Right dotted circle pattern - hidden on mobile */}
             <div className="hidden lg:block absolute right-[24%] xl:right-[26%] top-[55%] xl:top-[50%] w-[90px] xl:w-[110px] h-[90px] xl:h-[110px] z-[0]" aria-hidden="true">
               <Image
                 src="/images/right-dotted-circle.png"
@@ -94,8 +107,8 @@ function Hero() {
               />
             </div>
 
-            {/* ── Center Content ── */}
-            <div className="text-center max-w-2xl mx-auto relative z-10">
+            {/* ── Desktop Center Content ── */}
+            <div className="hidden lg:block text-center max-w-2xl mx-auto relative z-10">
               <h1 className="text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-[3rem] font-bold tracking-tight text-brand-primary leading-[1.15] mb-6">
                 Your One Stop Cleaning
                 <br />
@@ -105,8 +118,8 @@ function Hero() {
           </div>
         </div>
 
-        {/* ── Booking Bar ── */}
-        <div className="relative z-50 -mt-6 lg:-mt-50 animate-fade-in-up-delay-1">
+        {/* ── Desktop Booking Bar ── */}
+        <div className="hidden lg:block relative z-50 -mt-6 lg:-mt-50 animate-fade-in-up-delay-1">
           <BookingBar />
         </div>
       </div>

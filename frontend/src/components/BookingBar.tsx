@@ -91,7 +91,8 @@ export default function BookingBar() {
 
     return (
         <div className="max-w-2xl mx-auto relative z-[100]" ref={barRef}>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-neutral-100 relative z-[100]">
+            {/* Desktop View */}
+            <div className="hidden lg:flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-neutral-100 relative z-[100]">
 
                 <Dropdown id="bed" value={bed} placeholder="Select Bedrooms" options={OPTIONS.bed} setter={setBed} isFirst={true} />
 
@@ -101,7 +102,17 @@ export default function BookingBar() {
 
                 <Link
                     href="/booking"
-                    className="px-7 py-[18px] h-full bg-brand-accent text-white text-[15px] font-semibold whitespace-nowrap text-center hover:bg-brand-accent-hover transition-colors duration-200 rounded-b-xl sm:rounded-bl-none sm:rounded-r-xl relative z-10"
+                    className="px-7 py-[18px] h-full flex justify-center items-center bg-[#1E78FF] text-white text-[15px] font-semibold whitespace-nowrap hover:bg-blue-600 transition-colors duration-200 rounded-r-xl relative z-10"
+                >
+                    Booking from $80
+                </Link>
+            </div>
+
+            {/* Mobile View */}
+            <div className="lg:hidden w-full flex justify-center mt-2 px-1">
+                <Link
+                    href="/booking"
+                    className="flex justify-center items-center w-full py-[20px] bg-[#1E78FF] text-white text-[18px] font-bold rounded-[10px] hover:bg-blue-600 transition-colors shadow-md"
                 >
                     Booking from $80
                 </Link>
