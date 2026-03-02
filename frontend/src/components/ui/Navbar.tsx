@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 
@@ -19,13 +20,15 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 lg:h-18">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-9 h-9 rounded-lg bg-brand-primary flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
-                            <span className="text-white font-bold text-sm">S</span>
-                        </div>
-                        <span className="text-xl font-bold text-brand-primary tracking-tight">
-                            Shield
-                        </span>
+                    <Link href="/" className="flex items-center gap-2 group relative h-10 w-[140px]">
+                        <Image
+                            src="/images/logo-1.png"
+                            alt="Shield Logo"
+                            fill
+                            className="object-contain transition-transform duration-200 group-hover:scale-105"
+                            sizes="140px"
+                            priority
+                        />
                     </Link>
 
                     {/* Desktop Nav */}
