@@ -44,7 +44,7 @@ export default function BookingBar() {
                     type="button"
                     onClick={() => setOpenDropdown(isOpen ? null : id)}
                     className={clsx(
-                        "w-full px-5 py-[18px] text-[15px] outline-none flex items-center justify-between transition-all duration-200 z-10",
+                        "w-full px-5 md:px-2 lg:px-5 py-[18px] text-[15px] outline-none flex items-center justify-between transition-all duration-200 z-10",
                         isOpen
                             ? "ring-2 ring-inset ring-brand-accent shadow-md rounded-[10px] relative z-20 bg-white"
                             : "text-neutral-600 bg-transparent hover:bg-neutral-50/50",
@@ -91,8 +91,8 @@ export default function BookingBar() {
 
     return (
         <div className="max-w-2xl mx-auto relative z-[100]" ref={barRef}>
-            {/* Desktop View */}
-            <div className="hidden lg:flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-neutral-100 relative z-[100]">
+            {/* Desktop & Tablet View */}
+            <div className="hidden md:flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-neutral-100 relative z-[100]">
 
                 <Dropdown id="bed" value={bed} placeholder="Select Bedrooms" options={OPTIONS.bed} setter={setBed} isFirst={true} />
 
@@ -102,14 +102,14 @@ export default function BookingBar() {
 
                 <Link
                     href="/booking"
-                    className="px-7 py-[18px] h-full flex justify-center items-center bg-[#1E78FF] text-white text-[15px] font-semibold whitespace-nowrap hover:bg-blue-600 transition-colors duration-200 rounded-r-xl relative z-10"
+                    className="px-7 md:px-4 lg:px-7 py-[18px] h-full flex justify-center items-center bg-[#1E78FF] text-white text-[15px] font-semibold whitespace-nowrap hover:bg-blue-600 transition-colors duration-200 rounded-r-xl relative z-10"
                 >
                     Booking from $80
                 </Link>
             </div>
 
             {/* Mobile View */}
-            <div className="lg:hidden w-full flex justify-center mt-2 px-1">
+            <div className="md:hidden w-full flex justify-center mt-2 px-1">
                 <Link
                     href="/booking"
                     className="flex justify-center items-center w-full py-[20px] bg-[#1E78FF] text-white text-[18px] font-bold rounded-[10px] hover:bg-blue-600 transition-colors shadow-md"

@@ -11,7 +11,7 @@ function Hero() {
 
         {/* ── Mobile Title & CTA ── */}
         <div className="lg:hidden w-full text-center flex flex-col items-center justify-center mt-12 sm:mt-16 mb-6 z-10 px-2 space-y-6 lg:mt-0 lg:mb-8">
-          <h1 className="text-[46px] sm:text-[52px] font-bold tracking-tight text-brand-primary leading-[1.05] font-sans">
+          <h1 className="text-[46px] sm:text-[52px] md:text-[64px] font-bold tracking-tight text-brand-primary leading-[1.05] font-sans">
             Your One Stop
             <br />
             Cleaning Centre
@@ -40,7 +40,7 @@ function Hero() {
 
             {/* Left — Woman on ladder cleaning window */}
             {/* INCREASED SIZE ON MOBILE AGAIN: w-[280px] -> h-[480px] AND MOVED RIGHT TO left-[22%] */}
-            <div className="absolute left-[2%] sm:left-[35%] bottom-[15%] lg:bottom-0 lg:left-[2%] xl:left-[4%] w-[260px] sm:w-[320px] lg:w-[280px] xl:w-[340px] h-[480px] sm:h-[500px] lg:h-[460px] xl:h-[520px] z-[2] animate-fade-in-up">
+            <div className="absolute left-[2%] sm:left-[15%] md:left-[-5%] bottom-[15%] lg:bottom-0 lg:left-[2%] xl:left-[4%] w-[260px] sm:w-[320px] lg:w-[280px] xl:w-[340px] h-[480px] sm:h-[500px] lg:h-[460px] xl:h-[520px] z-[2] animate-fade-in-up">
               <Image
                 src="/images/hero-cleaner-ladder.png"
                 alt="Cleaner on ladder wiping window"
@@ -52,7 +52,7 @@ function Hero() {
             </div>
 
             {/* Right — Man with vacuum cleaner */}
-            <div className="absolute right-[-10%] sm:right-[10%] bottom-[15%] lg:bottom-0 lg:right-[4%] xl:right-[6%] w-[150px] sm:w-[180px] lg:w-[270px] h-[350px] sm:h-[300px] lg:h-[450px] z-[2] animate-fade-in-up-delay-2">
+            <div className="absolute right-[-10%] sm:right-[10%] md:right-[-5%] bottom-[15%] lg:bottom-0 lg:right-[4%] xl:right-[6%] w-[150px] sm:w-[180px] lg:w-[270px] h-[350px] sm:h-[300px] lg:h-[450px] z-[2] animate-fade-in-up-delay-2">
               <Image
                 src="/images/hero-cleaner-vacuum.png"
                 alt="Cleaner with vacuum"
