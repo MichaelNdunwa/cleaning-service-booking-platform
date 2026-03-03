@@ -32,7 +32,7 @@ export default function Navbar() {
                     </Link>
 
                     {/* Desktop Nav */}
-                    <nav className="hidden md:flex items-center gap-1">
+                    <nav className="hidden lg:flex items-center gap-1">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
@@ -45,7 +45,7 @@ export default function Navbar() {
                     </nav>
 
                     {/* Desktop CTA */}
-                    <div className="hidden md:flex items-center gap-3">
+                    <div className="hidden lg:flex items-center gap-3">
                         <Link
                             href="/login"
                             className="px-4 py-2 text-sm font-medium text-neutral-600 rounded-lg transition-colors duration-200 hover:text-[#3B82F6] hover:bg-transparent"
@@ -61,7 +61,7 @@ export default function Navbar() {
                         </Button>
                     </div>
 
-                    <div className="md:hidden flex items-center gap-2">
+                    <div className="lg:hidden flex items-center gap-2">
                         {/* Mobile Log In Button */}
                         <Button
                             href="/login"
@@ -105,7 +105,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu */}
                 {mobileOpen && (
-                    <div className="md:hidden pb-4 border-t border-neutral-100 mt-2 animate-fade-in-up">
+                    <div className="lg:hidden pb-4 border-t border-neutral-100 mt-2 animate-fade-in-up">
                         <nav className="flex flex-col gap-1 pt-3">
                             {navLinks.map((link) => (
                                 <Link

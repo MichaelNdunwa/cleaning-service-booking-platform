@@ -16,9 +16,9 @@ export default function Footer() {
         <footer className="bg-white text-neutral-600 border-t border-neutral-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Main Footer */}
-                <div className="py-12 lg:py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 text-center lg:text-left">
+                <div className="py-12 md:py-8 lg:py-16 grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-4 lg:gap-12 text-center md:text-left">
                     {/* Brand */}
-                    <div className="flex flex-col items-center lg:items-start lg:col-span-1 order-last lg:order-first">
+                    <div className="flex flex-col items-center md:items-start lg:col-span-1 order-last md:order-first">
                         <Link href="/" className="flex items-center gap-2 mb-4 relative h-6 w-24">
                             <Image
                                 src="/images/logo-2.png"
@@ -28,7 +28,7 @@ export default function Footer() {
                                 sizes="96px"
                             />
                         </Link>
-                        <p className="text-neutral-500 text-sm leading-relaxed mb-6">
+                        <p className="text-neutral-500 text-sm md:text-xs lg:text-sm leading-relaxed mb-6 md:mb-4 lg:mb-6 pr-0 md:pr-4 lg:pr-0">
                             Your one stop cleaning centre for all needs. Professional,
                             reliable, and thorough cleaning services.
                         </p>
@@ -49,17 +49,17 @@ export default function Footer() {
                     </div>
 
                     {/* Quick Links */}
-                    <div className="lg:pl-8 border-b border-neutral-100 lg:border-none">
+                    <div className="md:pl-2 lg:pl-8 border-b border-neutral-100 md:border-none">
                         <button
-                            className="w-full flex justify-between items-center lg:cursor-default py-4 lg:py-0 lg:mb-4"
+                            className="w-full flex justify-between items-center md:cursor-default py-4 md:py-0 md:mb-4 lg:mb-5"
                             onClick={() => toggleSection("quickLinks")}
                             aria-expanded={openSection === "quickLinks"}
                         >
-                            <h3 className="font-semibold text-sm uppercase tracking-wider text-neutral-800">
+                            <h3 className="font-semibold text-sm md:text-xs lg:text-sm uppercase tracking-wider text-neutral-800">
                                 Quick Links
                             </h3>
                             <svg
-                                className={`w-5 h-5 text-neutral-400 transition-transform duration-200 lg:hidden ${openSection === "quickLinks" ? "rotate-180" : ""}`}
+                                className={`w-5 h-5 text-neutral-400 transition-transform duration-200 md:hidden ${openSection === "quickLinks" ? "rotate-180" : ""}`}
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -67,8 +67,8 @@ export default function Footer() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div className={`overflow-hidden transition-all duration-300 ${openSection === "quickLinks" ? "max-h-64 opacity-100 pb-4 lg:pb-0" : "max-h-0 opacity-0 lg:max-h-none lg:opacity-100"}`}>
-                            <ul className="space-y-3 flex flex-col text-left">
+                        <div className={`overflow-hidden transition-all duration-300 ${openSection === "quickLinks" ? "max-h-64 opacity-100 pb-4 md:pb-0" : "max-h-0 opacity-0 md:max-h-none md:opacity-100"}`}>
+                            <ul className="space-y-3 md:space-y-2 lg:space-y-3 flex flex-col text-left">
                                 {[
                                     { href: "/", label: "Home" },
                                     { href: "/about", label: "About Us" },
@@ -78,7 +78,7 @@ export default function Footer() {
                                     <li key={link.href}>
                                         <Link
                                             href={link.href}
-                                            className="text-neutral-500 text-sm hover:text-brand-accent transition-colors duration-200"
+                                            className="text-neutral-500 text-sm md:text-[13px] lg:text-sm hover:text-brand-accent transition-colors duration-200"
                                         >
                                             {link.label}
                                         </Link>
@@ -89,17 +89,17 @@ export default function Footer() {
                     </div>
 
                     {/* Services */}
-                    <div className="border-b border-neutral-100 lg:border-none">
+                    <div className="border-b border-neutral-100 md:border-none">
                         <button
-                            className="w-full flex justify-between items-center lg:cursor-default py-4 lg:py-0 lg:mb-4"
+                            className="w-full flex justify-between items-center md:cursor-default py-4 md:py-0 md:mb-4 lg:mb-5"
                             onClick={() => toggleSection("services")}
                             aria-expanded={openSection === "services"}
                         >
-                            <h3 className="font-semibold text-sm uppercase tracking-wider text-neutral-800">
+                            <h3 className="font-semibold text-sm md:text-xs lg:text-sm uppercase tracking-wider text-neutral-800">
                                 Services
                             </h3>
                             <svg
-                                className={`w-5 h-5 text-neutral-400 transition-transform duration-200 lg:hidden ${openSection === "services" ? "rotate-180" : ""}`}
+                                className={`w-5 h-5 text-neutral-400 transition-transform duration-200 md:hidden ${openSection === "services" ? "rotate-180" : ""}`}
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -107,8 +107,8 @@ export default function Footer() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div className={`overflow-hidden transition-all duration-300 ${openSection === "services" ? "max-h-64 opacity-100 pb-4 lg:pb-0" : "max-h-0 opacity-0 lg:max-h-none lg:opacity-100"}`}>
-                            <ul className="space-y-3 flex flex-col text-left">
+                        <div className={`overflow-hidden transition-all duration-300 ${openSection === "services" ? "max-h-64 opacity-100 pb-4 md:pb-0" : "max-h-0 opacity-0 md:max-h-none md:opacity-100"}`}>
+                            <ul className="space-y-3 md:space-y-2 lg:space-y-3 flex flex-col text-left">
                                 {[
                                     "Residential Cleaning",
                                     "Office Cleaning",
@@ -117,7 +117,7 @@ export default function Footer() {
                                     "Post Construction",
                                 ].map((service) => (
                                     <li key={service}>
-                                        <span className="text-neutral-500 text-sm">{service}</span>
+                                        <span className="text-neutral-500 text-sm md:text-[13px] lg:text-sm">{service}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -125,17 +125,17 @@ export default function Footer() {
                     </div>
 
                     {/* Contact */}
-                    <div className="border-b border-neutral-100 lg:border-none">
+                    <div className="border-b border-neutral-100 md:border-none">
                         <button
-                            className="w-full flex justify-between items-center lg:cursor-default py-4 lg:py-0 lg:mb-4"
+                            className="w-full flex justify-between items-center md:cursor-default py-4 md:py-0 md:mb-4 lg:mb-5"
                             onClick={() => toggleSection("contact")}
                             aria-expanded={openSection === "contact"}
                         >
-                            <h3 className="font-semibold text-sm uppercase tracking-wider text-neutral-800">
+                            <h3 className="font-semibold text-sm md:text-xs lg:text-sm uppercase tracking-wider text-neutral-800">
                                 Contact Us
                             </h3>
                             <svg
-                                className={`w-5 h-5 text-neutral-400 transition-transform duration-200 lg:hidden ${openSection === "contact" ? "rotate-180" : ""}`}
+                                className={`w-5 h-5 text-neutral-400 transition-transform duration-200 md:hidden ${openSection === "contact" ? "rotate-180" : ""}`}
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -143,8 +143,8 @@ export default function Footer() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        <div className={`overflow-hidden transition-all duration-300 ${openSection === "contact" ? "max-h-64 opacity-100 pb-4 lg:pb-0" : "max-h-0 opacity-0 lg:max-h-none lg:opacity-100"}`}>
-                            <ul className="space-y-3 text-neutral-500 text-sm flex flex-col text-left">
+                        <div className={`overflow-hidden transition-all duration-300 ${openSection === "contact" ? "max-h-64 opacity-100 pb-4 md:pb-0" : "max-h-0 opacity-0 md:max-h-none md:opacity-100"}`}>
+                            <ul className="space-y-3 md:space-y-2 lg:space-y-3 text-neutral-500 text-sm md:text-[13px] lg:text-sm flex flex-col text-left">
                                 <li className="flex items-center lg:items-start gap-2 hover:text-brand-accent transition-colors duration-200">
                                     <svg
                                         className="w-4 h-4 mt-0.5 text-brand-accent-light shrink-0"
