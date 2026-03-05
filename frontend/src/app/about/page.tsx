@@ -4,34 +4,31 @@ import CTABanner from "@/components/ui/CTABanner";
 
 function AboutHero() {
     return (
-        <section className="w-full relative bg-white py-12 lg:py-20 overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between">
-                {/* Left Column - Text & CTA */}
-                <div className="flex flex-col items-center lg:items-start text-center lg:text-left z-10 w-full lg:w-1/2 mb-12 lg:mb-0">
-                    <h1 className="text-4xl sm:text-5xl lg:text-[64px] font-bold text-[#0B1536] mb-8 leading-tight">
-                        About Us
-                    </h1>
-                    <Button
-                        href="/booking"
-                        variant="primary-outline-hover"
-                        className="px-8 py-3.5 text-lg font-semibold shadow-md"
-                    >
-                        Request A Quote
-                    </Button>
-                </div>
+        <section className="w-full relative min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] flex justify-center items-center py-16 lg:py-24 overflow-hidden">
+            {/* Background Image */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/about-us.png"
+                    alt="About Shield Cleaning.Co"
+                    fill
+                    className="object-contain object-center"
+                    priority
+                />
+            </div>
 
-                {/* Right Column - Illustration */}
-                <div className="w-full lg:w-1/2 relative flex justify-center lg:justify-end z-0">
-                    <div className="relative w-full max-w-[600px] aspect-[4/3]">
-                        <Image
-                            src="/images/about-us.png"
-                            alt="Professional cleaner mopping the floor"
-                            fill
-                            className="object-contain"
-                            priority
-                        />
-                    </div>
-                </div>
+            {/* Content centered */}
+            <div className="relative z-10 flex flex-col items-center text-center px-4 sm:px-6 lg:px-8 w-full max-w-4xl mx-auto">
+                {/* <h1 className="text-4xl sm:text-5xl lg:text-[64px] font-bold text-black mb-8 leading-tight drop-shadow-md"> */}
+                <h1 className="text-4xl sm:text-5xl lg:text-[64px] font-semibold text-black mb-8 leading-tight drop-shadow-md">
+                    About Us
+                </h1>
+                <Button
+                    href="/booking"
+                    variant="primary-outline-hover"
+                    className="px-10 py-4 text-lg font-semibold shadow-xl"
+                >
+                    Request A Quote
+                </Button>
             </div>
         </section>
     );
@@ -45,11 +42,10 @@ function StorySection() {
                     The Shield Cleaning.Co Story
                 </h2>
                 <p className="text-[#3B4256] text-[15px] sm:text-base leading-[1.8] max-w-3xl mx-auto">
-                    Our story began in 2014 when we realized there's a real problem with the way cleaning is
-                    currently handled. We believe you care deeply about the life and the working standard
-                    of your cleaning team. As our professional cleaners, we provide comprehensive verified
-                    guides on healthy and holistic cleaning methods to ensure that your home, office or
-                    commercial building is as clean as a healthy and safe—environment.
+                    Our story began in 2014 when we realized there’s no convenient way for us to find cleaners in a simple manner.
+                    We take our jobs very seriously, just ask the 10,000+ recurring customers who keep coming back for our professional
+                    services. We use a combination of enterprise grade technology and technical cleaning methods to ensure that your house,
+                    office or commercial setting is as good as new, healthy and clean - when we’re done.
                 </p>
             </div>
         </section>
@@ -65,13 +61,13 @@ function ContactSection() {
                         Contact Us
                     </h2>
                     <p className="text-[#3B4256] text-sm sm:text-base leading-relaxed max-w-3xl mx-auto">
-                        If you will like to do business with us through partnerships, then email will
-                        usually get back to you within the same business day. Our client services teams are
-                        always ready to answer all your booking related questions.
+                        If you call during our business hours you’ll get through to us instantly. If you email, we’ll usually get
+                        back to you within the same business day. Our client services team members are eager to answer all of your
+                        cleaning services questions.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24 max-w-4xl mx-auto">
+                <div className="flex flex-col md:flex-row justify-center md:items-start gap-12 lg:gap-24 max-w-4xl mx-auto">
                     {/* Working Hours */}
                     <div className="flex flex-col items-center md:items-start text-center md:text-left">
                         <h3 className="text-lg font-bold text-[#0B1536] mb-6">Working Hours</h3>
@@ -122,19 +118,35 @@ function ContactSection() {
 }
 
 function ClientsSection() {
+    const clients = [
+        { src: "/images/pera-logo.png", alt: "Pera Group Cleaning Logo", width: 120, height: 40 },
+        { src: "/images/showroom-logo.png", alt: "Showroom Logo", width: 120, height: 40 },
+        { src: "/images/ish-logo.png", alt: "ISH Logo", width: 100, height: 60 },
+        { src: "/images/canaras.png", alt: "Canaras Logo", width: 140, height: 40 },
+        { src: "/images/light-iron-logo.png", alt: "Light Iron Logo", width: 140, height: 40 },
+        { src: "/images/theatre.png", alt: "Theatre Logo", width: 100, height: 100 },
+        { src: "/images/kings-bay-logo.png", alt: "Kings Bay Logo", width: 50, height: 100 },
+        { src: "/images/museum-logo.png", alt: "Museum Logo", width: 100, height: 100 },
+    ];
+
     return (
         <section className="w-full bg-white py-20 lg:py-32">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 className="text-3xl sm:text-4xl font-bold text-[#0B1536] mb-12 sm:mb-16">
+                <h2 className="text-3xl sm:text-4xl font-semibold text-[#0B1536] mb-12 sm:mb-16">
                     Our Amazing Clients
                 </h2>
-                {/* Placeholder Logos until assets are provided */}
-                <div className="flex flex-wrap justify-center items-center gap-10 sm:gap-16 opacity-50 grayscale">
-                    <div className="text-2xl font-bold font-serif italic text-neutral-800 tracking-tighter">pera<br /><span className="text-[10px] font-sans font-normal tracking-wide uppercase text-neutral-400">group cleaning</span></div>
-                    <div className="text-3xl font-[cursive] text-neutral-700">Brookie M</div>
-                    <div className="text-3xl font-black tracking-tighter text-neutral-900">.iab.</div>
-                    <div className="text-4xl font-bold text-neutral-800 tracking-tighter mix-blend-multiply">CANARAS</div>
-                    <div className="text-xl font-light text-neutral-800 uppercase tracking-[0.2em]">LIGHT<span className="font-bold">IRON</span><br /><span className="text-[8px] tracking-normal">A PANAVISION COMPANY</span></div>
+                <div className="flex flex-wrap justify-center items-center gap-10 sm:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-300">
+                    {clients.map((client, index) => (
+                        <div key={index} className="relative flex items-center justify-center">
+                            <Image
+                                src={client.src}
+                                alt={client.alt}
+                                width={client.width}
+                                height={client.height}
+                                className="object-contain"
+                            />
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>
