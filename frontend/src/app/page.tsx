@@ -11,7 +11,7 @@ function Hero() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4 sm:pt-10 sm:pb-8 lg:pt-6 lg:pb-4 relative lg:mb-20 flex-1 flex flex-col lg:block justify-center">
 
         {/* ── Mobile Title & CTA ── */}
-        <div className="lg:hidden w-full text-center flex flex-col items-center justify-center mt-12 sm:mt-16 mb-6 z-10 px-2 space-y-6 lg:mt-0 lg:mb-8">
+        <div className="lg:hidden w-full text-center flex flex-col items-center justify-center mt-12 sm:mt-16 mb-6 z-10 space-y-6 lg:mt-0 lg:mb-8">
           <h1 className="text-[46px] sm:text-[52px] md:text-[64px] font-bold tracking-tight text-brand-primary leading-[1.05] font-sans">
             Your One Stop
             <br />

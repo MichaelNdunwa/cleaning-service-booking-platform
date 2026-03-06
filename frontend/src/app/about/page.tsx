@@ -48,7 +48,7 @@ function AboutHero() {
 function StorySection() {
     return (
         <section className="w-full bg-white py-16 lg:py-24">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-left sm:text-center">
                 <h2 className="text-3xl sm:text-4xl font-bold text-[#0B1536] mb-8">
                     The Shield Cleaning.Co Story
                 </h2>
@@ -67,7 +67,7 @@ function ContactSection() {
     return (
         <section className="w-full bg-[#F4F8FF]/60 py-16 lg:py-24">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
+                <div className="text-left sm:text-center mb-16">
                     <h2 className="text-3xl sm:text-4xl font-bold text-[#0B1536] mb-6">
                         Contact Us
                     </h2>
@@ -80,7 +80,7 @@ function ContactSection() {
 
                 <div className="flex flex-col md:flex-row justify-center md:items-start gap-12 lg:gap-24 max-w-4xl mx-auto">
                     {/* Working Hours */}
-                    <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                    <div className="flex flex-col items-start sm:items-center md:items-start text-left sm:text-center md:text-left">
                         <h3 className="text-lg font-bold text-[#0B1536] mb-6">Working Hours</h3>
                         <div className="w-full max-w-[280px]">
                             <div className="flex justify-between items-center py-3 border-b border-blue-100/50">
@@ -99,7 +99,7 @@ function ContactSection() {
                     </div>
 
                     {/* Contact Details */}
-                    <div className="flex flex-col items-center md:items-start text-center md:text-left pt-2 md:pt-14">
+                    <div className="flex flex-col items-start sm:items-center md:items-start text-left sm:text-center md:text-left pt-2 md:pt-14">
                         <ul className="space-y-6">
                             <li className="flex items-start gap-3">
                                 <svg className="w-5 h-5 mt-0.5 text-neutral-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -146,15 +146,15 @@ function ClientsSection() {
                 <h2 className="text-3xl sm:text-4xl font-semibold text-[#0B1536] mb-12 sm:mb-16">
                     Our Amazing Clients
                 </h2>
-                <div className="flex flex-wrap justify-center items-center gap-10 sm:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-300">
+                <div className="flex flex-wrap justify-center items-center gap-10 sm:gap-16">
                     {clients.map((client, index) => (
-                        <div key={index} className="relative flex items-center justify-center">
+                        <div key={index} className="relative flex items-center justify-center group">
                             <Image
                                 src={client.src}
                                 alt={client.alt}
                                 width={client.width}
                                 height={client.height}
-                                className="object-contain"
+                                className="object-contain opacity-70 grayscale transition-all duration-300 group-hover:grayscale-0 group-hover:opacity-100"
                             />
                         </div>
                     ))}
