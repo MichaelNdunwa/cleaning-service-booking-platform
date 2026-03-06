@@ -4,32 +4,43 @@ import CTABanner from "@/components/ui/CTABanner";
 
 function AboutHero() {
     return (
-        <section className="w-full relative min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] flex justify-center items-center py-16 lg:py-24 overflow-hidden">
-            {/* Background Image */}
-            <div className="absolute inset-0 z-0">
-                <Image
-                    src="/images/about-us.png"
-                    alt="About Shield Cleaning.Co"
-                    fill
-                    className="object-contain object-center"
-                    priority
-                />
-            </div>
-
-            {/* Content centered */}
-            <div className="relative z-10 flex flex-col items-center text-center px-4 sm:px-6 lg:px-8 w-full max-w-4xl mx-auto">
-                {/* <h1 className="text-4xl sm:text-5xl lg:text-[64px] font-bold text-black mb-8 leading-tight drop-shadow-md"> */}
+        <section className="w-full relative flex flex-col lg:block overflow-hidden bg-white">
+            {/* Content centered on mobile (top) & overlaid on desktop */}
+            <div className="relative z-10 flex flex-col items-center text-center px-4 sm:px-6 lg:px-8 w-full max-w-4xl mx-auto py-12 sm:py-16 lg:absolute lg:inset-0 lg:justify-center">
                 <h1 className="text-4xl sm:text-5xl lg:text-[64px] font-semibold text-black mb-8 leading-tight drop-shadow-md">
                     About Us
                 </h1>
                 <Button
                     href="/booking"
                     variant="primary-outline-hover"
-                    className="px-10 py-4 text-lg font-semibold shadow-xl"
+                    className="w-full sm:w-auto px-10 py-4 text-lg font-semibold shadow-xl"
                 >
                     Request A Quote
                 </Button>
             </div>
+
+            {/* Image below text on mobile, full background overlay on desktop */}
+            <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[600px] lg:absolute lg:inset-0 z-0">
+                {/* Desktop Image */}
+                <Image
+                    src="/images/about-us.png"
+                    alt="About Shield Cleaning.Co"
+                    fill
+                    className="hidden lg:block object-contain object-center"
+                    priority
+                />
+                {/* Mobile/Tablet Image */}
+                <Image
+                    src="/images/about-us-mobile.png"
+                    alt="About Shield Cleaning.Co Mobile"
+                    fill
+                    className="block lg:hidden object-cover object-center"
+                    priority
+                />
+            </div>
+
+            {/* Desktop min-height spacer to ensure absolute image has space */}
+            <div className="hidden lg:block w-full min-h-[600px]"></div>
         </section>
     );
 }

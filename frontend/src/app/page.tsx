@@ -402,6 +402,7 @@ function BlogSection() {
             variant="primary-outline-hover"
             size="lg"
             href="/blog"
+            className="w-full sm:w-auto"
           >
             Read Latest Blog
           </Button>

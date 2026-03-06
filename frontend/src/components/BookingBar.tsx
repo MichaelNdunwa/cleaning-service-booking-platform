@@ -109,7 +109,7 @@ export default function BookingBar() {
             </div>
 
             {/* Mobile View */}
-            <div className="md:hidden w-full flex justify-center mt-2 px-1">
+            <div className="md:hidden w-full flex justify-center mt-2">
                 <Link
                     href="/booking"
                     className="flex justify-center items-center w-full py-[20px] bg-[#1E78FF] text-white text-[18px] font-bold rounded-[10px] hover:bg-blue-600 transition-colors shadow-md"
