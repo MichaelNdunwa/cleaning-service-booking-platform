@@ -3,10 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Button from "@/components/ui/Button";
 
 export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const pathname = usePathname();
 
     const navLinks = [
         { href: "/", label: "Home" },
@@ -14,6 +16,10 @@ export default function Navbar() {
         { href: "/solutions", label: "Solutions" },
         { href: "/booking", label: "Book Now" },
     ];
+
+    if (pathname?.startsWith("/booking")) {
+        return null;
+    }
 
     return (
         <header className="sticky top-0 z-[100] bg-white/80 backdrop-blur-lg border-b border-neutral-100">

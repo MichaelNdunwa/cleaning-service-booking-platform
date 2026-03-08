@@ -3,14 +3,20 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
     const [openSection, setOpenSection] = useState<string | null>(null);
+    const pathname = usePathname();
 
     const toggleSection = (section: string) => {
         setOpenSection(openSection === section ? null : section);
     };
+
+    if (pathname?.startsWith("/booking")) {
+        return null;
+    }
 
     return (
         <footer className="bg-white text-neutral-600 border-t border-neutral-100">
