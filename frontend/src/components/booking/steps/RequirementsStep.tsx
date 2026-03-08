@@ -47,17 +47,17 @@ export default function RequirementsStep({ data, updateData, onNext }: Props) {
     );
 
     return (
-        <div className="w-full max-w-3xl flex flex-col items-center animate-fade-in">
-            <h2 className="text-3xl font-bold text-[#0B1536] mb-12">
+        <div className="w-full max-w-3xl flex flex-col items-start md:items-center animate-fade-in">
+            <h2 className="text-[28px] md:text-3xl font-bold text-[#0B1536] mb-8 md:mb-12 leading-tight">
                 Customize Your Requirements
             </h2>
 
             {/* Bedrooms */}
-            <div className="mb-10 flex flex-col items-center">
-                <p className="text-[11px] font-extrabold text-neutral-300 uppercase tracking-widest mb-4">
-                    Number of Bedrooms
+            <div className="mb-8 md:mb-10 flex flex-col items-start md:items-center w-full">
+                <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                    NUMBER OF BEDROOMS
                 </p>
-                <div className="flex flex-wrap justify-center gap-3">
+                <div className="flex flex-wrap justify-start md:justify-center gap-3 w-full">
                     {bedrooms.map((bed) => (
                         <OptionButton
                             key={bed}
@@ -72,16 +72,17 @@ export default function RequirementsStep({ data, updateData, onNext }: Props) {
             </div>
 
             {/* Bathrooms */}
-            <div className="mb-14 flex flex-col items-center">
-                <p className="text-[11px] font-extrabold text-neutral-300 uppercase tracking-widest mb-4">
-                    Number of Bathrooms
+            <div className="mb-10 md:mb-14 flex flex-col items-start md:items-center w-full">
+                <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                    NUMBER OF BATHROOMS
                 </p>
-                <div className="flex flex-wrap justify-center gap-3">
+                <div className="flex flex-wrap justify-start md:justify-center gap-3 w-full">
                     {bathrooms.map((bath) => (
                         <OptionButton
                             key={bath}
                             active={data.bathrooms.toString() === bath}
                             onClick={() => updateData({ bathrooms: bath })}
+                            className="min-w-[64px]"
                         >
                             {bath}
                         </OptionButton>
@@ -90,11 +91,11 @@ export default function RequirementsStep({ data, updateData, onNext }: Props) {
             </div>
 
             {/* Clean Type */}
-            <div className="mb-16 flex flex-col items-center">
-                <p className="text-[11px] font-extrabold text-neutral-300 uppercase tracking-widest mb-4">
-                    Clean Type
+            <div className="mb-12 md:mb-16 flex flex-col items-start md:items-center w-full">
+                <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                    CLEAN TYPE
                 </p>
-                <div className="flex flex-wrap justify-center gap-4">
+                <div className="flex flex-wrap justify-start md:justify-center gap-4 w-full">
                     {cleanTypes.map((type) => (
                         <div key={type.id} className="flex flex-col items-center gap-2">
                             <button
@@ -116,9 +117,11 @@ export default function RequirementsStep({ data, updateData, onNext }: Props) {
                 </div>
             </div>
 
-            <Button onClick={onNext} className="w-[180px] h-[48px] text-[15px]">
-                Next
-            </Button>
+            <div className="w-full flex justify-center hidden md:flex mt-4">
+                <Button onClick={onNext} className="w-[180px] h-[48px] text-[15px]">
+                    Next
+                </Button>
+            </div>
         </div>
     );
 }

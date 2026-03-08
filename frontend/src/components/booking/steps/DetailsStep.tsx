@@ -32,19 +32,48 @@ export default function DetailsStep({ data, updateData, onNext }: Props) {
         updateData({ extras: newExtras });
     };
 
-    return (
-        <div className="w-full max-w-3xl flex flex-col items-center animate-fade-in">
-            <h2 className="text-3xl font-bold text-[#0B1536] mb-2">Select Frequency</h2>
-            <p className="text-[#9CA3AF] text-[15px] mb-12">Book ForShield's recurring plan and save 20% annually.</p>
+    const toggleAddOn = (label: string) => { // New function for addOns
+        const newExtras = data.extras.includes(label)
+            ? data.extras.filter(e => e !== label)
+            : [...data.extras, label];
+        updateData({ extras: newExtras });
+    };
 
-            {/* Frequency */}
-            <div className="w-full mb-16 flex flex-col items-center">
-                <p className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest mb-4">
-                    Recurring
+    return (
+        <div className="w-full max-w-2xl flex flex-col items-start md:items-center animate-fade-in relative">
+            <h2 className="text-[28px] md:text-3xl font-bold text-[#0B1536] mb-2 leading-tight">Select Frequency</h2>
+            <p className="text-[#9CA3AF] text-[15px] mb-8 md:mb-12">Book ForShield's recurring plan and save 20% annually.</p>
+
+            {/* Frequency Options */}
+            <div className="w-full mb-12 md:mb-16">
+                <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                    RECURRING
                 </p>
-                <div className="flex flex-wrap justify-center gap-3">
-                    {frequencies.map((freq) => (
-                        <div key={freq.id} className="flex flex-col items-center gap-2">
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                    {frequencies.slice(0, 2).map((freq) => (
+                        <div key={freq.id} className="flex flex-col items-center gap-1.5 focus-within:z-10 relative">
+                            <button
+                                type="button"
+                                onClick={() => updateData({ frequency: freq.id })}
+                                className={`
+                                    h-[46px] rounded-lg text-[15px] font-bold transition-all duration-200 min-w-[130px] px-4 flex items-center justify-center
+                                    ${data.frequency === freq.id
+                                        ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
+                                        : "border border-neutral-200 text-[#0B1536] hover:border-neutral-300 bg-white"
+                                    }
+                                `}
+                            >
+                                {freq.label}
+                            </button>
+                            {freq.discount && (
+                                <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">{freq.discount}</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                    {frequencies.slice(2).map((freq) => (
+                        <div key={freq.id} className="flex flex-col items-center gap-1.5 focus-within:z-10 relative">
                             <button
                                 type="button"
                                 onClick={() => updateData({ frequency: freq.id })}
@@ -66,146 +95,155 @@ export default function DetailsStep({ data, updateData, onNext }: Props) {
                 </div>
             </div>
 
-            <h2 className="text-3xl font-bold text-[#0B1536] mb-2">Add Your Address & Details</h2>
-            <p className="text-[#9CA3AF] text-[15px] mb-12">Be specific of any additional details we might need from you</p>
+            {/* Address & Details Section */}
+            <div className="w-full border-t border-neutral-100 pt-10 md:pt-16">
+                <h2 className="text-[28px] md:text-3xl font-bold text-[#0B1536] mb-2 leading-tight">Add Your Address & Details</h2>
+                <p className="text-[#9CA3AF] text-[15px] mb-8 md:mb-12">Be specific of any additional details we might need from you</p>
 
-            {/* Address */}
-            <div className="w-full max-w-2xl flex gap-4 mb-10">
-                <div className="flex-1 flex flex-col gap-2">
-                    <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">Address</label>
-                    <input
-                        type="text"
-                        placeholder="Enter a Location"
-                        value={data.address}
-                        onChange={(e) => updateData({ address: e.target.value })}
-                        className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[15px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400"
-                    />
+                {/* Address & Apt */}
+                <div className="flex flex-col md:flex-row gap-6 mb-8 md:mb-10">
+                    <div className="flex-1 flex flex-col items-start w-full">
+                        <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                            ADDRESS
+                        </p>
+                        <input
+                            placeholder="Enter a Location"
+                            value={data.address}
+                            onChange={(e) => updateData({ address: e.target.value })}
+                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[15px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 bg-white"
+                        />
+                    </div>
+                    <div className="w-full md:w-48 flex flex-col items-start">
+                        <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                            APT. NUMBER
+                        </p>
+                        <input
+                            placeholder=""
+                            value={data.aptNumber}
+                            onChange={(e) => updateData({ aptNumber: e.target.value })}
+                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[15px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 bg-white"
+                        />
+                    </div>
                 </div>
-                <div className="w-[140px] flex flex-col gap-2">
-                    <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">Apt.Number</label>
-                    <input
-                        type="text"
-                        value={data.aptNumber}
-                        onChange={(e) => updateData({ aptNumber: e.target.value })}
-                        className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[15px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400"
-                    />
-                </div>
-            </div>
 
-            {/* Entry Method */}
-            <div className="w-full max-w-2xl mb-10 flex flex-col items-center">
-                <p className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest mb-4">
-                    How do we get in?
-                </p>
-                <div className="flex flex-wrap justify-between w-full gap-3">
-                    {entryMethods.map((method) => (
-                        <button
-                            key={method}
-                            type="button"
-                            onClick={() => updateData({ entryMethod: method })}
-                            className={`
+                {/* Entry Method */}
+                <div className="mb-10 md:mb-14 flex flex-col items-start w-full">
+                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                        HOW DO WE GET IN?
+                    </p>
+                    <div className="flex flex-wrap md:flex-nowrap gap-3 w-full justify-between">
+                        {entryMethods.map((method) => (
+                            <button
+                                key={method}
+                                type="button"
+                                onClick={() => updateData({ entryMethod: method })}
+                                className={`
                                 flex-1 h-[46px] rounded-lg text-[15px] font-bold transition-all duration-200 min-w-[120px] whitespace-nowrap px-2
                                 ${data.entryMethod === method
-                                    ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
-                                    : "border border-neutral-200 text-neutral-600 hover:border-neutral-300 bg-white"
-                                }
-                            `}
-                        >
-                            {method}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Extras */}
-            <div className="w-full max-w-2xl mb-12 flex flex-col items-center">
-                <p className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest mb-4">
-                    Extras
-                </p>
-                <div className="flex justify-center gap-4 w-full">
-                    {extrasOptions.map((extra) => {
-                        const isSelected = data.extras.includes(extra.id);
-                        return (
-                            <button
-                                key={extra.id}
-                                type="button"
-                                onClick={() => toggleExtra(extra.id)}
-                                className={`
-                                    flex-1 h-[140px] rounded-xl flex flex-col items-center justify-center gap-3 transition-all duration-200
-                                    ${isSelected
-                                        ? "border-2 border-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
-                                        : "border border-neutral-200 bg-white hover:border-neutral-300"
+                                        ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
+                                        : "border border-neutral-200 text-neutral-600 hover:border-neutral-300 bg-white"
                                     }
-                                `}
+                            `}
                             >
-                                <div className={`w-8 h-10 border-2 rounded-md border-neutral-300 flex items-center justify-center ${isSelected ? "border-[#1E78FF]" : ""}`}>
-                                    {/* Mock icon shape */}
-                                </div>
-                                <div>
-                                    <div className={`text-[15px] font-bold ${isSelected ? "text-[#1E78FF]" : "text-[#0B1536]"}`}>{extra.label}</div>
-                                    <div className="text-[13px] font-semibold text-neutral-400 mt-1">{extra.price}</div>
-                                </div>
+                                {method}
                             </button>
-                        );
-                    })}
+                        ))}
+                    </div>
                 </div>
-            </div>
 
-            {/* Pets */}
-            <div className="w-full max-w-2xl mb-8 flex flex-col items-center">
-                <p className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest mb-4">
-                    Any Pets?
-                </p>
-                <div className="flex justify-center gap-3 w-full max-w-[200px] mx-auto mb-4">
-                    <button
-                        onClick={() => updateData({ hasPets: true })}
-                        className={`
+                {/* Add-ons */}
+                <div className="mb-10 md:mb-14 flex flex-col items-start w-full">
+                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                        ADD ONS?
+                    </p>
+                    <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 md:gap-4 w-full">
+                        {extrasOptions.map((extra) => {
+                            const isSelected = data.extras.includes(extra.id);
+                            return (
+                                <button
+                                    key={extra.id}
+                                    onClick={() => toggleAddOn(extra.id)}
+                                    className={`
+                                        h-[100px] md:h-28 rounded-xl flex flex-col items-center justify-center gap-2 border bg-white transition-all w-full md:w-[140px] px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1E78FF]
+                                        ${isSelected
+                                            ? "border-2 border-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] z-10 block"
+                                            : "border-neutral-200 hover:border-neutral-300 relative"
+                                        }
+                                    `}
+                                >
+                                    <div className={`w-8 h-10 border-2 rounded-md border-neutral-300 flex items-center justify-center ${isSelected ? "border-[#1E78FF]" : ""}`}>
+                                        {/* Mock icon shape */}
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <div className={`text-[15px] font-bold ${isSelected ? "text-[#1E78FF]" : "text-[#0B1536]"}`}>{extra.label}</div>
+                                        <div className="text-[13px] font-semibold text-neutral-400 mt-1">{extra.price}</div>
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Pets */}
+                <div className="mb-8 md:mb-10 flex flex-col items-start w-full">
+                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                        ANY PETS?
+                    </p>
+                    <div className="flex gap-3 mb-4 w-full">
+                        <button
+                            onClick={() => updateData({ hasPets: true })}
+                            className={`
                             flex-1 h-[46px] rounded-lg text-[15px] font-bold transition-all px-6
                             ${data.hasPets
-                                ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
-                                : "border border-neutral-200 text-neutral-600 bg-white"
-                            }
+                                    ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
+                                    : "border border-neutral-200 text-neutral-600 bg-white"
+                                }
                         `}
-                    >
-                        Yes
-                    </button>
-                    <button
-                        onClick={() => updateData({ hasPets: false })}
-                        className={`
+                        >
+                            Yes
+                        </button>
+                        <button
+                            onClick={() => updateData({ hasPets: false })}
+                            className={`
                             flex-1 h-[46px] rounded-lg text-[15px] font-bold transition-all px-6
                             ${!data.hasPets
-                                ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
-                                : "border border-neutral-200 text-[#0B1536] bg-white"
-                            }
+                                    ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
+                                    : "border border-neutral-200 text-[#0B1536] bg-white"
+                                }
                         `}
-                    >
-                        No
-                    </button>
+                        >
+                            No
+                        </button>
+                    </div>
+                    {data.hasPets && (
+                        <textarea
+                            placeholder="What types of pets? Some of our cleaners have pet allergies."
+                            value={data.petDetails}
+                            onChange={(e) => updateData({ petDetails: e.target.value })}
+                            className="w-full h-24 p-4 border rounded-xl border-neutral-200 bg-white placeholder:text-neutral-400 text-[#0B1536] resize-none focus:outline-none focus:border-[#1E78FF] transition-colors"
+                        />
+                    )}
                 </div>
 
-                <input
-                    type="text"
-                    placeholder="What types of pets? Some of our cleaners have pet allergies."
-                    value={data.petDetails}
-                    onChange={(e) => updateData({ petDetails: e.target.value })}
-                    className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
-                />
+                {/* Notes */}
+                <div className="mb-8 md:mb-12 flex flex-col items-start w-full">
+                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                        ADDITIONAL NOTES
+                    </p>
+                    <textarea
+                        placeholder="I would like Sophie to be my cleaner. Please change my sheets (fresh bedding is on the bed) and empty the dishwasher."
+                        value={data.notes}
+                        onChange={(e) => updateData({ notes: e.target.value })}
+                        className="w-full h-32 p-5 border rounded-xl border-neutral-200 bg-white placeholder:text-neutral-400 text-[#0B1536] resize-none focus:outline-none focus:border-[#1E78FF] transition-colors"
+                    />
+                </div>
             </div>
 
-            {/* Notes */}
-            <div className="w-full max-w-2xl mb-12 flex flex-col gap-2">
-                <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">Additional Notes</label>
-                <textarea
-                    placeholder="I would like Sophie to be my cleaner. Please change my sheets (fresh bedding is on the bed) and empty the dishwasher."
-                    value={data.notes}
-                    onChange={(e) => updateData({ notes: e.target.value })}
-                    className="h-[100px] py-4 w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium resize-none leading-relaxed"
-                />
+            <div className="w-full flex justify-center hidden md:flex mt-4">
+                <Button onClick={onNext} className="w-[180px] h-[48px] text-[15px]">
+                    Next
+                </Button>
             </div>
-
-            <Button onClick={onNext} className="w-[180px] h-[48px] text-[15px]">
-                Next
-            </Button>
         </div>
     );
 }

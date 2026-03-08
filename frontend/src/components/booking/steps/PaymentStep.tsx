@@ -2,6 +2,7 @@
 
 import { BookingState } from "@/app/booking/page";
 import Button from "@/components/ui/Button";
+import CTABanner from "@/components/ui/CTABanner";
 
 interface Props {
     data: BookingState;
@@ -9,7 +10,7 @@ interface Props {
     onNext: () => void;
 }
 
-export default function PaymentStep({ data, onNext }: Props) {
+export default function PaymentStep({ data, updateData, onNext }: Props) {
     const InputField = ({ label, placeholder, className = "col-span-1" }: { label: string, placeholder: string, className?: string }) => (
         <div className={`flex flex-col gap-2 ${className}`}>
             <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">{label}</label>
@@ -22,24 +23,40 @@ export default function PaymentStep({ data, onNext }: Props) {
     );
 
     return (
-        <div className="w-full max-w-5xl flex gap-12 animate-fade-in mx-auto">
+        <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row gap-8 md:gap-16 items-start animate-fade-in relative -mt-6 md:-mt-0">
             {/* Left Column: Form */}
-            <div className="flex-1">
-                <h2 className="text-3xl font-bold text-[#0B1536] mb-2">Payment Details</h2>
-                <p className="text-[#9CA3AF] text-[15px] mb-10">Add in your payment details through our secure gateway</p>
+            <div className="flex-1 w-full mx-auto max-w-2xl px-2 md:px-0">
+                <h2 className="text-[28px] md:text-3xl font-bold text-[#0B1536] mb-2 leading-tight">Payment Details</h2>
+                <p className="text-[#9CA3AF] text-[15px] mb-8 md:mb-12">Add in your payment details through our secure gateway</p>
 
-                <div className="grid grid-cols-2 gap-x-4 gap-y-6 max-w-[500px]">
-                    <InputField label="CREDIT CARD" placeholder="Card number" className="col-span-1" />
-                    <div className="grid grid-cols-2 gap-4">
-                        <InputField label="EXP.DATE" placeholder="mm/yyyy" />
-                        <InputField label="CVV" placeholder="123" />
+                {/* Credit Card */}
+                <div className="w-full mb-8">
+                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">CREDIT CARD</p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+                        <input
+                            type="text"
+                            placeholder="Card number"
+                            className="col-span-2 h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
+                        />
+                        <input
+                            type="text"
+                            placeholder="mm/yyyy"
+                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
+                        />
+                        <input
+                            type="text"
+                            placeholder="123"
+                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
+                        />
                     </div>
+                </div>
 
-                    <InputField label="FULL NAME" placeholder="Enter Full name" />
-                    <InputField label="EMAIL ADDRESS" placeholder="Enter a address" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6 max-w-[500px]">
+                    <InputField label="FULL NAME" placeholder="Enter Full name" className="col-span-full md:col-span-1" />
+                    <InputField label="EMAIL ADDRESS" placeholder="Enter a address" className="col-span-full md:col-span-1" />
 
-                    <InputField label="PHONE NUMBER" placeholder="Enter a Phone number" />
-                    <div className="flex flex-col gap-2">
+                    <InputField label="PHONE NUMBER" placeholder="Enter a Phone number" className="col-span-full md:col-span-1" />
+                    <div className="flex flex-col gap-2 col-span-full md:col-span-1">
                         <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">HOW DO WE CONTACT YOU</label>
                         <div className="flex gap-2">
                             {["Text", "Call", "Email"].map(pref => (
@@ -50,13 +67,27 @@ export default function PaymentStep({ data, onNext }: Props) {
                         </div>
                     </div>
 
-                    <InputField label="PASSWORD" placeholder="Enter a Password" />
-                    <InputField label="CONFIRM PASSWORD" placeholder="Enter a Password" />
+                    <InputField label="PASSWORD" placeholder="Enter a Password" className="col-span-full md:col-span-1" />
+                    <InputField label="CONFIRM PASSWORD" placeholder="Enter a Password" className="col-span-full md:col-span-1" />
+                </div>
+
+                <div className="w-full flex justify-center hidden md:flex mt-8">
+                    <Button onClick={onNext} className="w-[180px] h-[48px] text-[15px]">
+                        Review Order
+                    </Button>
+                </div>
+
+                {/* Mobile Extra Banner Insertion directly beneath form before sticky footer */}
+                <div className="md:hidden w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] mt-12 bg-[#D1D5DB] pt-12 max-h-[250px] overflow-hidden">
+                    {/* The CTABanner takes care of its own styling, but we wrap it to full bleed out of main container on mobile */}
+                    <div className="transform scale-90 origin-top -mt-8">
+                        <CTABanner />
+                    </div>
                 </div>
             </div>
 
-            {/* Right Column: Billing */}
-            <div className="w-[420px] shrink-0">
+            {/* Right Column: Billing Summary (Hidden exactly on mobile flow to match reference) */}
+            <div className="w-full md:w-[480px] hidden md:flex flex-col bg-slate-50 rounded-2xl p-8 sticky top-32 border border-neutral-100 shadow-sm">
                 <h2 className="text-3xl font-bold text-[#0B1536] mb-10">Billing</h2>
 
                 <div className="w-full bg-[#FCFCFD] p-8 rounded-xl border border-neutral-100 shadow-sm">

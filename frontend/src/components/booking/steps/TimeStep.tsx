@@ -25,23 +25,23 @@ export default function TimeStep({ data, updateData, onNext }: Props) {
     };
 
     return (
-        <div className="w-full max-w-2xl flex flex-col items-center animate-fade-in">
-            <h2 className="text-3xl font-bold text-[#0B1536] mb-2">Book Timing</h2>
-            <p className="text-[#9CA3AF] text-[15px] mb-12">Save even more by booking off-peak dates and times.</p>
+        <div className="w-full max-w-2xl flex flex-col items-start md:items-center animate-fade-in relative overflow-hidden">
+            <h2 className="text-[28px] md:text-3xl font-bold text-[#0B1536] mb-2 leading-tight">Book Timing</h2>
+            <p className="text-[#9CA3AF] text-[15px] mb-8 md:mb-12">Save even more by booking off-peak dates and times.</p>
 
             {/* Horizontal Date Ribbon */}
-            <div className="flex items-center justify-between w-full mb-10">
-                <button className="text-neutral-400 hover:text-[#0B1536]">
+            <div className="flex items-center justify-between w-full mb-8 md:mb-10">
+                <button className="hidden md:block text-neutral-400 hover:text-[#0B1536]">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </button>
-                <div className="flex gap-3">
+                <div className="flex gap-3 overflow-x-auto pb-4 -mb-4 scrollbar-hide px-1 w-full md:w-auto md:justify-center">
                     {dates.map((d) => (
                         <div
                             key={d}
                             className={`
-                                w-[84px] h-[46px] rounded-lg flex items-center justify-center font-bold text-sm cursor-pointer
+                                shrink-0 w-[84px] h-[46px] rounded-lg flex items-center justify-center font-bold text-sm cursor-pointer
                                 transition-all duration-200
                                 ${d === 24
                                     ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)]"
@@ -53,7 +53,7 @@ export default function TimeStep({ data, updateData, onNext }: Props) {
                         </div>
                     ))}
                 </div>
-                <button className="text-neutral-400 hover:text-[#0B1536]">
+                <button className="hidden md:block text-neutral-400 hover:text-[#0B1536]">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
@@ -61,7 +61,7 @@ export default function TimeStep({ data, updateData, onNext }: Props) {
             </div>
 
             {/* Time Slots Vertical */}
-            <div className="w-full flex flex-col gap-3">
+            <div className="w-full flex flex-col gap-3 px-1">
                 {timeSlots.map((slot) => {
                     const isSelected = data.time === slot.id;
                     return (
@@ -98,12 +98,6 @@ export default function TimeStep({ data, updateData, onNext }: Props) {
                 })}
             </div>
 
-            {/* Next Button */}
-            <div className="w-full flex justify-center mt-12">
-                <Button onClick={onNext} className="w-[180px] h-[48px] text-[15px]">
-                    Next
-                </Button>
-            </div>
         </div>
     );
 }
