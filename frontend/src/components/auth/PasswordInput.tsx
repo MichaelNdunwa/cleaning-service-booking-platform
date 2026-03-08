@@ -6,12 +6,13 @@ interface PasswordInputProps
     extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
     label?: string;
     error?: string;
+    invalid?: boolean;
 }
 
 const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-    ({ label = "Password", error, className = "", id, ...props }, ref) => {
+    ({ label = "Password", error, invalid, className = "", id, ...props }, ref) => {
         const [visible, setVisible] = useState(false);
-        const inputId = id || label.toLowerCase().replace(/\s+/g, "-");
+        const inputId = id || label?.toLowerCase().replace(/\s+/g, "-") || "password-input";
 
         return (
             <div className="w-full">
@@ -34,7 +35,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
               focus:outline-none focus:ring-2 focus:ring-brand-accent/30 focus:border-brand-accent
               disabled:opacity-50 disabled:cursor-not-allowed
               pl-4 pr-11 py-2.5
-              ${error ? "border-red-400 focus:ring-red-300/30 focus:border-red-400" : "border-neutral-200 hover:border-neutral-300"}
+              ${error || invalid ? "border-red-500 focus:ring-red-300/30 focus:border-red-500" : "border-neutral-200 hover:border-neutral-300"}
               ${className}
             `}
                         {...props}

@@ -36,115 +36,76 @@ export default function ForgotPasswordPage() {
 
     if (submitted) {
         return (
-            <AuthCard
-                title="Reset link sent"
-                subtitle="Check your email for a password reset link."
-            >
-                <div className="text-center py-6">
-                    {/* Success Icon */}
-                    <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
-                        <svg
-                            className="w-8 h-8 text-green-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                            />
+            <AuthCard>
+                <div className="text-center pb-6 pt-2">
+                    {/* Blue Checkmark Icon */}
+                    <div className="w-10 h-10 rounded-full bg-[#1E78FF] flex items-center justify-center mx-auto mb-6 shadow-sm">
+                        <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <p className="text-sm text-neutral-600 mb-6">
-                        We&apos;ve sent a password reset link to{" "}
-                        <span className="font-semibold text-brand-primary">{email}</span>.
-                        Please check your inbox and spam folder.
+
+                    <h1 className="text-2xl sm:text-3xl font-bold text-[#0B1536] mb-3">
+                        Reset link sent
+                    </h1>
+                    <p className="text-sm text-neutral-400 font-medium mb-8">
+                        Check your email for the reset password link
                     </p>
-                    <Button variant="primary" fullWidth href="/login">
-                        Back to Login
+
+                    <Button variant="primary" fullWidth href="mailto:">
+                        Open email app
                     </Button>
-                    <button
-                        onClick={() => {
-                            setSubmitted(false);
-                            setEmail("");
-                        }}
-                        className="mt-4 text-sm text-brand-accent hover:text-brand-accent-hover font-medium transition-colors"
-                    >
-                        Didn&apos;t receive it? Try again
-                    </button>
+
+                    <div className="w-full border-t border-neutral-100 my-8"></div>
+
+                    <p className="text-xs text-neutral-400 leading-relaxed max-w-[280px] mx-auto">
+                        If you don't see your reset password email link, please check your spam folder inside your mail
+                    </p>
                 </div>
             </AuthCard>
         );
     }
 
     return (
-        <AuthCard
-            title="Forgot password?"
-            subtitle="Enter your email and we'll send you a reset link."
-        >
+        <AuthCard>
+            <div className="mb-6">
+                <Link href="/login" className="inline-flex flex-row items-center text-sm font-medium text-neutral-500 hover:text-neutral-700 transition-colors mb-6">
+                    <span className="mr-1.5 font-sans leading-none pb-0.5">←</span> Back
+                </Link>
+                <h1 className="text-2xl sm:text-3xl font-bold text-[#0B1536] text-center mb-3">
+                    Forgot password?
+                </h1>
+                <p className="text-center text-sm text-neutral-500 font-medium leading-relaxed max-w-[280px] mx-auto">
+                    Enter the email you use for the account and we'll send you a reset password link
+                </p>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-4">
                 <Input
-                    label="Email"
+                    label="ENTER YOUR EMAIL"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="reece08@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     error={error}
-                    icon={
-                        <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                            />
-                        </svg>
-                    }
                 />
 
                 <Button type="submit" fullWidth disabled={loading}>
                     {loading ? (
-                        <span className="flex items-center gap-2">
-                            <svg
-                                className="w-4 h-4 animate-spin"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                />
-                                <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                                />
+                        <span className="flex items-center justify-center gap-2">
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                             </svg>
                             Sending...
                         </span>
                     ) : (
-                        "Send Reset Link"
+                        "Email me my reset link"
                     )}
                 </Button>
 
-                <p className="text-center text-sm text-neutral-500 mt-4">
-                    <Link
-                        href="/login"
-                        className="font-semibold text-brand-accent hover:text-brand-accent-hover transition-colors"
-                    >
-                        ← Back to Login
-                    </Link>
+                <p className="text-center text-xs text-neutral-400 mt-6 leading-relaxed max-w-[260px] mx-auto">
+                    If you don't see your reset password email link, please check your spam folder
                 </p>
             </form>
         </AuthCard>

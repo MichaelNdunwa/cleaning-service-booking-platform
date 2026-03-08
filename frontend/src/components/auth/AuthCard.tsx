@@ -1,34 +1,34 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 interface AuthCardProps {
     children: ReactNode;
-    title: string;
-    subtitle?: string;
+    title?: string;
 }
 
-export default function AuthCard({ children, title, subtitle }: AuthCardProps) {
+export default function AuthCard({ children, title }: AuthCardProps) {
     return (
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-neutral-50">
             <div className="w-full max-w-md">
                 {/* Logo */}
-                <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-                    <div className="w-10 h-10 rounded-xl bg-brand-primary flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">S</span>
-                    </div>
-                    <span className="text-2xl font-bold text-brand-primary tracking-tight">
-                        Shield
-                    </span>
+                <Link href="/" className="flex items-center justify-center mb-8">
+                    <Image
+                        src="/images/logo-1.png"
+                        alt="Clean Logo"
+                        width={120}
+                        height={40}
+                        className="object-contain"
+                    />
                 </Link>
 
                 {/* Card */}
-                <div className="bg-white rounded-2xl shadow-lg border border-neutral-100 p-8">
-                    <div className="mb-6">
-                        <h1 className="text-2xl font-bold text-brand-primary">{title}</h1>
-                        {subtitle && (
-                            <p className="mt-2 text-sm text-neutral-500">{subtitle}</p>
-                        )}
-                    </div>
+                <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-8">
+                    {title && (
+                        <div className="mb-6 text-center">
+                            <h1 className="text-2xl font-bold text-[#0B1536]">{title}</h1>
+                        </div>
+                    )}
                     {children}
                 </div>
             </div>

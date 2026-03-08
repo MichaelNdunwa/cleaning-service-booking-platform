@@ -1,6 +1,14 @@
 import BookingBar from "@/components/BookingBar";
 
-export default function CTABanner() {
+interface CTABannerProps {
+    title?: string;
+    description?: string;
+}
+
+export default function CTABanner({
+    title = "Servicing 100K+ Users Across Your City",
+    description = "Join thousands of satisfied customers who trust Shield for their cleaning needs. Book your first clean today."
+}: CTABannerProps) {
     return (
         <section
             className="w-full bg-cover bg-center bg-no-repeat relative flex flex-col items-center justify-center p-0 m-0"
@@ -14,12 +22,13 @@ export default function CTABanner() {
 
                     <div className="relative z-10 w-full max-w-4xl mx-auto">
                         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-neutral-900 mb-2 sm:mb-4 leading-tight">
-                            Servicing 100K+ Users Across Your City
+                            {title}
                         </h2>
-                        <p className="text-neutral-500 font-medium text-sm sm:text-base leading-relaxed mb-8 sm:mb-10 max-w-xl mx-auto">
-                            Join thousands of satisfied customers who trust Shield for their
-                            cleaning needs. Book your first clean today.
-                        </p>
+                        {description && (
+                            <p className="text-neutral-500 font-medium text-sm sm:text-base leading-relaxed mb-8 sm:mb-10 max-w-xl mx-auto">
+                                {description}
+                            </p>
+                        )}
 
                         {/* The newly added Booking Bar integrated here */}
                         <div className="w-full">

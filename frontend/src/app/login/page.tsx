@@ -7,6 +7,7 @@ import AuthCard from "@/components/auth/AuthCard";
 import Input from "@/components/ui/Input";
 import PasswordInput from "@/components/auth/PasswordInput";
 import GoogleButton from "@/components/auth/GoogleButton";
+import AppleButton from "@/components/auth/AppleButton";
 import Button from "@/components/ui/Button";
 import { login } from "@/lib/api";
 
@@ -53,8 +54,20 @@ export default function LoginPage() {
     };
 
     return (
-        <AuthCard title="Log in" subtitle="Welcome back! Enter your details below.">
+        <AuthCard title="Login">
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Social Login */}
+                <div className="space-y-3">
+                    <GoogleButton />
+                    <AppleButton />
+                </div>
+
+                <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-neutral-200" />
+                    </div>
+                </div>
+
                 {justRegistered && (
                     <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-sm text-green-700">
                         Account created successfully! Please log in below.
@@ -66,105 +79,47 @@ export default function LoginPage() {
                     </div>
                 )}
                 <Input
-                    label="Email"
+                    label="EMAIL"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="reece08@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     error={errors.email}
-                    icon={
-                        <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-                            />
-                        </svg>
-                    }
                 />
 
                 <PasswordInput
-                    label="Password"
-                    placeholder="Enter your password"
+                    label="PASSWORD"
+                    placeholder="........"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     error={errors.password}
                 />
 
-                <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            className="w-4 h-4 rounded border-neutral-300 text-brand-accent focus:ring-brand-accent/30"
-                        />
-                        <span className="text-sm text-neutral-600">Remember me</span>
-                    </label>
-                    <Link
-                        href="/forgot-password"
-                        className="text-sm font-medium text-brand-accent hover:text-brand-accent-hover transition-colors"
-                    >
-                        Forgot password?
-                    </Link>
-                </div>
-
                 <Button type="submit" fullWidth disabled={loading}>
                     {loading ? (
-                        <span className="flex items-center gap-2">
-                            <svg
-                                className="w-4 h-4 animate-spin"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                />
-                                <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                                />
+                        <span className="flex items-center justify-center gap-2">
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                             </svg>
-                            Logging in...
+                            Continuing...
                         </span>
                     ) : (
-                        "Log in"
+                        "Continue"
                     )}
                 </Button>
 
-                {/* Divider */}
-                <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-neutral-200" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-white px-3 text-neutral-400">
-                            Or continue with
-                        </span>
-                    </div>
-                </div>
-
-                <GoogleButton />
-
-                <p className="text-center text-sm text-neutral-500 mt-6">
-                    Don&apos;t have an account?{" "}
-                    <Link
-                        href="/signup"
-                        className="font-semibold text-brand-accent hover:text-brand-accent-hover transition-colors"
-                    >
-                        Sign up
+                <div className="flex flex-col items-center gap-2 mt-6 pt-2">
+                    <p className="text-sm text-neutral-500">
+                        Don't have an account?{" "}
+                        <Link href="/signup" className="font-semibold text-[#1E78FF] hover:text-[#165ECC] transition-colors">
+                            Sign up
+                        </Link>
+                    </p>
+                    <Link href="/forgot-password" className="text-sm font-semibold text-[#1E78FF] hover:text-[#165ECC] transition-colors">
+                        Forgot password
                     </Link>
-                </p>
+                </div>
             </form>
         </AuthCard>
     );
