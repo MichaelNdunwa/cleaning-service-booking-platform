@@ -9,7 +9,7 @@ import PasswordInput from "@/components/auth/PasswordInput";
 import GoogleButton from "@/components/auth/GoogleButton";
 import AppleButton from "@/components/auth/AppleButton";
 import Button from "@/components/ui/Button";
-import { login } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -20,7 +20,7 @@ export default function LoginPage() {
     const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>(
         {}
     );
-    const [loading, setLoading] = useState(false);
+    const { login, isLoading } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,16 +40,13 @@ export default function LoginPage() {
         }
 
         setErrors({});
-        setLoading(true);
 
         try {
             await login({ email, password });
-            router.push("/");
+            // The AuthContext automatically router.push('/') on success
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "Login failed. Please try again.";
             setErrors({ general: message });
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -95,8 +92,8 @@ export default function LoginPage() {
                     error={errors.password}
                 />
 
-                <Button type="submit" fullWidth disabled={loading}>
-                    {loading ? (
+                <Button type="submit" fullWidth disabled={isLoading}>
+                    {isLoading ? (
                         <span className="flex items-center justify-center gap-2">
                             <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

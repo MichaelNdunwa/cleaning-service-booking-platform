@@ -34,7 +34,7 @@ class CleaningAPI(http.Controller):
 
     # ── Auth: Signup ──
 
-    @http.route("/api/v1/auth/signup", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
+    @http.route("/api/v1/auth/signup", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def auth_signup(self, **kwargs):
         """Create a new portal user account."""
         if request.httprequest.method == "OPTIONS":
@@ -77,8 +77,11 @@ class CleaningAPI(http.Controller):
             user_id = new_user.id
             user_name = name
             user_email = email
-            # Set customer_rank on the partner
-            new_user.partner_id.sudo().write({"customer_rank": 1})
+            # Set customer_rank on the partner (only if sale module is installed)
+            try:
+                new_user.partner_id.sudo().write({"customer_rank": 1})
+            except (KeyError, ValueError):
+                pass  # customer_rank field not available
         except (ValidationError, UserError) as e:
             _logger.warning("Signup failed: %s", e)
             return self._error_response(str(e), status=400)
@@ -98,7 +101,7 @@ class CleaningAPI(http.Controller):
 
     # ── Auth: Login ──
 
-    @http.route("/api/v1/auth/login", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False)
+    @http.route("/api/v1/auth/login", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def auth_login(self, **kwargs):
         """Authenticate user and create session."""
         if request.httprequest.method == "OPTIONS":
@@ -162,7 +165,7 @@ class CleaningAPI(http.Controller):
 
     # ── Auth: Logout ──
 
-    @http.route("/api/v1/auth/logout", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
+    @http.route("/api/v1/auth/logout", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def auth_logout(self, **kwargs):
         """Destroy the current session."""
         if request.httprequest.method == "OPTIONS":
@@ -173,9 +176,12 @@ class CleaningAPI(http.Controller):
 
     # ── Auth: Current User ──
 
-    @http.route("/api/v1/auth/me", type="http", auth="public", methods=["GET"], csrf=False)
+    @http.route("/api/v1/auth/me", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def auth_me(self, **kwargs):
         """Return the current authenticated user or 401."""
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
         uid = request.session.uid
         if not uid:
             return self._error_response("Not authenticated.", status=401)
@@ -194,9 +200,12 @@ class CleaningAPI(http.Controller):
 
     # ── Service Types ──
 
-    @http.route("/api/v1/services", type="http", auth="public", methods=["GET"], csrf=False)
+    @http.route("/api/v1/services", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def get_services(self, **kwargs):
         """Return list of active service types."""
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
         services = request.env["clean.service.type"].sudo().search([("active", "=", True)])
         data = [
             {
@@ -212,9 +221,12 @@ class CleaningAPI(http.Controller):
 
     # ── Add-ons ──
 
-    @http.route("/api/v1/addons", type="http", auth="public", methods=["GET"], csrf=False)
+    @http.route("/api/v1/addons", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def get_addons(self, **kwargs):
         """Return list of active add-ons."""
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
         addons = request.env["clean.addon"].sudo().search([("active", "=", True)])
         data = [
             {
@@ -231,9 +243,12 @@ class CleaningAPI(http.Controller):
 
     # ── Availability ──
 
-    @http.route("/api/v1/availability", type="http", auth="public", methods=["GET"], csrf=False)
+    @http.route("/api/v1/availability", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def get_availability(self, **kwargs):
         """Return available time slots for a given date."""
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
         date_str = kwargs.get("date")
         if not date_str:
             return self._error_response("Missing required parameter: date")
@@ -275,7 +290,7 @@ class CleaningAPI(http.Controller):
 
     # ── Create Booking ──
 
-    @http.route("/api/v1/booking", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
+    @http.route("/api/v1/booking", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def create_booking(self, **kwargs):
         """Create a new booking from frontend data."""
         # Handle CORS preflight
@@ -340,9 +355,12 @@ class CleaningAPI(http.Controller):
 
     # ── Get Booking ──
 
-    @http.route("/api/v1/booking/<int:booking_id>", type="http", auth="public", methods=["GET"], csrf=False)
+    @http.route("/api/v1/booking/<int:booking_id>", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def get_booking(self, booking_id, **kwargs):
         """Return booking details by ID."""
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
         booking = request.env["clean.booking"].sudo().browse(booking_id)
         if not booking.exists():
             return self._error_response("Booking not found.", status=404)
@@ -389,7 +407,7 @@ class CleaningAPI(http.Controller):
 
     # ── Create / Update Customer ──
 
-    @http.route("/api/v1/customer", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
+    @http.route("/api/v1/customer", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
     def create_customer(self, **kwargs):
         """Create or update a res.partner record."""
         if request.httprequest.method == "OPTIONS":

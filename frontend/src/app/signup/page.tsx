@@ -9,7 +9,7 @@ import PasswordInput from "@/components/auth/PasswordInput";
 import GoogleButton from "@/components/auth/GoogleButton";
 import AppleButton from "@/components/auth/AppleButton";
 import Button from "@/components/ui/Button";
-import { signup } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignupPage() {
     const router = useRouter();
@@ -20,7 +20,7 @@ export default function SignupPage() {
         agreeTerms: false,
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [loading, setLoading] = useState(false);
+    const { signup, isLoading } = useAuth();
 
     const update = (field: string, value: string | boolean) =>
         setForm((prev) => ({ ...prev, [field]: value }));
@@ -45,7 +45,6 @@ export default function SignupPage() {
         }
 
         setErrors({});
-        setLoading(true);
 
         try {
             await signup({
@@ -53,12 +52,10 @@ export default function SignupPage() {
                 email: form.email,
                 password: form.password,
             });
-            router.push("/login?registered=1");
+            // The AuthContext automatically router.push('/login?registered=1') on success
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "Signup failed. Please try again.";
             setErrors({ general: message });
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -133,8 +130,8 @@ export default function SignupPage() {
                     <p className="text-xs text-red-500 -mt-2">{errors.agreeTerms}</p>
                 )}
 
-                <Button type="submit" fullWidth disabled={loading}>
-                    {loading ? (
+                <Button type="submit" fullWidth disabled={isLoading}>
+                    {isLoading ? (
                         <span className="flex items-center justify-center gap-2">
                             <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

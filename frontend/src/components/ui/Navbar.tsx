@@ -5,10 +5,12 @@ import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const pathname = usePathname();
+    const { user, logout } = useAuth();
 
     const navLinks = [
         { href: "/", label: "Home" },
@@ -50,21 +52,42 @@ export default function Navbar() {
                         ))}
                     </nav>
 
-                    {/* Desktop CTA */}
-                    <div className="hidden lg:flex items-center gap-3">
-                        <Link
-                            href="/login"
-                            className="px-4 py-2 text-sm font-medium text-neutral-600 rounded-lg transition-colors duration-200 hover:text-[#3B82F6] hover:bg-transparent"
-                        >
-                            Log in
-                        </Link>
-                        <Button
-                            href="/signup"
-                            variant="primary-outline-hover"
-                            className="px-5 py-2.5 text-sm"
-                        >
-                            Get Started
-                        </Button>
+                    {/* Desktop Auth / Profile */}
+                    <div className="hidden lg:flex items-center gap-4">
+                        {user ? (
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-neutral-100">
+                                    <div className="w-7 h-7 rounded-full bg-[#1E78FF] text-white flex items-center justify-center font-bold text-xs uppercase">
+                                        {user.name.charAt(0)}
+                                    </div>
+                                    <span className="text-sm font-semibold text-[#0B1536]">
+                                        {user.name.split(" ")[0]}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={logout}
+                                    className="text-sm font-medium text-red-500 hover:text-red-700 transition-colors px-2 py-1"
+                                >
+                                    Log out
+                                </button>
+                            </div>
+                        ) : (
+                            <>
+                                <Link
+                                    href="/login"
+                                    className="px-4 py-2 text-sm font-medium text-neutral-600 rounded-lg transition-colors duration-200 hover:text-[#3B82F6] hover:bg-transparent"
+                                >
+                                    Log in
+                                </Link>
+                                <Button
+                                    href="/signup"
+                                    variant="primary-outline-hover"
+                                    className="px-5 py-2.5 text-sm"
+                                >
+                                    Get Started
+                                </Button>
+                            </>
+                        )}
                     </div>
 
                     <div className="lg:hidden flex items-center gap-2">
@@ -123,15 +146,40 @@ export default function Navbar() {
                                     {link.label}
                                 </Link>
                             ))}
+
+                            {/* Mobile Auth Bottom Section */}
                             <div className="pt-3 mt-2 border-t border-neutral-100">
-                                <Button
-                                    href="/signup"
-                                    variant="primary-outline-hover"
-                                    fullWidth
-                                    onClick={() => setMobileOpen(false)}
-                                >
-                                    Get Started
-                                </Button>
+                                {user ? (
+                                    <div className="flex flex-col gap-3 px-2 py-2">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-[#1E78FF] text-white flex items-center justify-center font-bold text-sm uppercase">
+                                                {user.name.charAt(0)}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold text-[#0B1536]">{user.name}</span>
+                                                <span className="text-xs text-neutral-400">{user.email}</span>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                logout();
+                                                setMobileOpen(false);
+                                            }}
+                                            className="w-full py-2.5 text-sm font-bold text-red-500 bg-red-50 border border-red-100 rounded-lg text-center mt-2 hover:bg-red-100 transition-colors"
+                                        >
+                                            Log out
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <Button
+                                        href="/signup"
+                                        variant="primary-outline-hover"
+                                        fullWidth
+                                        onClick={() => setMobileOpen(false)}
+                                    >
+                                        Get Started
+                                    </Button>
+                                )}
                             </div>
                         </nav>
                     </div>

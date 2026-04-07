@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:9090/api/:path*",
+        destination: `${process.env.ODOO_BASE_URL}/api/:path*`,
       },
     ];
   },
