@@ -163,6 +163,100 @@ class CleaningAPI(http.Controller):
             "user": user_data,
         })
 
+    # ── Auth: OAuth (Google / Apple) ──
+
+    @http.route("/api/v1/auth/oauth", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    def auth_oauth(self, **kwargs):
+        """Find-or-create a portal user from a verified OAuth identity.
+
+        The OAuth token has already been validated by NextAuth (server-side) before
+        this endpoint is called — we trust the email/name/provider_uid are authentic.
+
+        NOTE: This endpoint deliberately does NOT set request.session fields.
+        Setting session.uid without computing a valid session_token corrupts the
+        browser cookie. User state is managed by the frontend via the returned data.
+        """
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
+        # Clear any potentially broken session cookie sent by the browser.
+        # A corrupt session (uid set but no session_token) would cause a 403 on
+        # subsequent requests even for auth='none' routes.
+        try:
+            request.session.logout(keep_db=True)
+        except Exception:
+            pass
+
+        try:
+            data = json.loads(request.httprequest.data)
+        except (json.JSONDecodeError, TypeError):
+            return self._error_response("Invalid JSON body.")
+
+        provider = data.get("provider", "")
+        email = data.get("email", "").strip().lower()
+        name = data.get("name", "").strip()
+        provider_uid = data.get("provider_uid", "").strip()
+
+        if not email:
+            return self._error_response("Email is required.")
+        if provider not in ("google", "apple"):
+            return self._error_response("Unsupported provider.")
+
+        try:
+            db = request.db
+            if not db:
+                return self._error_response("Database not configured.", status=500)
+
+            cr = odoo.modules.registry.Registry(db).cursor()
+            try:
+                env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
+
+                # Find existing user by email
+                existing_user = env["res.users"].search([("login", "=", email)], limit=1)
+
+                if existing_user:
+                    uid = existing_user.id
+                    user_name = existing_user.name
+                else:
+                    # Create a new portal user — assign a random password since
+                    # this account will always authenticate via OAuth.
+                    import secrets
+                    random_password = secrets.token_urlsafe(32)
+                    portal_group = env.ref("base.group_portal")
+                    new_user = env["res.users"].with_context(no_reset_password=True).create({
+                        "name": name or email.split("@")[0],
+                        "login": email,
+                        "email": email,
+                        "password": random_password,
+                        "group_ids": [(6, 0, [portal_group.id])],
+                    })
+                    # Mark as customer
+                    try:
+                        new_user.partner_id.write({"customer_rank": 1})
+                    except (KeyError, ValueError):
+                        pass
+                    uid = new_user.id
+                    user_name = new_user.name
+
+
+                user_data = {"id": uid, "name": user_name, "email": email}
+                cr.commit()
+            except Exception:
+                cr.rollback()
+                cr.close()
+                raise
+            else:
+                cr.close()
+
+        except Exception as e:
+            _logger.exception("OAuth login error")
+            return self._error_response("OAuth login failed. Please try again.", status=500)
+
+        return self._json_response({
+            "success": True,
+            "user": user_data,
+        })
+
     # ── Auth: Logout ──
 
     @http.route("/api/v1/auth/logout", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
