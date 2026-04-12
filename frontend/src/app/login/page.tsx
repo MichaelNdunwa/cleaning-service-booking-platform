@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AuthCard from "@/components/auth/AuthCard";
 import Input from "@/components/ui/Input";
@@ -11,8 +11,7 @@ import AppleButton from "@/components/auth/AppleButton";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 
-export default function LoginPage() {
-    const router = useRouter();
+function LoginPageContent() {
     const searchParams = useSearchParams();
     const justRegistered = searchParams.get("registered") === "1";
     const [email, setEmail] = useState("");
@@ -108,7 +107,7 @@ export default function LoginPage() {
 
                 <div className="flex flex-col items-center gap-2 mt-6 pt-2">
                     <p className="text-sm text-neutral-500">
-                        Don't have an account?{" "}
+                        Don&apos;t have an account?{" "}
                         <Link href="/signup" className="font-semibold text-[#1E78FF] hover:text-[#165ECC] transition-colors">
                             Sign up
                         </Link>
@@ -119,5 +118,13 @@ export default function LoginPage() {
                 </div>
             </form>
         </AuthCard>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={null}>
+            <LoginPageContent />
+        </Suspense>
     );
 }
