@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+import os
 from datetime import datetime
 
 import odoo
@@ -14,18 +15,32 @@ _logger = logging.getLogger(__name__)
 class CleaningAPI(http.Controller):
     """REST API controller for the Next.js frontend."""
 
+    def _allowed_origins(self):
+        """Return the allowed frontend origins for browser requests."""
+        raw_origins = os.getenv("CLEANING_ALLOWED_ORIGINS", "http://localhost:3000")
+        origins = [origin.strip().rstrip("/") for origin in raw_origins.split(",") if origin.strip()]
+        return origins or ["http://localhost:3000"]
+
+    def _cors_headers(self):
+        """Build CORS headers for the current request origin."""
+        origin = (request.httprequest.headers.get("Origin") or "").strip().rstrip("/")
+        headers = {
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Credentials": "true",
+            "Vary": "Origin",
+        }
+        if origin and origin in self._allowed_origins():
+            headers["Access-Control-Allow-Origin"] = origin
+        return headers
+
     def _json_response(self, data, status=200):
         """Return a JSON response with proper headers."""
         return Response(
             json.dumps(data, default=str),
             status=status,
             content_type="application/json",
-            headers={
-                "Access-Control-Allow-Origin": "http://localhost:3000",
-                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
-                "Access-Control-Allow-Credentials": "true",
-            },
+            headers=self._cors_headers(),
         )
 
     def _error_response(self, message, status=400):
@@ -34,7 +49,7 @@ class CleaningAPI(http.Controller):
 
     # ── Auth: Signup ──
 
-    @http.route("/api/v1/auth/signup", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/auth/signup", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
     def auth_signup(self, **kwargs):
         """Create a new portal user account."""
         if request.httprequest.method == "OPTIONS":
@@ -101,7 +116,7 @@ class CleaningAPI(http.Controller):
 
     # ── Auth: Login ──
 
-    @http.route("/api/v1/auth/login", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/auth/login", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False)
     def auth_login(self, **kwargs):
         """Authenticate user and create session."""
         if request.httprequest.method == "OPTIONS":
@@ -165,7 +180,7 @@ class CleaningAPI(http.Controller):
 
     # ── Auth: OAuth (Google / Apple) ──
 
-    @http.route("/api/v1/auth/oauth", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/auth/oauth", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False)
     def auth_oauth(self, **kwargs):
         """Find-or-create a portal user from a verified OAuth identity.
 
@@ -263,7 +278,7 @@ class CleaningAPI(http.Controller):
 
     # ── Auth: Logout ──
 
-    @http.route("/api/v1/auth/logout", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/auth/logout", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
     def auth_logout(self, **kwargs):
         """Destroy the current session."""
         if request.httprequest.method == "OPTIONS":
@@ -274,7 +289,7 @@ class CleaningAPI(http.Controller):
 
     # ── Auth: Current User ──
 
-    @http.route("/api/v1/auth/me", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/auth/me", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False)
     def auth_me(self, **kwargs):
         """Return the current authenticated user or 401."""
         if request.httprequest.method == "OPTIONS":
@@ -298,7 +313,7 @@ class CleaningAPI(http.Controller):
 
     # ── Service Types ──
 
-    @http.route("/api/v1/services", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/services", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False)
     def get_services(self, **kwargs):
         """Return list of active service types."""
         if request.httprequest.method == "OPTIONS":
@@ -319,7 +334,7 @@ class CleaningAPI(http.Controller):
 
     # ── Add-ons ──
 
-    @http.route("/api/v1/addons", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/addons", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False)
     def get_addons(self, **kwargs):
         """Return list of active add-ons."""
         if request.httprequest.method == "OPTIONS":
@@ -341,7 +356,7 @@ class CleaningAPI(http.Controller):
 
     # ── Availability ──
 
-    @http.route("/api/v1/availability", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/availability", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False)
     def get_availability(self, **kwargs):
         """Return available time slots for a given date."""
         if request.httprequest.method == "OPTIONS":
@@ -388,7 +403,7 @@ class CleaningAPI(http.Controller):
 
     # ── Create Booking ──
 
-    @http.route("/api/v1/booking", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/booking", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
     def create_booking(self, **kwargs):
         """Create a new booking from frontend data."""
         # Handle CORS preflight
@@ -453,7 +468,7 @@ class CleaningAPI(http.Controller):
 
     # ── Get Booking ──
 
-    @http.route("/api/v1/booking/<int:booking_id>", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/booking/<int:booking_id>", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False)
     def get_booking(self, booking_id, **kwargs):
         """Return booking details by ID."""
         if request.httprequest.method == "OPTIONS":
@@ -505,7 +520,7 @@ class CleaningAPI(http.Controller):
 
     # ── Create / Update Customer ──
 
-    @http.route("/api/v1/customer", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, cors="http://localhost:3000")
+    @http.route("/api/v1/customer", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
     def create_customer(self, **kwargs):
         """Create or update a res.partner record."""
         if request.httprequest.method == "OPTIONS":
