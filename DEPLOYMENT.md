@@ -67,4 +67,4 @@ If you want the cheapest practical path:
 
 - Frontend: Vercel
 - Backend: Oracle Cloud Always Free if you want no monthly bill and are okay with more setup
-- Backend alternative: Railway if you want simpler deployment and are okay with a small monthly cost
+- Backend alternative: Railway if you want simpler deployment and are okay with a small monthly cost (I don't think I will be using this alternative.)
