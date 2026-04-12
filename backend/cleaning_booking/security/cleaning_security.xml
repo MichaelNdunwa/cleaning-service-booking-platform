@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <!-- Security Groups -->
+        <record id="group_cleaning_user" model="res.groups">
+            <field name="name">Cleaning User</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Access to view and manage cleaning bookings.</field>
+        </record>
+
+        <record id="group_cleaning_manager" model="res.groups">
+            <field name="name">Cleaning Manager</field>
+            <field name="implied_ids" eval="[(4, ref('group_cleaning_user'))]"/>
+
+            <field name="comment">Full control over cleaning bookings, configuration, and reports.</field>
+        </record>
+    </data>
+
+    <data noupdate="1">
+        <!-- Sequence for Booking Reference -->
+        <record id="sequence_clean_booking" model="ir.sequence">
+            <field name="name">Cleaning Booking</field>
+            <field name="code">clean.booking</field>
+            <field name="prefix">CLN-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

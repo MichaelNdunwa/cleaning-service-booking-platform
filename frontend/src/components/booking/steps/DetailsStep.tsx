@@ -1,0 +1,249 @@
+"use client";
+
+import { BookingState } from "@/app/booking/page";
+import Button from "@/components/ui/Button";
+
+interface Props {
+    data: BookingState;
+    updateData: (updates: Partial<BookingState>) => void;
+    onNext: () => void;
+}
+
+export default function DetailsStep({ data, updateData, onNext }: Props) {
+    const frequencies = [
+        { id: "Onetime", label: "Onetime", discount: null },
+        { id: "Weekly", label: "Weekly", discount: "20% OFF" },
+        { id: "Every 2 weeks", label: "Every 2 weeks", discount: "15% OFF" },
+        { id: "Every 4 Weeks", label: "Every 4 Weeks", discount: "10% OFF" },
+    ];
+
+    const entryMethods = ["Someone is Home", "Doorman", "Hidden Key", "Others"];
+
+    const extrasOptions = [
+        { id: "Inside fridge", label: "Inside fridge", price: "$35" },
+        { id: "Inside oven", label: "Inside oven", price: "$35" },
+        { id: "Inside Cabinets", label: "Inside Cabinets", price: "$35" },
+    ];
+
+    const toggleExtra = (id: string) => {
+        const newExtras = data.extras.includes(id)
+            ? data.extras.filter(e => e !== id)
+            : [...data.extras, id];
+        updateData({ extras: newExtras });
+    };
+
+    const toggleAddOn = (label: string) => { // New function for addOns
+        const newExtras = data.extras.includes(label)
+            ? data.extras.filter(e => e !== label)
+            : [...data.extras, label];
+        updateData({ extras: newExtras });
+    };
+
+    return (
+        <div className="w-full max-w-2xl flex flex-col items-start md:items-center animate-fade-in relative">
+            <h2 className="text-[28px] md:text-3xl font-bold text-[#0B1536] mb-2 leading-tight">Select Frequency</h2>
+            <p className="text-[#9CA3AF] text-[15px] mb-8 md:mb-12">Book ForShield's recurring plan and save 20% annually.</p>
+
+            {/* Frequency Options */}
+            <div className="w-full mb-12 md:mb-16">
+                <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                    RECURRING
+                </p>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                    {frequencies.slice(0, 2).map((freq) => (
+                        <div key={freq.id} className="flex flex-col items-center gap-1.5 focus-within:z-10 relative">
+                            <button
+                                type="button"
+                                onClick={() => updateData({ frequency: freq.id })}
+                                className={`
+                                    h-[46px] rounded-lg text-[15px] font-bold transition-all duration-200 min-w-[130px] px-4 flex items-center justify-center
+                                    ${data.frequency === freq.id
+                                        ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
+                                        : "border border-neutral-200 text-[#0B1536] hover:border-neutral-300 bg-white"
+                                    }
+                                `}
+                            >
+                                {freq.label}
+                            </button>
+                            {freq.discount && (
+                                <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">{freq.discount}</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                    {frequencies.slice(2).map((freq) => (
+                        <div key={freq.id} className="flex flex-col items-center gap-1.5 focus-within:z-10 relative">
+                            <button
+                                type="button"
+                                onClick={() => updateData({ frequency: freq.id })}
+                                className={`
+                                    h-[46px] rounded-lg text-[15px] font-bold transition-all duration-200 min-w-[130px] px-4 flex items-center justify-center
+                                    ${data.frequency === freq.id
+                                        ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
+                                        : "border border-neutral-200 text-[#0B1536] hover:border-neutral-300 bg-white"
+                                    }
+                                `}
+                            >
+                                {freq.label}
+                            </button>
+                            {freq.discount && (
+                                <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">{freq.discount}</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Address & Details Section */}
+            <div className="w-full border-t border-neutral-100 pt-10 md:pt-16">
+                <h2 className="text-[28px] md:text-3xl font-bold text-[#0B1536] mb-2 leading-tight">Add Your Address & Details</h2>
+                <p className="text-[#9CA3AF] text-[15px] mb-8 md:mb-12">Be specific of any additional details we might need from you</p>
+
+                {/* Address & Apt */}
+                <div className="flex flex-col md:flex-row gap-6 mb-8 md:mb-10">
+                    <div className="flex-1 flex flex-col items-start w-full">
+                        <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                            ADDRESS
+                        </p>
+                        <input
+                            placeholder="Enter a Location"
+                            value={data.address}
+                            onChange={(e) => updateData({ address: e.target.value })}
+                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[15px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 bg-white"
+                        />
+                    </div>
+                    <div className="w-full md:w-48 flex flex-col items-start">
+                        <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                            APT. NUMBER
+                        </p>
+                        <input
+                            placeholder=""
+                            value={data.aptNumber}
+                            onChange={(e) => updateData({ aptNumber: e.target.value })}
+                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[15px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 bg-white"
+                        />
+                    </div>
+                </div>
+
+                {/* Entry Method */}
+                <div className="mb-10 md:mb-14 flex flex-col items-start w-full">
+                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                        HOW DO WE GET IN?
+                    </p>
+                    <div className="flex flex-wrap md:flex-nowrap gap-3 w-full justify-between">
+                        {entryMethods.map((method) => (
+                            <button
+                                key={method}
+                                type="button"
+                                onClick={() => updateData({ entryMethod: method })}
+                                className={`
+                                flex-1 h-[46px] rounded-lg text-[15px] font-bold transition-all duration-200 min-w-[120px] whitespace-nowrap px-2
+                                ${data.entryMethod === method
+                                        ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
+                                        : "border border-neutral-200 text-neutral-600 hover:border-neutral-300 bg-white"
+                                    }
+                            `}
+                            >
+                                {method}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Add-ons */}
+                <div className="mb-10 md:mb-14 flex flex-col items-start w-full">
+                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                        ADD ONS?
+                    </p>
+                    <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 md:gap-4 w-full">
+                        {extrasOptions.map((extra) => {
+                            const isSelected = data.extras.includes(extra.id);
+                            return (
+                                <button
+                                    key={extra.id}
+                                    onClick={() => toggleAddOn(extra.id)}
+                                    className={`
+                                        h-[100px] md:h-28 rounded-xl flex flex-col items-center justify-center gap-2 border bg-white transition-all w-full md:w-[140px] px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1E78FF]
+                                        ${isSelected
+                                            ? "border-2 border-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] z-10 block"
+                                            : "border-neutral-200 hover:border-neutral-300 relative"
+                                        }
+                                    `}
+                                >
+                                    <div className={`w-8 h-10 border-2 rounded-md border-neutral-300 flex items-center justify-center ${isSelected ? "border-[#1E78FF]" : ""}`}>
+                                        {/* Mock icon shape */}
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <div className={`text-[15px] font-bold ${isSelected ? "text-[#1E78FF]" : "text-[#0B1536]"}`}>{extra.label}</div>
+                                        <div className="text-[13px] font-semibold text-neutral-400 mt-1">{extra.price}</div>
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Pets */}
+                <div className="mb-8 md:mb-10 flex flex-col items-start w-full">
+                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                        ANY PETS?
+                    </p>
+                    <div className="flex gap-3 mb-4 w-full">
+                        <button
+                            onClick={() => updateData({ hasPets: true })}
+                            className={`
+                            flex-1 h-[46px] rounded-lg text-[15px] font-bold transition-all px-6
+                            ${data.hasPets
+                                    ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
+                                    : "border border-neutral-200 text-neutral-600 bg-white"
+                                }
+                        `}
+                        >
+                            Yes
+                        </button>
+                        <button
+                            onClick={() => updateData({ hasPets: false })}
+                            className={`
+                            flex-1 h-[46px] rounded-lg text-[15px] font-bold transition-all px-6
+                            ${!data.hasPets
+                                    ? "border-2 border-[#1E78FF] text-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] bg-white"
+                                    : "border border-neutral-200 text-[#0B1536] bg-white"
+                                }
+                        `}
+                        >
+                            No
+                        </button>
+                    </div>
+                    {data.hasPets && (
+                        <textarea
+                            placeholder="What types of pets? Some of our cleaners have pet allergies."
+                            value={data.petDetails}
+                            onChange={(e) => updateData({ petDetails: e.target.value })}
+                            className="w-full h-24 p-4 border rounded-xl border-neutral-200 bg-white placeholder:text-neutral-400 text-[#0B1536] resize-none focus:outline-none focus:border-[#1E78FF] transition-colors"
+                        />
+                    )}
+                </div>
+
+                {/* Notes */}
+                <div className="mb-8 md:mb-12 flex flex-col items-start w-full">
+                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                        ADDITIONAL NOTES
+                    </p>
+                    <textarea
+                        placeholder="I would like Sophie to be my cleaner. Please change my sheets (fresh bedding is on the bed) and empty the dishwasher."
+                        value={data.notes}
+                        onChange={(e) => updateData({ notes: e.target.value })}
+                        className="w-full h-32 p-5 border rounded-xl border-neutral-200 bg-white placeholder:text-neutral-400 text-[#0B1536] resize-none focus:outline-none focus:border-[#1E78FF] transition-colors"
+                    />
+                </div>
+            </div>
+
+            <div className="w-full flex justify-center hidden md:flex mt-4">
+                <Button onClick={onNext} className="w-[180px] h-[48px] text-[15px]">
+                    Next
+                </Button>
+            </div>
+        </div>
+    );
+}

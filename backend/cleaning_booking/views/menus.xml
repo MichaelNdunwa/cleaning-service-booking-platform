@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- ── Root Menu ── -->
+    <menuitem id="menu_cleaning_root"
+        name="Cleaning"
+        web_icon="cleaning_booking,static/description/icon.png"
+        sequence="50"/>
+
+    <!-- ── Operations Submenu ── -->
+    <menuitem id="menu_cleaning_operations"
+        name="Operations"
+        parent="menu_cleaning_root"
+        sequence="10"/>
+
+    <menuitem id="menu_cleaning_bookings"
+        name="Bookings"
+        parent="menu_cleaning_operations"
+        action="action_clean_booking"
+        sequence="10"/>
+
+    <!-- ── Configuration Submenu ── -->
+    <menuitem id="menu_cleaning_config"
+        name="Configuration"
+        parent="menu_cleaning_root"
+        sequence="90"
+        groups="cleaning_booking.group_cleaning_manager"/>
+
+    <menuitem id="menu_cleaning_service_types"
+        name="Service Types"
+        parent="menu_cleaning_config"
+        action="action_clean_service_type"
+        sequence="10"/>
+
+    <menuitem id="menu_cleaning_addons"
+        name="Add-ons"
+        parent="menu_cleaning_config"
+        action="action_clean_addon"
+        sequence="20"/>
+
+    <menuitem id="menu_cleaning_time_slots"
+        name="Time Slots"
+        parent="menu_cleaning_config"
+        action="action_clean_time_slot"
+        sequence="30"/>
+</odoo>

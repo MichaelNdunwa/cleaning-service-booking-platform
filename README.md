@@ -95,6 +95,11 @@ The full sprint plan with detailed tasks and timelines is documented in:
    * `cleaning_ops`
    * `cleaning_payroll`
 
+## 🚢 Deployment
+
+Phase 2 deployment notes for the Next.js frontend, Odoo backend, and Google OAuth production settings are in:
+📄 [DEPLOYMENT.md](./DEPLOYMENT.md)
+
 ---
 
 ## 📊 Roadmap
@@ -113,4 +118,3 @@ The full sprint plan with detailed tasks and timelines is documented in:
 This project is developed for internal use with Odoo Community Edition.
 UI design references the free community Figma template:
 👉 [Clean – Booking UI Template](https://www.figma.com/community/file/1308402417668124443/clean-booking-ui-template)
-

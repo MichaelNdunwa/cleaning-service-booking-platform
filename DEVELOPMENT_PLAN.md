@@ -309,7 +309,7 @@ Set up the Odoo 18 Community environment, initialize the repo, scaffold custom m
 * [x] Install PostgreSQL (with role `odoo_dev`).
 * [x] Configure `odoo.conf` (custom addons path).
 * [x] Create a new DB (`cleaning_dev_db`).
-* [x] Verify Odoo runs on `http://localhost:8069`.
+* [x] Verify Odoo runs on `http://localhost:9090`.
 
 **Test:** Login with admin → confirm Apps menu visible.
 

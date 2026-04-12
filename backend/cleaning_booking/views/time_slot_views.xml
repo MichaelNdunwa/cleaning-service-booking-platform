@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- ── Time Slot Tree View ── -->
+    <record id="view_clean_time_slot_tree" model="ir.ui.view">
+        <field name="name">clean.time.slot.tree</field>
+        <field name="model">clean.time.slot</field>
+        <field name="arch" type="xml">
+            <list string="Time Slots" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="start_hour" widget="float_time"/>
+                <field name="end_hour" widget="float_time"/>
+                <field name="capacity"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ── Time Slot Form View ── -->
+    <record id="view_clean_time_slot_form" model="ir.ui.view">
+        <field name="name">clean.time.slot.form</field>
+        <field name="model">clean.time.slot</field>
+        <field name="arch" type="xml">
+            <form string="Time Slot">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Slot name..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="start_hour" widget="float_time"/>
+                            <field name="end_hour" widget="float_time"/>
+                        </group>
+                        <group>
+                            <field name="capacity"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Time Slot Action ── -->
+    <record id="action_clean_time_slot" model="ir.actions.act_window">
+        <field name="name">Time Slots</field>
+        <field name="res_model">clean.time.slot</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure available time slots for bookings.
+            </p>
+        </field>
+    </record>
+</odoo>

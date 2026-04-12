@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_clean_booking_user,clean.booking.user,model_clean_booking,cleaning_booking.group_cleaning_user,1,1,1,0
+access_clean_booking_manager,clean.booking.manager,model_clean_booking,cleaning_booking.group_cleaning_manager,1,1,1,1
+access_clean_addon_user,clean.addon.user,model_clean_addon,cleaning_booking.group_cleaning_user,1,0,0,0
+access_clean_addon_manager,clean.addon.manager,model_clean_addon,cleaning_booking.group_cleaning_manager,1,1,1,1
+access_clean_service_type_user,clean.service.type.user,model_clean_service_type,cleaning_booking.group_cleaning_user,1,0,0,0
+access_clean_service_type_manager,clean.service.type.manager,model_clean_service_type,cleaning_booking.group_cleaning_manager,1,1,1,1
+access_clean_time_slot_user,clean.time.slot.user,model_clean_time_slot,cleaning_booking.group_cleaning_user,1,0,0,0
+access_clean_time_slot_manager,clean.time.slot.manager,model_clean_time_slot,cleaning_booking.group_cleaning_manager,1,1,1,1
