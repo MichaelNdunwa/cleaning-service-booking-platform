@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useSession, signIn as nextAuthSignIn } from "next-auth/react";
+import { useSession, signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "next-auth/react";
 import { login, signup, logout, getMe, oauthLogin } from "@/lib/api";
 import { LoginPayload, SignupPayload } from "@/lib/types";
 
@@ -42,17 +42,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setIsLoading(true);
             try {
                 // PATH 1 — Google OAuth user
-                // NextAuth session exists → call oauthLogin() from the browser so
-                // the returned user data can be used directly (no Odoo cookie needed).
-                if (status === "authenticated" && session?.user?.email && !odooSyncedRef.current) {
-                    odooSyncedRef.current = true;
-                    const oauthRes = await oauthLogin({
-                        provider: "google",
-                        email: session.user.email,
-                        name: session.user.name ?? "",
-                        provider_uid: session.user.email,
-                    });
-                    setUser(oauthRes?.user ? (oauthRes.user as User) : null);
+                // The NextAuth server callback already syncs the Google user to
+                // Odoo. Reuse that result when available so one Google login
+                // creates one Odoo login log entry.
+                if (status === "authenticated" && session?.user?.email) {
+                    if (session.user.odooId) {
+                        odooSyncedRef.current = true;
+                        setUser({
+                            id: session.user.odooId,
+                            name: session.user.name ?? "",
+                            email: session.user.email,
+                        });
+                        return;
+                    }
+
+                    // Fallback: if the server-side sync did not attach an Odoo
+                    // user id, try once from the browser.
+                    if (!odooSyncedRef.current) {
+                        odooSyncedRef.current = true;
+                        const oauthRes = await oauthLogin({
+                            provider: "google",
+                            email: session.user.email,
+                            name: session.user.name ?? "",
+                            provider_uid: session.user.email,
+                        });
+                        setUser(oauthRes?.user ? (oauthRes.user as User) : null);
+                    }
                     return;
                 }
 
@@ -103,8 +118,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const handleLogout = async () => {
         setIsLoading(true);
         try {
-            await logout();
+            await logout();                                    // Clear Odoo session cookie
+            await nextAuthSignOut({ redirect: false });        // Clear NextAuth JWT cookie
             setUser(null);
+            odooSyncedRef.current = false;                     // Allow re-sync on next Google login
             router.push("/");
         } finally {
             setIsLoading(false);

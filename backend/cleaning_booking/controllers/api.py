@@ -238,6 +238,10 @@ class CleaningAPI(http.Controller):
                     uid = new_user.id
                     user_name = new_user.name
 
+                # Mirror Odoo's own _update_last_login() behavior so login_date
+                # updates for OAuth sign-ins too. sudo() bypasses ACLs while
+                # with_user(uid) preserves the real user on create_uid.
+                env["res.users.log"].with_user(uid).sudo().create({})
 
                 user_data = {"id": uid, "name": user_name, "email": email}
                 cr.commit()
