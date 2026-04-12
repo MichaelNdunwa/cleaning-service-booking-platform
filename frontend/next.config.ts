@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
-        destination: `${process.env.ODOO_BASE_URL}/api/:path*`,
+        source: "/api/v1/:path*",
+        destination: `${process.env.ODOO_BASE_URL}/api/v1/:path*`,
       },
     ];
   },
