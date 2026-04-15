@@ -10,6 +10,8 @@ import type {
     SignupPayload,
     AuthResponse,
     OAuthPayload,
+    ForgotPasswordPayload,
+    ResetPasswordPayload,
 } from "./types";
 
 /* ── Configuration ── */
@@ -67,6 +69,20 @@ export async function getMe(): Promise<AuthResponse> {
 
 export async function oauthLogin(payload: OAuthPayload): Promise<AuthResponse> {
     return apiFetch<AuthResponse>("/api/v1/auth/oauth", {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function forgotPassword(payload: ForgotPasswordPayload): Promise<AuthResponse> {
+    return apiFetch<AuthResponse>("/api/v1/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function resetPassword(payload: ResetPasswordPayload): Promise<AuthResponse> {
+    return apiFetch<AuthResponse>("/api/v1/auth/reset-password", {
         method: "POST",
         body: JSON.stringify(payload),
     });

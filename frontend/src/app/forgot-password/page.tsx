@@ -5,6 +5,7 @@ import Link from "next/link";
 import AuthCard from "@/components/auth/AuthCard";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import { forgotPassword } from "@/lib/api";
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
@@ -27,11 +28,19 @@ export default function ForgotPasswordPage() {
         setError("");
         setLoading(true);
 
-        // TODO: Integrate with auth provider
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            await forgotPassword({ email });
+            // Always show success regardless of whether the email exists
+            // (anti-enumeration — the backend does the same)
             setSubmitted(true);
-        }, 1500);
+        } catch {
+            // Even on a network error we show the success screen to avoid
+            // leaking info, but for genuine connectivity issues we surface
+            // a soft message that doesn't expose server details.
+            setError("Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (submitted) {
@@ -39,8 +48,8 @@ export default function ForgotPasswordPage() {
             <AuthCard>
                 <div className="text-center pb-6 pt-2">
                     {/* Blue Checkmark Icon */}
-                    <div className="w-10 h-10 rounded-full bg-[#1E78FF] flex items-center justify-center mx-auto mb-6 shadow-sm">
-                        <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <div className="w-12 h-12 rounded-full bg-[#1E78FF] flex items-center justify-center mx-auto mb-6 shadow-sm">
+                        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
@@ -48,19 +57,26 @@ export default function ForgotPasswordPage() {
                     <h1 className="text-2xl sm:text-3xl font-bold text-[#0B1536] mb-3">
                         Reset link sent
                     </h1>
-                    <p className="text-sm text-neutral-400 font-medium mb-8">
-                        Check your email for the reset password link
+                    <p className="text-sm text-neutral-400 font-medium mb-8 max-w-[280px] mx-auto leading-relaxed">
+                        If <strong className="text-neutral-600">{email}</strong> is registered, you&apos;ll receive a reset link shortly.
                     </p>
 
                     <Button variant="primary" fullWidth href="mailto:">
                         Open email app
                     </Button>
 
-                    <div className="w-full border-t border-neutral-100 my-8"></div>
+                    <div className="w-full border-t border-neutral-100 my-8" />
 
                     <p className="text-xs text-neutral-400 leading-relaxed max-w-[280px] mx-auto">
-                        If you don't see your reset password email link, please check your spam folder inside your mail
+                        Can&apos;t find the email? Check your spam folder. The link expires after 24 hours.
                     </p>
+
+                    <Link
+                        href="/forgot-password"
+                        className="block mt-4 text-xs font-semibold text-[#1E78FF] hover:text-[#165ECC] transition-colors"
+                    >
+                        Try a different email
+                    </Link>
                 </div>
             </AuthCard>
         );
@@ -76,7 +92,7 @@ export default function ForgotPasswordPage() {
                     Forgot password?
                 </h1>
                 <p className="text-center text-sm text-neutral-500 font-medium leading-relaxed max-w-[280px] mx-auto">
-                    Enter the email you use for the account and we'll send you a reset password link
+                    Enter the email you use for the account and we&apos;ll send you a reset link
                 </p>
             </div>
 
@@ -105,7 +121,7 @@ export default function ForgotPasswordPage() {
                 </Button>
 
                 <p className="text-center text-xs text-neutral-400 mt-6 leading-relaxed max-w-[260px] mx-auto">
-                    If you don't see your reset password email link, please check your spam folder
+                    If you don&apos;t see the email, please check your spam folder
                 </p>
             </form>
         </AuthCard>
