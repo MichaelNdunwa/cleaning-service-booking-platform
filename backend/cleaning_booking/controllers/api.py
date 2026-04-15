@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+import secrets
 from datetime import datetime
 
 import odoo
@@ -71,16 +72,13 @@ class CleaningAPI(http.Controller):
         if len(password) < 8:
             return self._error_response("Password must be at least 8 characters.")
 
-        # Use sudo env for user creation
         env = request.env
 
-        # Check if user already exists
         existing = env["res.users"].sudo().search([("login", "=", email)], limit=1)
         if existing:
             return self._error_response("An account with this email already exists.", status=409)
 
         try:
-            # Create a portal user
             portal_group = env.ref("base.group_portal")
             new_user = env["res.users"].sudo().with_context(no_reset_password=True).create({
                 "name": name,
@@ -92,11 +90,10 @@ class CleaningAPI(http.Controller):
             user_id = new_user.id
             user_name = name
             user_email = email
-            # Set customer_rank on the partner (only if sale module is installed)
             try:
                 new_user.partner_id.sudo().write({"customer_rank": 1})
             except (KeyError, ValueError):
-                pass  # customer_rank field not available
+                pass
         except (ValidationError, UserError) as e:
             _logger.warning("Signup failed: %s", e)
             return self._error_response(str(e), status=400)
@@ -138,7 +135,6 @@ class CleaningAPI(http.Controller):
             if not db:
                 return self._error_response("Database not configured.", status=500)
 
-            # Build env manually for auth="none" route, matching Odoo 19's pattern
             cr = odoo.modules.registry.Registry(db).cursor()
             try:
                 env = odoo.api.Environment(cr, None, {})
@@ -169,7 +165,7 @@ class CleaningAPI(http.Controller):
                 cr.close()
         except AccessDenied:
             return self._error_response("Invalid email or password.", status=401)
-        except Exception as e:
+        except Exception:
             _logger.exception("Login error")
             return self._error_response("Login failed. Please try again.", status=500)
 
@@ -195,8 +191,6 @@ class CleaningAPI(http.Controller):
             return self._json_response({})
 
         # Clear any potentially broken session cookie sent by the browser.
-        # A corrupt session (uid set but no session_token) would cause a 403 on
-        # subsequent requests even for auth='none' routes.
         try:
             request.session.logout(keep_db=True)
         except Exception:
@@ -210,7 +204,6 @@ class CleaningAPI(http.Controller):
         provider = data.get("provider", "")
         email = data.get("email", "").strip().lower()
         name = data.get("name", "").strip()
-        provider_uid = data.get("provider_uid", "").strip()
 
         if not email:
             return self._error_response("Email is required.")
@@ -226,16 +219,12 @@ class CleaningAPI(http.Controller):
             try:
                 env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
 
-                # Find existing user by email
                 existing_user = env["res.users"].search([("login", "=", email)], limit=1)
 
                 if existing_user:
                     uid = existing_user.id
                     user_name = existing_user.name
                 else:
-                    # Create a new portal user — assign a random password since
-                    # this account will always authenticate via OAuth.
-                    import secrets
                     random_password = secrets.token_urlsafe(32)
                     portal_group = env.ref("base.group_portal")
                     new_user = env["res.users"].with_context(no_reset_password=True).create({
@@ -245,7 +234,6 @@ class CleaningAPI(http.Controller):
                         "password": random_password,
                         "group_ids": [(6, 0, [portal_group.id])],
                     })
-                    # Mark as customer
                     try:
                         new_user.partner_id.write({"customer_rank": 1})
                     except (KeyError, ValueError):
@@ -254,8 +242,7 @@ class CleaningAPI(http.Controller):
                     user_name = new_user.name
 
                 # Mirror Odoo's own _update_last_login() behavior so login_date
-                # updates for OAuth sign-ins too. sudo() bypasses ACLs while
-                # with_user(uid) preserves the real user on create_uid.
+                # updates for OAuth sign-ins too.
                 env["res.users.log"].with_user(uid).sudo().create({})
 
                 user_data = {"id": uid, "name": user_name, "email": email}
@@ -267,7 +254,7 @@ class CleaningAPI(http.Controller):
             else:
                 cr.close()
 
-        except Exception as e:
+        except Exception:
             _logger.exception("OAuth login error")
             return self._error_response("OAuth login failed. Please try again.", status=500)
 
@@ -286,6 +273,164 @@ class CleaningAPI(http.Controller):
 
         request.session.logout(keep_db=True)
         return self._json_response({"success": True, "message": "Logged out."})
+
+    # ── Auth: Forgot Password ──
+
+    @http.route("/api/v1/auth/forgot-password", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False)
+    def auth_forgot_password(self, **kwargs):
+        """Send a password-reset email.
+
+        Always returns { success: true } regardless of whether the email exists
+        to prevent user enumeration.
+        """
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
+        try:
+            data = json.loads(request.httprequest.data)
+        except (json.JSONDecodeError, TypeError):
+            return self._error_response("Invalid JSON body.")
+
+        email = (data.get("email") or "").strip().lower()
+        if not email:
+            return self._error_response("Email is required.")
+
+        try:
+            db = request.db
+            if not db:
+                return self._error_response("Database not configured.", status=500)
+
+            cr = odoo.modules.registry.Registry(db).cursor()
+            try:
+                env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
+
+                user = env["res.users"].search([("login", "=", email)], limit=1)
+                if user:
+                    Token = env["clean.password.reset.token"]
+                    token_str = Token.create_token_for_user(user)
+
+                    frontend_url = os.getenv("CLEANING_FRONTEND_URL", "http://localhost:3000")
+                    reset_url = f"{frontend_url}/reset-password?token={token_str}"
+
+                    # Log the full URL so dev environments without a mail server
+                    # can still test the flow by copying it from the Odoo log.
+                    _logger.info("[Password Reset] URL for %s : %s", email, reset_url)
+
+                    try:
+                        body_html = (
+                            "<div style='font-family:Arial,sans-serif;max-width:560px;margin:0 auto;'>"
+                            f"<p>Hi {user.name},</p>"
+                            "<p>We received a request to reset your <strong>Shield Cleaning</strong> account password.</p>"
+                            "<p style='margin:28px 0;'>"
+                            f"<a href='{reset_url}' "
+                            "style='display:inline-block;padding:13px 28px;background:#1E78FF;"
+                            "color:#ffffff;border-radius:8px;text-decoration:none;"
+                            "font-weight:700;font-size:15px;'>"
+                            "Reset my password"
+                            "</a></p>"
+                            "<p style='color:#6b7280;font-size:13px;'>"
+                            "This link expires in <strong>24 hours</strong>. "
+                            "If you did not request a password reset, you can safely ignore this email — "
+                            "your password will remain unchanged."
+                            "</p>"
+                            "<hr style='border:none;border-top:1px solid #e5e7eb;margin:24px 0;'/>"
+                            "<p style='color:#9ca3af;font-size:12px;'>The Shield Cleaning team</p>"
+                            "</div>"
+                        )
+                        # CLEANING_EMAIL_FROM must match the "FROM Filtering" value
+                        # configured on the outgoing mail server in Odoo Settings.
+                        email_from = os.getenv(
+                            "CLEANING_EMAIL_FROM",
+                            "Shield Cleaning <noreply@shieldcleaning.co>",
+                        )
+                        env["mail.mail"].create({
+                            "subject": "Reset your Shield Cleaning password",
+                            "email_from": email_from,
+                            "email_to": email,
+                            "body_html": body_html,
+                            "auto_delete": True,
+                        }).send()
+                    except Exception as mail_err:
+                        _logger.warning("[Password Reset] Email not sent for %s: %s", email, mail_err)
+                        # Don't fail the request — the token exists; dev can grab the URL from logs
+
+                cr.commit()
+            except Exception:
+                cr.rollback()
+                cr.close()
+                raise
+            else:
+                cr.close()
+
+        except Exception:
+            _logger.exception("Forgot-password error")
+            # Fall through and return success to prevent enumeration
+
+        return self._json_response({
+            "success": True,
+            "message": "If that email is registered, a reset link has been sent.",
+        })
+
+    # ── Auth: Reset Password ──
+
+    @http.route("/api/v1/auth/reset-password", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False)
+    def auth_reset_password(self, **kwargs):
+        """Consume a reset token and update the user's password."""
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
+        try:
+            data = json.loads(request.httprequest.data)
+        except (json.JSONDecodeError, TypeError):
+            return self._error_response("Invalid JSON body.")
+
+        token_str = (data.get("token") or "").strip()
+        password = data.get("password", "")
+
+        if not token_str:
+            return self._error_response("Reset token is required.")
+        if len(password) < 8:
+            return self._error_response("Password must be at least 8 characters.")
+
+        try:
+            db = request.db
+            if not db:
+                return self._error_response("Database not configured.", status=500)
+
+            cr = odoo.modules.registry.Registry(db).cursor()
+            try:
+                env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
+
+                Token = env["clean.password.reset.token"]
+                token_record = Token.validate_token(token_str)
+
+                if not token_record:
+                    cr.close()
+                    return self._error_response(
+                        "This reset link is invalid or has expired. Please request a new one.",
+                        status=400,
+                    )
+
+                user = token_record.user_id
+                user._change_password(password)
+                token_record.write({"used": True})
+                cr.commit()
+
+            except Exception:
+                cr.rollback()
+                cr.close()
+                raise
+            else:
+                cr.close()
+
+        except Exception:
+            _logger.exception("Reset-password error")
+            return self._error_response("Password reset failed. Please try again.", status=500)
+
+        return self._json_response({
+            "success": True,
+            "message": "Password updated successfully. You can now log in.",
+        })
 
     # ── Auth: Current User ──
 
@@ -377,7 +522,6 @@ class CleaningAPI(http.Controller):
             ("state", "not in", ["cancelled"]),
         ])
 
-        # Count bookings per slot
         slot_counts = {}
         for b in bookings:
             slot_counts[b.time_slot_id.id] = slot_counts.get(b.time_slot_id.id, 0) + 1
@@ -406,7 +550,6 @@ class CleaningAPI(http.Controller):
     @http.route("/api/v1/booking", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
     def create_booking(self, **kwargs):
         """Create a new booking from frontend data."""
-        # Handle CORS preflight
         if request.httprequest.method == "OPTIONS":
             return self._json_response({})
 
@@ -415,25 +558,21 @@ class CleaningAPI(http.Controller):
         except (json.JSONDecodeError, TypeError):
             return self._error_response("Invalid JSON body.")
 
-        # Required fields
         required = ["service_type_id", "booking_date", "time_slot_id"]
         missing = [f for f in required if f not in data]
         if missing:
             return self._error_response(f"Missing required fields: {', '.join(missing)}")
 
-        # Find or create customer
         customer_data = data.get("customer", {})
         customer = self._find_or_create_customer(customer_data)
         if not customer:
             return self._error_response("Customer email is required.")
 
-        # Parse booking date
         try:
             booking_date = datetime.strptime(data["booking_date"], "%Y-%m-%d").date()
         except ValueError:
             return self._error_response("Invalid booking_date format. Use YYYY-MM-DD.")
 
-        # Prepare booking values
         vals = {
             "customer_id": customer.id,
             "service_type_id": int(data["service_type_id"]),
@@ -450,7 +589,6 @@ class CleaningAPI(http.Controller):
             "notes": data.get("notes", ""),
         }
 
-        # Add-ons (list of IDs)
         addon_ids = data.get("addon_ids", [])
         if addon_ids:
             vals["addon_ids"] = [(6, 0, [int(a) for a in addon_ids])]
@@ -555,7 +693,6 @@ class CleaningAPI(http.Controller):
         customer = Partner.search([("email", "=", email)], limit=1)
 
         if customer:
-            # Update existing partner with new data
             update_vals = {}
             if data.get("name") and data["name"] != customer.name:
                 update_vals["name"] = data["name"]

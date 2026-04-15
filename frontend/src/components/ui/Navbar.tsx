@@ -91,16 +91,31 @@ export default function Navbar() {
                     </div>
 
                     <div className="lg:hidden flex items-center gap-2">
-                        {/* Mobile Log In Button */}
-                        <Button
-                            href="/login"
-                            variant="outline"
-                            className="!px-3 !py-1.5 !text-sm"
-                        >
-                            Log in
-                        </Button>
+                        {/* Avatar chip (logged in) OR Log In button (logged out) */}
+                        {user ? (
+                            <button
+                                onClick={() => setMobileOpen(!mobileOpen)}
+                                className="flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-slate-50 border border-neutral-100 hover:border-neutral-200 transition-colors"
+                                aria-label="Open menu"
+                            >
+                                <div className="w-7 h-7 rounded-full bg-[#1E78FF] text-white flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                                    {user.name.charAt(0)}
+                                </div>
+                                <span className="text-xs font-semibold text-[#0B1536]">
+                                    {user.name.split(" ")[0]}
+                                </span>
+                            </button>
+                        ) : (
+                            <Button
+                                href="/login"
+                                variant="outline"
+                                className="!px-3 !py-1.5 !text-sm"
+                            >
+                                Log in
+                            </Button>
+                        )}
 
-                        {/* Mobile menu button */}
+                        {/* Hamburger / close button */}
                         <button
                             className="p-2 rounded-lg text-neutral-600 hover:bg-neutral-50 transition-colors"
                             onClick={() => setMobileOpen(!mobileOpen)}

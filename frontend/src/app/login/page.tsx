@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 function LoginPageContent() {
     const searchParams = useSearchParams();
     const justRegistered = searchParams.get("registered") === "1";
+    const justReset = searchParams.get("reset") === "1";
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>(
@@ -30,8 +31,8 @@ function LoginPageContent() {
             newErrors.email = "Please enter a valid email";
 
         if (!password) newErrors.password = "Password is required";
-        else if (password.length < 6)
-            newErrors.password = "Password must be at least 6 characters";
+        else if (password.length < 8)
+            newErrors.password = "Password must be at least 8 characters";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -67,6 +68,11 @@ function LoginPageContent() {
                 {justRegistered && (
                     <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-sm text-green-700">
                         Account created successfully! Please log in below.
+                    </div>
+                )}
+                {justReset && (
+                    <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-sm text-green-700">
+                        Password updated! You can now log in with your new password.
                     </div>
                 )}
                 {errors.general && (

@@ -162,3 +162,12 @@ export interface OAuthPayload {
     name: string;
     provider_uid: string; // the `sub` (subject) from the Google/Apple ID token
 }
+
+export interface ForgotPasswordPayload {
+    email: string;
+}
+
+export interface ResetPasswordPayload {
+    token: string;
+    password: string;
+}
