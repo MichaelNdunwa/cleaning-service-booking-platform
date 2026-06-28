@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Custom login layout: replace footer, logo, and background -->
+    <template id="login_layout_custom" inherit_id="web.login_layout"
+              name="Shield Cleaning Login Layout">
+        <!-- Custom body background class -->
+        <xpath expr="//t[@t-set='body_classname']" position="attributes">
+            <attribute name="t-value">'shield-login-bg'</attribute>
+        </xpath>
+        <!-- Replace footer: remove Odoo "Powered by" and "Manage Databases" links -->
+        <xpath expr="//div[hasclass('text-center') and hasclass('small') and hasclass('mt-4')]"
+               position="replace">
+            <div class="text-center small mt-4 pt-3 border-top text-muted">
+                &#169; 2025 Shield Cleaning Co. All rights reserved.
+            </div>
+        </xpath>
+        <!-- Replace company logo with Shield Cleaning brand logo -->
+        <xpath expr="//div[hasclass('text-center')]/img" position="replace">
+            <img src="/cleaning_booking/static/img/shield-logo.svg"
+                 alt="Shield Cleaning Co"
+                 style="max-height:80px; max-width: 100%; width:auto;"/>
+        </xpath>
+        <!-- Add tagline below logo -->
+        <xpath expr="//div[hasclass('text-center')]" position="after">
+            <p class="text-center text-muted mb-0"
+               style="font-size: 0.85rem; margin-top: -0.25rem;">
+                Professional Cleaning Services
+            </p>
+        </xpath>
+    </template>
+
+    <!-- Custom login form: button text and welcome heading -->
+    <template id="login_form_custom" inherit_id="web.login"
+              name="Shield Cleaning Login Form">
+        <!-- Replace "Log in" button with branded "Sign In" -->
+        <xpath expr="//button[hasclass('btn-primary')]" position="replace">
+            <button type="submit" class="btn btn-primary btn-shield w-100">Sign In</button>
+        </xpath>
+        <!-- Add welcome heading above the form -->
+        <xpath expr="//div[@id='oe_structure_login_top']" position="inside">
+            <h5 class="text-center mb-3 fw-semibold" style="color: #1a237e;">
+                Welcome Back
+            </h5>
+        </xpath>
+    </template>
+
+</odoo>
