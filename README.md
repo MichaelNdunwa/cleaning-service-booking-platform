@@ -1,8 +1,8 @@
-# 🧹 Cleaning Service Booking Platform (Odoo 18 Community)
+# 🧹 Cleaning Service Booking Platform (Odoo 19 Community)
 
 ## 📌 Overview
 
-This project is a **Cleaning Service Booking Platform** built on **Odoo 18 Community Edition**.
+This project is a **Cleaning Service Booking Platform** built on **Odoo 19 Community Edition**.
 It provides a seamless experience for customers to book residential, office, or commercial cleaning services, and gives the business owner/admin a powerful back-office to manage bookings, payments, scheduling, and cleaner payroll.
 
 The **customer-facing frontend UI** is based on the **Clean – Booking UI Template** from Figma:
@@ -74,7 +74,7 @@ The full sprint plan with detailed tasks and timelines is documented in:
 
 ## ⚙️ Tech Stack
 
-* **Framework:** Odoo 18 Community Edition
+* **Framework:** Odoo 19 Community Edition
 * **Frontend UI:** [Clean – Booking UI Template (Figma)](https://www.figma.com/community/file/1308402417668124443/clean-booking-ui-template)
 * **Backend:** Python (Odoo ORM), PostgreSQL
 * **Payments:** Odoo `payment` module (Stripe/Paystack/Flutterwave, etc.)
@@ -86,7 +86,7 @@ The full sprint plan with detailed tasks and timelines is documented in:
 ## 🚀 Setup (Developer)
 
 1. Clone this repo
-2. Install Odoo 18 Community + dependencies
+2. Install Odoo 19 Community + dependencies
 3. Add this repo’s modules path to `odoo.conf`
 4. Start Odoo with a clean database
 5. Install modules in sequence:
