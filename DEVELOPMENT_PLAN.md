@@ -1,4 +1,4 @@
-## 🚀 Project: Cleaning Service Booking Platform (Odoo 18 Community)
+## 🚀 Project: Cleaning Service Booking Platform (Odoo 19 Community)
 
 ### 📌 Overview
 
@@ -21,7 +21,7 @@ This plan defines sprints, timelines, and weekly checklists.
 
 **Deliverables:**
 
-* ✅ Odoo 18 CE installed with required base modules:
+* ✅ Odoo 19 CE installed with required base modules:
 
   * `website`, `website_form`, `sale`, `payment`, `project`, `planning`, `hr`, `mail`
 * ✅ Git repo with module scaffolds:
@@ -42,7 +42,7 @@ This plan defines sprints, timelines, and weekly checklists.
 
 * Week 1:
 
-  * [x] Install & configure Odoo 18 CE
+  * [x] Install & configure Odoo 19 CE
   * [ ] Initialize Git repo & module scaffolds
   * [ ] Define Booking + Add-on models
   * [ ] Create first XML menus, actions, and security groups
@@ -279,7 +279,7 @@ This plan defines sprints, timelines, and weekly checklists.
 # 🗓 Week 1 – Foundations
 
 **Goal:**
-Set up the Odoo 18 Community environment, initialize the repo, scaffold custom modules, and create the **Booking** + **Add-on** models with menus and security.
+Set up the Odoo 19 Community environment, initialize the repo, scaffold custom modules, and create the **Booking** + **Add-on** models with menus and security.
 
 **Estimated Duration:** 1 week
 
@@ -287,7 +287,7 @@ Set up the Odoo 18 Community environment, initialize the repo, scaffold custom m
 
 ## ✅ Deliverables
 
-* Odoo 18 CE installed locally (Debian/WSL).
+* Odoo 19 CE installed locally (Debian/WSL).
 * Git repository initialized with three module scaffolds:
 
   * `cleaning_booking`
@@ -305,7 +305,7 @@ Set up the Odoo 18 Community environment, initialize the repo, scaffold custom m
 
 ### **Day 1–2: Environment Setup**
 
-* [x] Install **Odoo 18 CE** from source in Debian/WSL.
+* [x] Install **Odoo 19 CE** from source in Debian/WSL.
 * [x] Install PostgreSQL (with role `odoo_dev`).
 * [x] Configure `odoo.conf` (custom addons path).
 * [x] Create a new DB (`cleaning_dev_db`).
