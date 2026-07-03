@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     "end of tenancy",
     "professional cleaners",
   ],
+  icons: {
+    icon: "/images/favicon.svg",
+  },
 };
 
 export default function RootLayout({
