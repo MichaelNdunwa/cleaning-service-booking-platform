@@ -20,6 +20,7 @@
         "base",
         "mail",
         "contacts",
+        "web",
     ],
     "data": [
         # Security
@@ -35,7 +36,14 @@
         "views/service_type_views.xml",
         "views/time_slot_views.xml",
         "views/menus.xml",
+        # Custom login
+        "views/login_templates.xml",
     ],
+    "assets": {
+        "web.assets_frontend": [
+            "cleaning_booking/static/src/scss/login.scss",
+        ],
+    },
     "installable": True,
     "application": True,
     "auto_install": False,
