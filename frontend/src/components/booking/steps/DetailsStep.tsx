@@ -2,14 +2,16 @@
 
 import { BookingState } from "@/app/booking/page";
 import Button from "@/components/ui/Button";
+import type { Addon } from "@/lib/types";
 
 interface Props {
     data: BookingState;
     updateData: (updates: Partial<BookingState>) => void;
     onNext: () => void;
+    addons: Addon[];
 }
 
-export default function DetailsStep({ data, updateData, onNext }: Props) {
+export default function DetailsStep({ data, updateData, onNext, addons }: Props) {
     const frequencies = [
         { id: "Onetime", label: "Onetime", discount: null },
         { id: "Weekly", label: "Weekly", discount: "20% OFF" },
@@ -19,23 +21,11 @@ export default function DetailsStep({ data, updateData, onNext }: Props) {
 
     const entryMethods = ["Someone is Home", "Doorman", "Hidden Key", "Others"];
 
-    const extrasOptions = [
-        { id: "Inside fridge", label: "Inside fridge", price: "$35" },
-        { id: "Inside oven", label: "Inside oven", price: "$35" },
-        { id: "Inside Cabinets", label: "Inside Cabinets", price: "$35" },
-    ];
-
-    const toggleExtra = (id: string) => {
-        const newExtras = data.extras.includes(id)
-            ? data.extras.filter(e => e !== id)
-            : [...data.extras, id];
-        updateData({ extras: newExtras });
-    };
-
-    const toggleAddOn = (label: string) => { // New function for addOns
-        const newExtras = data.extras.includes(label)
-            ? data.extras.filter(e => e !== label)
-            : [...data.extras, label];
+    const toggleAddon = (addonId: number) => {
+        const idStr = String(addonId);
+        const newExtras = data.extras.includes(idStr)
+            ? data.extras.filter((e) => e !== idStr)
+            : [...data.extras, idStr];
         updateData({ extras: newExtras });
     };
 
@@ -151,38 +141,40 @@ export default function DetailsStep({ data, updateData, onNext }: Props) {
                     </div>
                 </div>
 
-                {/* Add-ons */}
-                <div className="mb-10 md:mb-14 flex flex-col items-start w-full">
-                    <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
-                        ADD ONS?
-                    </p>
-                    <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 md:gap-4 w-full">
-                        {extrasOptions.map((extra) => {
-                            const isSelected = data.extras.includes(extra.id);
-                            return (
-                                <button
-                                    key={extra.id}
-                                    onClick={() => toggleAddOn(extra.id)}
-                                    className={`
-                                        h-[100px] md:h-28 rounded-xl flex flex-col items-center justify-center gap-2 border bg-white transition-all w-full md:w-[140px] px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1E78FF]
-                                        ${isSelected
-                                            ? "border-2 border-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] z-10 block"
-                                            : "border-neutral-200 hover:border-neutral-300 relative"
-                                        }
-                                    `}
-                                >
-                                    <div className={`w-8 h-10 border-2 rounded-md border-neutral-300 flex items-center justify-center ${isSelected ? "border-[#1E78FF]" : ""}`}>
-                                        {/* Mock icon shape */}
-                                    </div>
-                                    <div className="flex flex-col items-center">
-                                        <div className={`text-[15px] font-bold ${isSelected ? "text-[#1E78FF]" : "text-[#0B1536]"}`}>{extra.label}</div>
-                                        <div className="text-[13px] font-semibold text-neutral-400 mt-1">{extra.price}</div>
-                                    </div>
-                                </button>
-                            );
-                        })}
+                {/* Add-ons from API */}
+                {addons.length > 0 && (
+                    <div className="mb-10 md:mb-14 flex flex-col items-start w-full">
+                        <p className="text-[11px] font-extrabold text-neutral-400 uppercase tracking-widest mb-4">
+                            ADD ONS?
+                        </p>
+                        <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 md:gap-4 w-full">
+                            {addons.map((addon) => {
+                                const isSelected = data.extras.includes(String(addon.id));
+                                return (
+                                    <button
+                                        key={addon.id}
+                                        onClick={() => toggleAddon(addon.id)}
+                                        className={`
+                                            h-[100px] md:h-28 rounded-xl flex flex-col items-center justify-center gap-2 border bg-white transition-all w-full md:w-[140px] px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1E78FF]
+                                            ${isSelected
+                                                ? "border-2 border-[#1E78FF] shadow-[0_4px_14px_rgba(30,120,255,0.15)] z-10 block"
+                                                : "border-neutral-200 hover:border-neutral-300 relative"
+                                            }
+                                        `}
+                                    >
+                                        <div className={`w-8 h-10 border-2 rounded-md border-neutral-300 flex items-center justify-center ${isSelected ? "border-[#1E78FF]" : ""}`}>
+                                            {/* Mock icon shape */}
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <div className={`text-[15px] font-bold ${isSelected ? "text-[#1E78FF]" : "text-[#0B1536]"}`}>{addon.name}</div>
+                                            <div className="text-[13px] font-semibold text-neutral-400 mt-1">${addon.price.toFixed(0)}</div>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Pets */}
                 <div className="mb-8 md:mb-10 flex flex-col items-start w-full">

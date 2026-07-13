@@ -2,14 +2,24 @@
 
 import { BookingState } from "@/app/booking/page";
 import Button from "@/components/ui/Button";
+import type { ServiceType, Addon } from "@/lib/types";
 
 interface Props {
     data: BookingState;
     updateData: (updates: Partial<BookingState>) => void;
     onNext: () => void;
+    services: ServiceType[];
+    addons: Addon[];
 }
 
-export default function RequirementsStep({ data, updateData, onNext }: Props) {
+const CLEAN_TYPE_ADDON_CODE: Record<string, string | null> = {
+    "Standard": null,
+    "Deep Clean": "deep_clean",
+    "Moving In/Out": "end_of_tenancy",
+    "Post Construction": "post_construction",
+};
+
+export default function RequirementsStep({ data, updateData, onNext, addons }: Props) {
     const bedrooms = ["Studio", "1", "2", "3", "4", "5"];
     const bathrooms = ["1", "2", "3", "4", "5"];
     const cleanTypes = [
@@ -18,6 +28,18 @@ export default function RequirementsStep({ data, updateData, onNext }: Props) {
         { id: "Moving In/Out", label: "Moving In/Out", time: "4.5-5 hours" },
         { id: "Post Construction", label: "Post Construction", time: "4.5-5 hours" },
     ];
+
+    const handleCleanType = (typeId: string) => {
+        const addonCode = CLEAN_TYPE_ADDON_CODE[typeId];
+        let newExtras: string[] = [];
+        if (addonCode) {
+            const addon = addons.find((a) => a.code === addonCode);
+            if (addon) {
+                newExtras = [String(addon.id)];
+            }
+        }
+        updateData({ cleanType: typeId, extras: newExtras });
+    };
 
     const OptionButton = ({
         active,
@@ -100,7 +122,7 @@ export default function RequirementsStep({ data, updateData, onNext }: Props) {
                         <div key={type.id} className="flex flex-col items-center gap-2">
                             <button
                                 type="button"
-                                onClick={() => updateData({ cleanType: type.id })}
+                                onClick={() => handleCleanType(type.id)}
                                 className={`
                                     h-[52px] px-8 rounded-lg text-[15px] font-bold transition-all duration-200 outline-none
                                     ${data.cleanType === type.id
