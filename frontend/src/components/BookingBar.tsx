@@ -4,10 +4,26 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 
-const OPTIONS = {
-    bed: ["One", "Two", "Three", "Four", "Five+"],
-    bath: ["1 Bathroom", "2 Bathrooms", "3 Bathrooms", "4+ Bathrooms"],
-    standard: ["Standard", "Deep Clean", "Premium"],
+type Option = { label: string; value: string };
+
+const OPTIONS: { bed: Option[]; bath: Option[]; standard: Option[] } = {
+    bed: [
+        { label: "1 Bedroom", value: "1" },
+        { label: "2 Bedrooms", value: "2" },
+        { label: "3 Bedrooms", value: "3" },
+        { label: "4 Bedrooms", value: "4" },
+        { label: "5+ Bedrooms", value: "5" },
+    ],
+    bath: [
+        { label: "1 Bathroom", value: "1" },
+        { label: "2 Bathrooms", value: "2" },
+        { label: "3 Bathrooms", value: "3" },
+        { label: "4+ Bathrooms", value: "4" },
+    ],
+    standard: [
+        { label: "Standard", value: "Standard" },
+        { label: "Deep Clean", value: "Deep Clean" },
+    ],
 };
 
 export default function BookingBar({ className }: { className?: string }) {
@@ -29,14 +45,21 @@ export default function BookingBar({ className }: { className?: string }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const Dropdown = ({ id, value, placeholder, options, setter, isFirst }: any) => {
+    const Dropdown = ({ id, value, placeholder, options, setter, isFirst }: {
+        id: string;
+        value: string;
+        placeholder: string;
+        options: Option[];
+        setter: (val: string) => void;
+        isFirst?: boolean;
+    }) => {
         const isOpen = openDropdown === id;
+        const selected = options.find((o) => o.value === value);
 
         return (
             <div
                 className={clsx(
                     "flex-1 relative",
-                    /* Render the standard right divider, UNLESS this dropdown or the one next to it is open */
                     !isOpen && id !== "standard" && "border-b sm:border-b-0 sm:border-r border-neutral-100"
                 )}
             >
@@ -52,7 +75,7 @@ export default function BookingBar({ className }: { className?: string }) {
                         value ? "font-medium text-neutral-900" : "text-neutral-400"
                     )}
                 >
-                    <span className="whitespace-nowrap">{value || placeholder}</span>
+                    <span className="whitespace-nowrap">{selected?.label || placeholder}</span>
                     <svg
                         className={clsx("w-[18px] h-[18px] transition-transform duration-200 text-neutral-400", isOpen && "rotate-180")}
                         fill="none"
@@ -66,27 +89,36 @@ export default function BookingBar({ className }: { className?: string }) {
 
                 {isOpen && (
                     <div className="absolute top-[calc(100%+8px)] left-0 w-full min-w-[200px] bg-white rounded-[12px] shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-neutral-100 py-2 z-50 animate-fade-in-up" style={{ animationDuration: '0.2s' }}>
-                        {options.map((opt: string) => (
+                        {options.map((opt) => (
                             <button
-                                key={opt}
+                                key={opt.value}
                                 onClick={() => {
-                                    setter(opt);
+                                    setter(opt.value);
                                     setOpenDropdown(null);
                                 }}
                                 className={clsx(
                                     "w-full text-left px-5 py-3 text-[15px] transition-colors duration-150",
-                                    value === opt
+                                    value === opt.value
                                         ? "bg-[#F4F8FF] text-brand-accent font-semibold"
                                         : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
                                 )}
                             >
-                                {opt}
+                                {opt.label}
                             </button>
                         ))}
                     </div>
                 )}
             </div>
         );
+    };
+
+    const buildBookingUrl = () => {
+        const params = new URLSearchParams();
+        if (bed) params.set("bedrooms", bed);
+        if (bath) params.set("bathrooms", bath);
+        if (standard) params.set("cleanType", standard);
+        const qs = params.toString();
+        return `/booking${qs ? `?${qs}` : ""}`;
     };
 
     return (
@@ -101,7 +133,7 @@ export default function BookingBar({ className }: { className?: string }) {
                 <Dropdown id="standard" value={standard} placeholder="Select Service Type" options={OPTIONS.standard} setter={setStandard} />
 
                 <Link
-                    href="/booking"
+                    href={buildBookingUrl()}
                     className="px-7 md:px-4 lg:px-7 py-[18px] h-full flex justify-center items-center bg-[#1E78FF] text-white text-[15px] font-semibold whitespace-nowrap hover:bg-blue-600 transition-colors duration-200 rounded-r-xl relative z-10"
                 >
                     Booking from $80
@@ -111,7 +143,7 @@ export default function BookingBar({ className }: { className?: string }) {
             {/* Mobile View */}
             <div className="md:hidden w-full flex justify-center mt-2">
                 <Link
-                    href="/booking"
+                    href={buildBookingUrl()}
                     className="flex justify-center items-center w-full py-[20px] bg-[#1E78FF] text-white text-[18px] font-bold rounded-[10px] hover:bg-blue-600 transition-colors shadow-md"
                 >
                     Booking from $80

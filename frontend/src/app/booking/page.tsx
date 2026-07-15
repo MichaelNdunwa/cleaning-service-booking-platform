@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import BookingHeader from "@/components/booking/BookingHeader";
 import RequirementsStep from "@/components/booking/steps/RequirementsStep";
 import DateStep from "@/components/booking/steps/DateStep";
@@ -75,11 +75,17 @@ function getServiceTypeByBedrooms(bedrooms: string | number, services: ServiceTy
     return services.find((s) => s.code === code);
 }
 
-export default function BookingPage() {
+function BookingWizard() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { user } = useAuth();
     const [step, setStep] = useState(1);
-    const [data, setData] = useState<BookingState>(initialState);
+    const [data, setData] = useState<BookingState>(() => ({
+        ...initialState,
+        bedrooms: searchParams.get("bedrooms") || "",
+        bathrooms: searchParams.get("bathrooms") || "",
+        cleanType: searchParams.get("cleanType") || "",
+    }));
     const [services, setServices] = useState<ServiceType[]>([]);
     const [addons, setAddons] = useState<Addon[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -305,5 +311,13 @@ export default function BookingPage() {
                 </button>
             </div>
         </div>
+    );
+}
+
+export default function BookingPage() {
+    return (
+        <Suspense>
+            <BookingWizard />
+        </Suspense>
     );
 }
