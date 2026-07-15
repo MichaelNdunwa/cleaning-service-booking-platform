@@ -10,10 +10,10 @@ const OPTIONS = {
     standard: ["Standard", "Deep Clean", "Premium"],
 };
 
-export default function BookingBar() {
+export default function BookingBar({ className }: { className?: string }) {
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-    const [bed, setBed] = useState("Two");
+    const [bed, setBed] = useState("");
     const [bath, setBath] = useState("");
     const [standard, setStandard] = useState("");
 
@@ -52,7 +52,7 @@ export default function BookingBar() {
                         value ? "font-medium text-neutral-900" : "text-neutral-400"
                     )}
                 >
-                    <span>{value || placeholder}</span>
+                    <span className="whitespace-nowrap">{value || placeholder}</span>
                     <svg
                         className={clsx("w-[18px] h-[18px] transition-transform duration-200 text-neutral-400", isOpen && "rotate-180")}
                         fill="none"
@@ -90,15 +90,15 @@ export default function BookingBar() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto relative z-[100]" ref={barRef}>
+        <div className={`max-w-4xl mx-auto relative z-[100] ${className || ""}`} ref={barRef}>
             {/* Desktop & Tablet View */}
             <div className="hidden md:flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-neutral-100 relative z-[100]">
 
                 <Dropdown id="bed" value={bed} placeholder="Select Bedrooms" options={OPTIONS.bed} setter={setBed} isFirst={true} />
 
-                <Dropdown id="bath" value={bath} placeholder="Bathroom" options={OPTIONS.bath} setter={setBath} />
+                <Dropdown id="bath" value={bath} placeholder="Select Bathrooms" options={OPTIONS.bath} setter={setBath} />
 
-                <Dropdown id="standard" value={standard} placeholder="Standard" options={OPTIONS.standard} setter={setStandard} />
+                <Dropdown id="standard" value={standard} placeholder="Select Service Type" options={OPTIONS.standard} setter={setStandard} />
 
                 <Link
                     href="/booking"

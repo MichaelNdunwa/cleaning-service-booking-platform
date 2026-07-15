@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BookingState } from "@/app/booking/page";
 import Button from "@/components/ui/Button";
 import CTABanner from "@/components/ui/CTABanner";
+import { useAuth } from "@/context/AuthContext";
 
 interface Props {
     data: BookingState;
@@ -14,7 +15,15 @@ interface Props {
 }
 
 export default function PaymentStep({ data, updateData, onNext, isSubmitting, submitError }: Props) {
+    const { user } = useAuth();
+    const isLoggedIn = !!user;
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        if (user) {
+            updateData({ fullName: user.name, email: user.email });
+        }
+    }, [user, updateData]);
 
     const validate = (): boolean => {
         const errs: Record<string, string> = {};
@@ -22,9 +31,11 @@ export default function PaymentStep({ data, updateData, onNext, isSubmitting, su
         if (!data.email.trim()) errs.email = "Email is required";
         else if (!/\S+@\S+\.\S+/.test(data.email)) errs.email = "Invalid email address";
         if (!data.phone.trim()) errs.phone = "Phone number is required";
-        if (!data.password) errs.password = "Password is required";
-        else if (data.password.length < 8) errs.password = "Password must be at least 8 characters";
-        if (data.password !== data.confirmPassword) errs.confirmPassword = "Passwords do not match";
+        if (!isLoggedIn) {
+            if (!data.password) errs.password = "Password is required";
+            else if (data.password.length < 8) errs.password = "Password must be at least 8 characters";
+            if (data.password !== data.confirmPassword) errs.confirmPassword = "Passwords do not match";
+        }
         setErrors(errs);
         return Object.keys(errs).length === 0;
     };
@@ -72,7 +83,8 @@ export default function PaymentStep({ data, updateData, onNext, isSubmitting, su
                             placeholder="Enter Full name"
                             value={data.fullName}
                             onChange={(e) => updateData({ fullName: e.target.value })}
-                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
+                            readOnly={isLoggedIn}
+                            className={`h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium ${isLoggedIn ? "bg-neutral-50 cursor-not-allowed" : ""}`}
                         />
                         {errors.fullName && <span className="text-red-500 text-xs pl-1">{errors.fullName}</span>}
                     </div>
@@ -82,10 +94,11 @@ export default function PaymentStep({ data, updateData, onNext, isSubmitting, su
                         <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">EMAIL ADDRESS</label>
                         <input
                             type="email"
-                            placeholder="Enter a address"
+                            placeholder="Enter your email address"
                             value={data.email}
                             onChange={(e) => updateData({ email: e.target.value })}
-                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
+                            readOnly={isLoggedIn}
+                            className={`h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium ${isLoggedIn ? "bg-neutral-50 cursor-not-allowed" : ""}`}
                         />
                         {errors.email && <span className="text-red-500 text-xs pl-1">{errors.email}</span>}
                     </div>
@@ -125,30 +138,34 @@ export default function PaymentStep({ data, updateData, onNext, isSubmitting, su
                     </div>
 
                     {/* Password */}
-                    <div className="flex flex-col gap-2 col-span-full md:col-span-1">
-                        <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">PASSWORD</label>
-                        <input
-                            type="password"
-                            placeholder="Enter a Password"
-                            value={data.password}
-                            onChange={(e) => updateData({ password: e.target.value })}
-                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
-                        />
-                        {errors.password && <span className="text-red-500 text-xs pl-1">{errors.password}</span>}
-                    </div>
+                    {!isLoggedIn && (
+                        <>
+                            <div className="flex flex-col gap-2 col-span-full md:col-span-1">
+                                <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">PASSWORD</label>
+                                <input
+                                    type="password"
+                                    placeholder="Enter a Password"
+                                    value={data.password}
+                                    onChange={(e) => updateData({ password: e.target.value })}
+                                    className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
+                                />
+                                {errors.password && <span className="text-red-500 text-xs pl-1">{errors.password}</span>}
+                            </div>
 
-                    {/* Confirm Password */}
-                    <div className="flex flex-col gap-2 col-span-full md:col-span-1">
-                        <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">CONFIRM PASSWORD</label>
-                        <input
-                            type="password"
-                            placeholder="Enter a Password"
-                            value={data.confirmPassword}
-                            onChange={(e) => updateData({ confirmPassword: e.target.value })}
-                            className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
-                        />
-                        {errors.confirmPassword && <span className="text-red-500 text-xs pl-1">{errors.confirmPassword}</span>}
-                    </div>
+                            {/* Confirm Password */}
+                            <div className="flex flex-col gap-2 col-span-full md:col-span-1">
+                                <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">CONFIRM PASSWORD</label>
+                                <input
+                                    type="password"
+                                    placeholder="Enter a Password"
+                                    value={data.confirmPassword}
+                                    onChange={(e) => updateData({ confirmPassword: e.target.value })}
+                                    className="h-[52px] w-full border border-neutral-200 rounded-lg px-4 text-[14px] text-[#0B1536] focus:border-[#1E78FF] focus:ring-1 focus:ring-[#1E78FF] outline-none placeholder:text-neutral-400 font-medium"
+                                />
+                                {errors.confirmPassword && <span className="text-red-500 text-xs pl-1">{errors.confirmPassword}</span>}
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Submit Error */}

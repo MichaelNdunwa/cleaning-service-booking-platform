@@ -20,7 +20,7 @@ export default function CTABanner({
                     <div className="absolute top-0 left-0 w-40 h-40 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
                     <div className="absolute bottom-0 right-0 w-60 h-60 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
-                    <div className="relative z-10 w-full max-w-4xl mx-auto">
+                    <div className="relative z-10 w-full max-w-5xl mx-auto">
                         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-neutral-900 mb-2 sm:mb-4 leading-tight">
                             {title}
                         </h2>
@@ -32,7 +32,7 @@ export default function CTABanner({
 
                         {/* The newly added Booking Bar integrated here */}
                         <div className="w-full">
-                            <BookingBar />
+                            <BookingBar className="max-w-5xl" />
                         </div>
                     </div>
                 </div>

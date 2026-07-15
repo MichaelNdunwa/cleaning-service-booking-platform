@@ -10,6 +10,7 @@ import TimeStep from "@/components/booking/steps/TimeStep";
 import DetailsStep from "@/components/booking/steps/DetailsStep";
 import PaymentStep from "@/components/booking/steps/PaymentStep";
 import { getServices, getAddons, createBooking, signup, login } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 import type { ServiceType, Addon } from "@/lib/types";
 
 export interface BookingState {
@@ -76,6 +77,7 @@ function getServiceTypeByBedrooms(bedrooms: string | number, services: ServiceTy
 
 export default function BookingPage() {
     const router = useRouter();
+    const { user } = useAuth();
     const [step, setStep] = useState(1);
     const [data, setData] = useState<BookingState>(initialState);
     const [services, setServices] = useState<ServiceType[]>([]);
@@ -155,16 +157,20 @@ export default function BookingPage() {
             const email = data.email.trim().toLowerCase();
             const password = data.password;
 
-            if (!fullName || !email || !password) {
-                throw new Error("Please fill in your name, email, and password.");
+            if (!fullName || !email) {
+                throw new Error("Please fill in your name and email.");
             }
 
-            const signupRes = await signup({ name: fullName, email, password });
-            if (!signupRes.success) {
-                throw new Error(signupRes.error || "Signup failed.");
+            if (!user) {
+                if (!password) {
+                    throw new Error("Please fill in your password.");
+                }
+                const signupRes = await signup({ name: fullName, email, password });
+                if (!signupRes.success) {
+                    throw new Error(signupRes.error || "Signup failed.");
+                }
+                await login({ email, password });
             }
-
-            await login({ email, password });
 
             const bookingPayload = {
                 customer: {
