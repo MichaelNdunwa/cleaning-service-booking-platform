@@ -42,10 +42,10 @@ This plan defines sprints, timelines, and weekly checklists.
 
 * Week 1:
 
-  * [x] Install & configure Odoo 19 CE
-  * [ ] Initialize Git repo & module scaffolds
-  * [ ] Define Booking + Add-on models
-  * [ ] Create first XML menus, actions, and security groups
+  * [X] Install & configure Odoo 19 CE
+  * [X] Initialize Git repo & module scaffolds
+  * [X] Define Booking + Add-on models
+  * [X] Create first XML menus, actions, and security groups
 * Half Week:
 
   * [ ] Test booking creation manually in backend
