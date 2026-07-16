@@ -9,6 +9,7 @@
                 <field name="name"/>
                 <field name="customer_id"/>
                 <field name="service_type_id"/>
+                <field name="clean_type_id"/>
                 <field name="booking_date"/>
                 <field name="time_slot_id"/>
                 <field name="frequency"/>
@@ -48,6 +49,7 @@
                         </group>
                         <group string="Service">
                             <field name="service_type_id"/>
+                            <field name="clean_type_id"/>
                             <field name="bedrooms"/>
                             <field name="bathrooms"/>
                             <field name="frequency"/>
@@ -60,7 +62,7 @@
                         </group>
                         <group string="Payment">
                             <field name="base_amount"/>
-                            <field name="addons_amount"/>
+                            <field name="extras_amount"/>
                             <field name="amount_total"/>
                             <field name="payment_reference"/>
                             <field name="payment_status"/>
@@ -118,7 +120,7 @@
                                 <field name="service_type_id"/> — <field name="booking_date"/>
                             </div>
                             <div class="text-muted">
-                                £<field name="amount_total"/>
+                                $<field name="amount_total"/>
                             </div>
                             <div>
                                 <field name="payment_status" widget="badge"/>
@@ -145,6 +147,7 @@
                 <filter name="filter_scheduled" string="Scheduled" domain="[('state', '=', 'scheduled')]"/>
                 <filter name="filter_in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
                 <filter name="filter_done" string="Done" domain="[('state', '=', 'done')]"/>
+                <filter name="filter_cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
                 <separator/>
                 <filter string="Booking Date" name="filter_booking_date" date="booking_date"/>
                 <separator/>

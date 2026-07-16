@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Cleaning Service Booking",
-    "version": "19.0.1.1.0",
+    "version": "19.0.1.2.0",
     "category": "Services",
     "summary": "Cleaning service booking system with REST API for frontend integration",
     "description": """
@@ -31,6 +31,7 @@
         "data/service_types.xml",
         "data/addons.xml",
         "data/time_slots.xml",
+        "data/cron_data.xml",
         # Views
         "views/booking_views.xml",
         "views/addon_views.xml",

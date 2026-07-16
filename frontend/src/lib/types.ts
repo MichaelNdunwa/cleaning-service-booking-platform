@@ -68,7 +68,7 @@ export interface Booking {
     bedrooms: number;
     bathrooms: number;
     base_amount: number;
-    addons_amount: number;
+    extras_amount: number;
     amount_total: number;
     state: BookingState;
     payment_status: PaymentStatus;

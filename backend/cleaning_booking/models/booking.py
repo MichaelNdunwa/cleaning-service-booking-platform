@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 
 class CleanBooking(models.Model):
@@ -7,6 +8,15 @@ class CleanBooking(models.Model):
     _description = "Cleaning Service Booking"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "booking_date desc, id desc"
+
+    VALID_TRANSITIONS = {
+        "draft": {"confirmed", "cancelled"},
+        "confirmed": {"scheduled", "cancelled"},
+        "scheduled": {"in_progress", "cancelled"},
+        "in_progress": {"done"},
+        "done": set(),
+        "cancelled": {"draft"},
+    }
 
     # ── Identification ──
     name = fields.Char(
@@ -91,8 +101,8 @@ class CleanBooking(models.Model):
         compute="_compute_amounts",
         store=True,
     )
-    addons_amount = fields.Float(
-        string="Add-ons Amount",
+    extras_amount = fields.Float(
+        string="Extras Amount",
         digits=(10, 2),
         compute="_compute_amounts",
         store=True,
@@ -147,7 +157,7 @@ class CleanBooking(models.Model):
             clean = booking.clean_type_id.base_price if booking.clean_type_id else 0.0
             addons = sum(addon.price for addon in booking.addon_ids)
             booking.base_amount = base
-            booking.addons_amount = clean + addons
+            booking.extras_amount = clean + addons
             booking.amount_total = base + clean + addons
 
     # ── Sequence ──
@@ -159,20 +169,39 @@ class CleanBooking(models.Model):
         return super().create(vals_list)
 
     # ── State Actions ──
+    def _validate_state_transition(self, new_state):
+        for record in self:
+            allowed = self.VALID_TRANSITIONS.get(record.state, set())
+            if new_state not in allowed:
+                raise UserError(
+                    self.env._(
+                        "Cannot move booking %(name)s from '%(current)s' to '%(target)s'.",
+                        name=record.name,
+                        current=record.state,
+                        target=new_state,
+                    )
+                )
+
     def action_confirm(self):
+        self._validate_state_transition("confirmed")
         self.write({"state": "confirmed"})
 
     def action_schedule(self):
+        self._validate_state_transition("scheduled")
         self.write({"state": "scheduled"})
 
     def action_start(self):
+        self._validate_state_transition("in_progress")
         self.write({"state": "in_progress"})
 
     def action_done(self):
+        self._validate_state_transition("done")
         self.write({"state": "done"})
 
     def action_cancel(self):
+        self._validate_state_transition("cancelled")
         self.write({"state": "cancelled"})
 
     def action_reset_draft(self):
+        self._validate_state_transition("draft")
         self.write({"state": "draft"})

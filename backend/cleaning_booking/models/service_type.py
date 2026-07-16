@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields
+from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 class CleanServiceType(models.Model):
@@ -24,3 +25,9 @@ class CleanServiceType(models.Model):
     _sql_constraints = [
         ("code_unique", "UNIQUE(code)", "Service type code must be unique."),
     ]
+
+    @api.constrains("bedrooms")
+    def _check_bedrooms(self):
+        for record in self:
+            if record.bedrooms < 0:
+                raise ValidationError("Number of bedrooms cannot be negative.")

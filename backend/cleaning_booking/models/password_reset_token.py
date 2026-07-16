@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import secrets as _secrets
 from datetime import timedelta
 
 from odoo import models, fields, api
@@ -38,6 +39,10 @@ class CleanPasswordResetToken(models.Model):
     )
     used = fields.Boolean(string="Used", default=False)
 
+    _sql_constraints = [
+        ("token_unique", "UNIQUE(token)", "Reset token must be unique."),
+    ]
+
     @api.model
     def create_token_for_user(self, user):
         """Generate a fresh token for *user* and return the token string.
@@ -45,14 +50,11 @@ class CleanPasswordResetToken(models.Model):
         Any previous unused tokens for this user are invalidated first to
         prevent token accumulation.
         """
-        import secrets
-
-        # Invalidate any existing unused tokens for this user
         self.search([("user_id", "=", user.id), ("used", "=", False)]).write(
             {"used": True}
         )
 
-        token_str = secrets.token_urlsafe(48)
+        token_str = _secrets.token_urlsafe(48)
         expires = fields.Datetime.now() + timedelta(hours=24)
 
         self.create(
@@ -79,3 +81,17 @@ class CleanPasswordResetToken(models.Model):
         if record.expires_at < fields.Datetime.now():
             return None
         return record
+
+    @api.model
+    def _cleanup_expired(self):
+        """CRON job: delete expired or used tokens older than 48 hours."""
+        cutoff = fields.Datetime.now() - timedelta(hours=48)
+        old_tokens = self.search([
+            "|",
+            "&", ("used", "=", True), ("create_date", "<", cutoff),
+            "&", ("expires_at", "<", fields.Datetime.now()), ("create_date", "<", cutoff),
+        ])
+        count = len(old_tokens)
+        if count:
+            old_tokens.unlink()
+        return count

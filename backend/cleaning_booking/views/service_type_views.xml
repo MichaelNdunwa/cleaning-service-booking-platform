@@ -9,6 +9,8 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="code"/>
+                <field name="category"/>
+                <field name="bedrooms" invisible="category != 'property'"/>
                 <field name="base_price"/>
                 <field name="active"/>
             </list>
@@ -31,9 +33,11 @@
                     <group>
                         <group>
                             <field name="code"/>
-                            <field name="base_price"/>
+                            <field name="category"/>
+                            <field name="bedrooms" invisible="category != 'property'"/>
                         </group>
                         <group>
+                            <field name="base_price"/>
                             <field name="sequence"/>
                             <field name="active"/>
                         </group>
