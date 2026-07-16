@@ -12,33 +12,24 @@ interface Props {
     addons: Addon[];
 }
 
-const CLEAN_TYPE_ADDON_CODE: Record<string, string | null> = {
-    "Standard": null,
-    "Deep Clean": "deep_clean",
-    "Moving In/Out": "end_of_tenancy",
-    "Post Construction": "post_construction",
-};
-
-export default function RequirementsStep({ data, updateData, onNext, addons }: Props) {
+export default function RequirementsStep({ data, updateData, onNext, services }: Props) {
     const bedrooms = ["Studio", "1", "2", "3", "4", "5"];
     const bathrooms = ["1", "2", "3", "4", "5"];
+
     const cleanTypes = [
         { id: "Standard", label: "Standard", time: "2 hours" },
-        { id: "Deep Clean", label: "Deep Clean", time: "2.5-3 hours" },
-        { id: "Moving In/Out", label: "Moving In/Out", time: "4.5-5 hours" },
-        { id: "Post Construction", label: "Post Construction", time: "4.5-5 hours" },
+        ...services
+            .filter((s) => s.category === "clean_level")
+            .sort((a, b) => a.base_price - b.base_price)
+            .map((s) => ({
+                id: s.name,
+                label: s.name,
+                time: s.base_price <= 40 ? "2.5-3 hours" : "4.5-5 hours",
+            })),
     ];
 
     const handleCleanType = (typeId: string) => {
-        const addonCode = CLEAN_TYPE_ADDON_CODE[typeId];
-        let newExtras: string[] = [];
-        if (addonCode) {
-            const addon = addons.find((a) => a.code === addonCode);
-            if (addon) {
-                newExtras = [String(addon.id)];
-            }
-        }
-        updateData({ cleanType: typeId, extras: newExtras });
+        updateData({ cleanType: typeId });
     };
 
     const OptionButton = ({

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { BookingState } from "@/app/booking/page";
+import { TOTAL_STEPS } from "@/lib/constants";
 
 interface BookingHeaderProps {
     step: number;
@@ -9,7 +10,7 @@ interface BookingHeaderProps {
 }
 
 export default function BookingHeader({ step, data }: BookingHeaderProps) {
-    const progressWidth = `${(step / 5) * 100}%`;
+    const progressWidth = `${(step / TOTAL_STEPS) * 100}%`;
 
     return (
         <header className="fixed top-0 left-0 right-0 h-[88px] bg-white shadow-sm z-50 flex">

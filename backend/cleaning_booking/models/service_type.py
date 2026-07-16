@@ -11,6 +11,12 @@ class CleanServiceType(models.Model):
     code = fields.Char(string="Code", required=True)
     description = fields.Text(string="Description")
     base_price = fields.Float(string="Base Price", required=True, digits=(10, 2))
+    category = fields.Selection([
+        ("property", "Property Type"),
+        ("clean_level", "Clean Level"),
+        ("specialty", "Specialty"),
+    ], string="Category", required=True, default="property")
+    bedrooms = fields.Integer(string="Bedrooms", help="Number of bedrooms for property types. 0=Studio.")
     sequence = fields.Integer(string="Sequence", default=10)
     active = fields.Boolean(string="Active", default=True)
     image = fields.Binary(string="Image", attachment=True)

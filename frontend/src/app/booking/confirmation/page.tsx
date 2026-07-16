@@ -7,8 +7,9 @@ import Link from "next/link";
 import { getBooking } from "@/lib/api";
 import type { Booking } from "@/lib/types";
 
-function ConfirmationContent() {
-    const searchParams = useSearchParams();
+const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "Shield Cleaning";
+
+function ConfirmationContent() {    const searchParams = useSearchParams();
     const bookingId = searchParams.get("id");
 
     const [booking, setBooking] = useState<Booking | null>(null);
@@ -75,7 +76,7 @@ function ConfirmationContent() {
                 Booking Confirmed!
             </h1>
             <p className="text-[#9CA3AF] text-[15px] mb-8 text-center max-w-md">
-                Thank you for booking with Shield Cleaning. Your booking reference is{" "}
+                Thank you for booking with {COMPANY_NAME}. Your booking reference is{" "}
                 <span className="font-bold text-[#0B1536]">{booking.reference}</span>.
             </p>
 

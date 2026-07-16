@@ -6,6 +6,8 @@ export interface ServiceType {
     code: string;
     description: string;
     base_price: number;
+    category: "property" | "clean_level" | "specialty";
+    bedrooms: number | null;
 }
 
 export interface Addon {

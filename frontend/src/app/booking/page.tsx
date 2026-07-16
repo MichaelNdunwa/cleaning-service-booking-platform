@@ -17,6 +17,7 @@ export interface BookingState {
     bedrooms: string | number;
     bathrooms: string | number;
     cleanType: string;
+    cleanTypeId: number | null;
     date: string;
     time: string;
     timeSlotId: number | null;
@@ -41,6 +42,7 @@ const initialState: BookingState = {
     bedrooms: "",
     bathrooms: "",
     cleanType: "",
+    cleanTypeId: null,
     date: "",
     time: "",
     timeSlotId: null,
@@ -62,17 +64,9 @@ const initialState: BookingState = {
 };
 
 function getServiceTypeByBedrooms(bedrooms: string | number, services: ServiceType[]): ServiceType | undefined {
-    const codeMap: Record<string, string> = {
-        "Studio": "studio",
-        "1": "1bed",
-        "2": "2bed",
-        "3": "3bed",
-        "4": "4bed",
-        "5": "4bed",
-    };
-    const code = codeMap[String(bedrooms)];
-    if (!code) return undefined;
-    return services.find((s) => s.code === code);
+    const bedNum = String(bedrooms) === "Studio" ? 0 : parseInt(String(bedrooms), 10);
+    if (isNaN(bedNum)) return undefined;
+    return services.find((s) => s.category === "property" && s.bedrooms === bedNum);
 }
 
 function BookingWizard() {
@@ -140,6 +134,10 @@ function BookingWizard() {
                 throw new Error("Could not determine service type. Please check your selections.");
             }
 
+            const cleanTypeSvc = data.cleanType
+                ? services.find((s) => s.category === "clean_level" && s.name === data.cleanType)
+                : null;
+
             const frequencyMap: Record<string, string> = {
                 "Onetime": "one_time",
                 "Weekly": "weekly",
@@ -185,6 +183,7 @@ function BookingWizard() {
                     phone: data.phone || undefined,
                 },
                 service_type_id: svc.id,
+                clean_type_id: cleanTypeSvc?.id || undefined,
                 booking_date: data.date,
                 time_slot_id: data.timeSlotId!,
                 frequency: freq as "one_time" | "weekly" | "fortnightly" | "monthly",

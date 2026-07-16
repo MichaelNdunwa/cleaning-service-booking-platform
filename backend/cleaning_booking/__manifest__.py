@@ -27,6 +27,7 @@
         "security/cleaning_security.xml",
         "security/ir.model.access.csv",
         # Data
+        "data/property_types.xml",
         "data/service_types.xml",
         "data/addons.xml",
         "data/time_slots.xml",

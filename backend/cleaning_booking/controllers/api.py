@@ -472,6 +472,8 @@ class CleaningAPI(http.Controller):
                 "code": s.code,
                 "description": s.description or "",
                 "base_price": s.base_price,
+                "category": s.category,
+                "bedrooms": s.bedrooms,
             }
             for s in services
         ]
@@ -589,6 +591,10 @@ class CleaningAPI(http.Controller):
             "notes": data.get("notes", ""),
         }
 
+        clean_type_id = data.get("clean_type_id")
+        if clean_type_id:
+            vals["clean_type_id"] = int(clean_type_id)
+
         addon_ids = data.get("addon_ids", [])
         if addon_ids:
             vals["addon_ids"] = [(6, 0, [int(a) for a in addon_ids])]
@@ -628,6 +634,10 @@ class CleaningAPI(http.Controller):
                 "id": booking.service_type_id.id,
                 "name": booking.service_type_id.name,
             },
+            "clean_type": {
+                "id": booking.clean_type_id.id,
+                "name": booking.clean_type_id.name,
+            } if booking.clean_type_id else None,
             "addons": [
                 {"id": a.id, "name": a.name, "price": a.price}
                 for a in booking.addon_ids

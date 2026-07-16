@@ -3,6 +3,7 @@
 import { BookingState } from "@/app/booking/page";
 import Button from "@/components/ui/Button";
 import type { Addon } from "@/lib/types";
+import { FREQUENCIES } from "@/lib/constants";
 
 interface Props {
     data: BookingState;
@@ -12,12 +13,7 @@ interface Props {
 }
 
 export default function DetailsStep({ data, updateData, onNext, addons }: Props) {
-    const frequencies = [
-        { id: "Onetime", label: "Onetime", discount: null },
-        { id: "Weekly", label: "Weekly", discount: "20% OFF" },
-        { id: "Every 2 weeks", label: "Every 2 weeks", discount: "15% OFF" },
-        { id: "Every 4 Weeks", label: "Every 4 Weeks", discount: "10% OFF" },
-    ];
+    const frequencies = FREQUENCIES;
 
     const entryMethods = ["Someone is Home", "Doorman", "Hidden Key", "Others"];
 

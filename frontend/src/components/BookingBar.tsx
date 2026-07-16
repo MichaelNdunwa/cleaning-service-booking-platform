@@ -3,37 +3,33 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import clsx from "clsx";
+import { getServices } from "@/lib/api";
+import type { ServiceType } from "@/lib/types";
 
 type Option = { label: string; value: string };
 
-const OPTIONS: { bed: Option[]; bath: Option[]; standard: Option[] } = {
-    bed: [
-        { label: "1 Bedroom", value: "1" },
-        { label: "2 Bedrooms", value: "2" },
-        { label: "3 Bedrooms", value: "3" },
-        { label: "4 Bedrooms", value: "4" },
-        { label: "5+ Bedrooms", value: "5" },
-    ],
-    bath: [
-        { label: "1 Bathroom", value: "1" },
-        { label: "2 Bathrooms", value: "2" },
-        { label: "3 Bathrooms", value: "3" },
-        { label: "4+ Bathrooms", value: "4" },
-    ],
-    standard: [
-        { label: "Standard", value: "Standard" },
-        { label: "Deep Clean", value: "Deep Clean" },
-    ],
-};
+const BATH_OPTIONS: Option[] = [
+    { label: "1 Bathroom", value: "1" },
+    { label: "2 Bathrooms", value: "2" },
+    { label: "3 Bathrooms", value: "3" },
+    { label: "4+ Bathrooms", value: "4" },
+];
 
 export default function BookingBar({ className }: { className?: string }) {
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const [services, setServices] = useState<ServiceType[]>([]);
 
     const [bed, setBed] = useState("");
     const [bath, setBath] = useState("");
     const [standard, setStandard] = useState("");
 
     const barRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        getServices()
+            .then((res) => setServices(res.services))
+            .catch(() => {});
+    }, []);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -44,6 +40,26 @@ export default function BookingBar({ className }: { className?: string }) {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    const bedOptions: Option[] = services
+        .filter((s) => s.category === "property" && s.bedrooms !== null)
+        .sort((a, b) => (a.bedrooms ?? 0) - (b.bedrooms ?? 0))
+        .map((s) => ({
+            label: s.bedrooms === 0 ? "Studio" : `${s.bedrooms}+ Bedroom${(s.bedrooms ?? 0) > 1 ? "s" : ""}`,
+            value: String(s.bedrooms),
+        }));
+
+    const cleanOptions: Option[] = [
+        { label: "Standard", value: "Standard" },
+        ...services
+            .filter((s) => s.category === "clean_level")
+            .sort((a, b) => a.base_price - b.base_price)
+            .map((s) => ({ label: s.name, value: s.name })),
+    ];
+
+    const minPrice = services
+        .filter((s) => s.category === "property")
+        .reduce((min, s) => Math.min(min, s.base_price), Infinity);
 
     const Dropdown = ({ id, value, placeholder, options, setter, isFirst }: {
         id: string;
@@ -121,22 +137,24 @@ export default function BookingBar({ className }: { className?: string }) {
         return `/booking${qs ? `?${qs}` : ""}`;
     };
 
+    const priceText = minPrice < Infinity ? `Booking from $${minPrice}` : "Book Now";
+
     return (
         <div className={`max-w-4xl mx-auto relative z-[100] ${className || ""}`} ref={barRef}>
             {/* Desktop & Tablet View */}
             <div className="hidden md:flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-neutral-100 relative z-[100]">
 
-                <Dropdown id="bed" value={bed} placeholder="Select Bedrooms" options={OPTIONS.bed} setter={setBed} isFirst={true} />
+                <Dropdown id="bed" value={bed} placeholder="Select Bedrooms" options={bedOptions} setter={setBed} isFirst={true} />
 
-                <Dropdown id="bath" value={bath} placeholder="Select Bathrooms" options={OPTIONS.bath} setter={setBath} />
+                <Dropdown id="bath" value={bath} placeholder="Select Bathrooms" options={BATH_OPTIONS} setter={setBath} />
 
-                <Dropdown id="standard" value={standard} placeholder="Select Service Type" options={OPTIONS.standard} setter={setStandard} />
+                <Dropdown id="standard" value={standard} placeholder="Select Service Type" options={cleanOptions} setter={setStandard} />
 
                 <Link
                     href={buildBookingUrl()}
                     className="px-7 md:px-4 lg:px-7 py-[18px] h-full flex justify-center items-center bg-[#1E78FF] text-white text-[15px] font-semibold whitespace-nowrap hover:bg-blue-600 transition-colors duration-200 rounded-r-xl relative z-10"
                 >
-                    Booking from $80
+                    {priceText}
                 </Link>
             </div>
 
@@ -146,7 +164,7 @@ export default function BookingBar({ className }: { className?: string }) {
                     href={buildBookingUrl()}
                     className="flex justify-center items-center w-full py-[20px] bg-[#1E78FF] text-white text-[18px] font-bold rounded-[10px] hover:bg-blue-600 transition-colors shadow-md"
                 >
-                    Booking from $80
+                    {priceText}
                 </Link>
             </div>
         </div>

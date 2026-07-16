@@ -34,6 +34,11 @@ class CleanBooking(models.Model):
         required=True,
         tracking=True,
     )
+    clean_type_id = fields.Many2one(
+        "clean.service.type",
+        string="Clean Type",
+        tracking=True,
+    )
     addon_ids = fields.Many2many(
         "clean.addon",
         "clean_booking_addon_rel",
@@ -135,14 +140,15 @@ class CleanBooking(models.Model):
     internal_notes = fields.Text(string="Internal Notes")
 
     # ── Computed Fields ──
-    @api.depends("service_type_id.base_price", "addon_ids.price")
+    @api.depends("service_type_id.base_price", "clean_type_id.base_price", "addon_ids.price")
     def _compute_amounts(self):
         for booking in self:
             base = booking.service_type_id.base_price if booking.service_type_id else 0.0
+            clean = booking.clean_type_id.base_price if booking.clean_type_id else 0.0
             addons = sum(addon.price for addon in booking.addon_ids)
             booking.base_amount = base
-            booking.addons_amount = addons
-            booking.amount_total = base + addons
+            booking.addons_amount = clean + addons
+            booking.amount_total = base + clean + addons
 
     # ── Sequence ──
     @api.model_create_multi
