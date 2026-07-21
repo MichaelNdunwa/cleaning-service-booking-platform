@@ -8,29 +8,48 @@ from .common import CleaningAPIBase
 
 
 class CleaningMainAPI(CleaningAPIBase, http.Controller):
-    """Public read-only endpoints for services, add-ons, and availability."""
+    """Public read-only endpoints for pricing, clean levels, add-ons, and availability."""
 
-    # ── Service Types ──
+    # ── Pricing Plans ──
 
-    @http.route("/api/v1/services", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False)
-    def get_services(self, **kwargs):
+    @http.route("/api/v1/pricing", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False)
+    def get_pricing(self, **kwargs):
         if request.httprequest.method == "OPTIONS":
             return self._json_response({})
 
-        services = request.env["clean.service.type"].sudo().search([("active", "=", True)])
+        plans = request.env["clean.pricing"].sudo().search([("active", "=", True)])
         data = [
             {
-                "id": s.id,
-                "name": s.name,
-                "code": s.code,
-                "description": s.description or "",
-                "base_price": s.base_price,
-                "category": s.category,
-                "bedrooms": s.bedrooms,
+                "id": p.id,
+                "name": p.name,
+                "code": p.code,
+                "pricing_type": p.pricing_type,
+                "bedrooms": p.bedrooms,
+                "base_price": p.base_price,
             }
-            for s in services
+            for p in plans
         ]
-        return self._json_response({"services": data})
+        return self._json_response({"pricing": data})
+
+    # ── Clean Levels ──
+
+    @http.route("/api/v1/levels", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False)
+    def get_levels(self, **kwargs):
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
+        levels = request.env["clean.level"].sudo().search([("active", "=", True)])
+        data = [
+            {
+                "id": l.id,
+                "name": l.name,
+                "code": l.code,
+                "description": l.description or "",
+                "base_price": l.base_price,
+            }
+            for l in levels
+        ]
+        return self._json_response({"levels": data})
 
     # ── Add-ons ──
 

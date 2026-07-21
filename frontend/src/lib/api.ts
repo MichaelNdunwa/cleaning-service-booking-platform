@@ -1,5 +1,6 @@
 import type {
-    ServicesResponse,
+    PricingResponse,
+    LevelsResponse,
     AddonsResponse,
     AvailabilityResponse,
     BookingResponse,
@@ -88,9 +89,14 @@ export async function resetPassword(payload: ResetPasswordPayload): Promise<Auth
     });
 }
 
-/* ── Service Types ── */
-export async function getServices(): Promise<ServicesResponse> {
-    return apiFetch<ServicesResponse>("/api/v1/services");
+/* ── Pricing ── */
+export async function getPricing(): Promise<PricingResponse> {
+    return apiFetch<PricingResponse>("/api/v1/pricing");
+}
+
+/* ── Clean Levels ── */
+export async function getCleanLevels(): Promise<LevelsResponse> {
+    return apiFetch<LevelsResponse>("/api/v1/levels");
 }
 
 /* ── Add-ons ── */
@@ -100,13 +106,9 @@ export async function getAddons(): Promise<AddonsResponse> {
 
 /* ── Availability ── */
 export async function getAvailability(
-    date: string,
-    serviceTypeId?: number
+    date: string
 ): Promise<AvailabilityResponse> {
     const params = new URLSearchParams({ date });
-    if (serviceTypeId) {
-        params.set("service_type_id", String(serviceTypeId));
-    }
     return apiFetch<AvailabilityResponse>(
         `/api/v1/availability?${params.toString()}`
     );

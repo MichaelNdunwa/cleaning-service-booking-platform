@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { getServices } from "@/lib/api";
-import type { ServiceType } from "@/lib/types";
+import { getPricing, getCleanLevels } from "@/lib/api";
+import type { PricingPlan, CleanLevel } from "@/lib/types";
 
 type Option = { label: string; value: string };
 
@@ -17,17 +17,21 @@ const BATH_OPTIONS: Option[] = [
 
 export default function BookingBar({ className }: { className?: string }) {
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-    const [services, setServices] = useState<ServiceType[]>([]);
+    const [pricing, setPricing] = useState<PricingPlan[]>([]);
+    const [levels, setLevels] = useState<CleanLevel[]>([]);
 
     const [bed, setBed] = useState("");
     const [bath, setBath] = useState("");
-    const [standard, setStandard] = useState("");
+    const [cleanLevel, setCleanLevel] = useState("");
 
     const barRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        getServices()
-            .then((res) => setServices(res.services))
+        getPricing()
+            .then((res) => setPricing(res.pricing))
+            .catch(() => {});
+        getCleanLevels()
+            .then((res) => setLevels(res.levels))
             .catch(() => {});
     }, []);
 
@@ -41,25 +45,24 @@ export default function BookingBar({ className }: { className?: string }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const bedOptions: Option[] = services
-        .filter((s) => s.category === "property" && s.bedrooms !== null)
+    const bedOptions: Option[] = pricing
+        .filter((p) => p.pricing_type === "bedroom" && p.bedrooms !== null)
         .sort((a, b) => (a.bedrooms ?? 0) - (b.bedrooms ?? 0))
-        .map((s) => ({
-            label: s.bedrooms === 0 ? "Studio" : `${s.bedrooms}+ Bedroom${(s.bedrooms ?? 0) > 1 ? "s" : ""}`,
-            value: String(s.bedrooms),
+        .map((p) => ({
+            label: p.bedrooms === 0 ? "Studio" : `${p.bedrooms}+ Bedroom${(p.bedrooms ?? 0) > 1 ? "s" : ""}`,
+            value: String(p.bedrooms),
         }));
 
-    const cleanOptions: Option[] = [
+    const levelOptions: Option[] = [
         { label: "Standard", value: "Standard" },
-        ...services
-            .filter((s) => s.category === "clean_level")
+        ...levels
             .sort((a, b) => a.base_price - b.base_price)
-            .map((s) => ({ label: s.name, value: s.name })),
+            .map((l) => ({ label: l.name, value: l.name })),
     ];
 
-    const minPrice = services
-        .filter((s) => s.category === "property")
-        .reduce((min, s) => Math.min(min, s.base_price), Infinity);
+    const minPrice = pricing
+        .filter((p) => p.pricing_type === "bedroom")
+        .reduce((min, p) => Math.min(min, p.base_price), Infinity);
 
     const Dropdown = ({ id, value, placeholder, options, setter, isFirst }: {
         id: string;
@@ -76,7 +79,7 @@ export default function BookingBar({ className }: { className?: string }) {
             <div
                 className={clsx(
                     "flex-1 relative",
-                    !isOpen && id !== "standard" && "border-b sm:border-b-0 sm:border-r border-neutral-100"
+                    !isOpen && id !== "cleanLevel" && "border-b sm:border-b-0 sm:border-r border-neutral-100"
                 )}
             >
                 <button
@@ -132,7 +135,7 @@ export default function BookingBar({ className }: { className?: string }) {
         const params = new URLSearchParams();
         if (bed) params.set("bedrooms", bed);
         if (bath) params.set("bathrooms", bath);
-        if (standard) params.set("cleanType", standard);
+        if (cleanLevel) params.set("cleanType", cleanLevel);
         const qs = params.toString();
         return `/booking${qs ? `?${qs}` : ""}`;
     };
@@ -148,7 +151,7 @@ export default function BookingBar({ className }: { className?: string }) {
 
                 <Dropdown id="bath" value={bath} placeholder="Select Bathrooms" options={BATH_OPTIONS} setter={setBath} />
 
-                <Dropdown id="standard" value={standard} placeholder="Select Service Type" options={cleanOptions} setter={setStandard} />
+                <Dropdown id="cleanLevel" value={cleanLevel} placeholder="Select Clean Level" options={levelOptions} setter={setCleanLevel} />
 
                 <Link
                     href={buildBookingUrl()}

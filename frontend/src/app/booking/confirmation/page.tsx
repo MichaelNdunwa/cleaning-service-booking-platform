@@ -99,7 +99,7 @@ function ConfirmationContent() {    const searchParams = useSearchParams();
                     </div>
                     <div className="flex justify-between">
                         <span className="text-neutral-400">Service</span>
-                        <span className="font-semibold text-[#0B1536]">{booking.service_type.name}</span>
+                        <span className="font-semibold text-[#0B1536]">{booking.pricing.name}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="text-neutral-400">Address</span>

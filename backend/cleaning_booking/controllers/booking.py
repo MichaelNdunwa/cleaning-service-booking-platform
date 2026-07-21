@@ -46,14 +46,14 @@ class CleaningBookingAPI(CleaningAPIBase, http.Controller):
                 "email": booking.customer_email,
                 "phone": booking.customer_phone or "",
             },
-            "service_type": {
-                "id": booking.service_type_id.id,
-                "name": booking.service_type_id.name,
+            "pricing": {
+                "id": booking.pricing_id.id,
+                "name": booking.pricing_id.name,
             },
-            "clean_type": {
-                "id": booking.clean_type_id.id,
-                "name": booking.clean_type_id.name,
-            } if booking.clean_type_id else None,
+            "clean_level": {
+                "id": booking.clean_level_id.id,
+                "name": booking.clean_level_id.name,
+            } if booking.clean_level_id else None,
             "addons": [
                 {"id": a.id, "name": a.name, "price": a.price}
                 for a in booking.addon_ids
@@ -92,7 +92,7 @@ class CleaningBookingAPI(CleaningAPIBase, http.Controller):
         if err:
             return err
 
-        required = ["service_type_id", "booking_date", "time_slot_id"]
+        required = ["pricing_id", "booking_date", "time_slot_id"]
         missing = [f for f in required if f not in data]
         if missing:
             return self._error_response(f"Missing required fields: {', '.join(missing)}")
@@ -112,7 +112,7 @@ class CleaningBookingAPI(CleaningAPIBase, http.Controller):
 
         vals = {
             "customer_id": customer.id,
-            "service_type_id": int(data["service_type_id"]),
+            "pricing_id": int(data["pricing_id"]),
             "booking_date": booking_date,
             "time_slot_id": int(data["time_slot_id"]),
             "frequency": data.get("frequency", "one_time"),
@@ -126,9 +126,9 @@ class CleaningBookingAPI(CleaningAPIBase, http.Controller):
             "notes": data.get("notes", ""),
         }
 
-        clean_type_id = data.get("clean_type_id")
-        if clean_type_id:
-            vals["clean_type_id"] = int(clean_type_id)
+        clean_level_id = data.get("clean_level_id")
+        if clean_level_id:
+            vals["clean_level_id"] = int(clean_level_id)
 
         addon_ids = data.get("addon_ids", [])
         if addon_ids:

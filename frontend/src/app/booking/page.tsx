@@ -9,15 +9,16 @@ import DateStep from "@/components/booking/steps/DateStep";
 import TimeStep from "@/components/booking/steps/TimeStep";
 import DetailsStep from "@/components/booking/steps/DetailsStep";
 import PaymentStep from "@/components/booking/steps/PaymentStep";
-import { getServices, getAddons, createBooking, signup, login } from "@/lib/api";
+import { getPricing, getCleanLevels, getAddons, createBooking, signup, login } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import type { ServiceType, Addon } from "@/lib/types";
+import type { PricingPlan, CleanLevel, Addon } from "@/lib/types";
 
 export interface BookingState {
     bedrooms: string | number;
     bathrooms: string | number;
     cleanType: string;
-    cleanTypeId: number | null;
+    cleanLevelId: number | null;
+    pricingId: number | null;
     date: string;
     time: string;
     timeSlotId: number | null;
@@ -42,7 +43,8 @@ const initialState: BookingState = {
     bedrooms: "",
     bathrooms: "",
     cleanType: "",
-    cleanTypeId: null,
+    cleanLevelId: null,
+    pricingId: null,
     date: "",
     time: "",
     timeSlotId: null,
@@ -63,10 +65,10 @@ const initialState: BookingState = {
     contactPreference: "Text",
 };
 
-function getServiceTypeByBedrooms(bedrooms: string | number, services: ServiceType[]): ServiceType | undefined {
+function getPricingByBedrooms(bedrooms: string | number, pricing: PricingPlan[]): PricingPlan | undefined {
     const bedNum = String(bedrooms) === "Studio" ? 0 : parseInt(String(bedrooms), 10);
     if (isNaN(bedNum)) return undefined;
-    return services.find((s) => s.category === "property" && s.bedrooms === bedNum);
+    return pricing.find((p) => p.pricing_type === "bedroom" && p.bedrooms === bedNum);
 }
 
 function BookingWizard() {
@@ -80,14 +82,18 @@ function BookingWizard() {
         bathrooms: searchParams.get("bathrooms") || "",
         cleanType: searchParams.get("cleanType") || "",
     }));
-    const [services, setServices] = useState<ServiceType[]>([]);
+    const [pricing, setPricing] = useState<PricingPlan[]>([]);
+    const [cleanLevels, setCleanLevels] = useState<CleanLevel[]>([]);
     const [addons, setAddons] = useState<Addon[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
 
     useEffect(() => {
-        getServices()
-            .then((res) => setServices(res.services))
+        getPricing()
+            .then((res) => setPricing(res.pricing))
+            .catch(() => {});
+        getCleanLevels()
+            .then((res) => setCleanLevels(res.levels))
             .catch(() => {});
         getAddons()
             .then((res) => setAddons(res.addons))
@@ -99,8 +105,8 @@ function BookingWizard() {
     }, []);
 
     const computeSubTotal = useCallback((): number => {
-        const svc = getServiceTypeByBedrooms(data.bedrooms, services);
-        const basePrice = svc?.base_price ?? 0;
+        const plan = getPricingByBedrooms(data.bedrooms, pricing);
+        const basePrice = plan?.base_price ?? 0;
         let addonTotal = 0;
         for (const idStr of data.extras) {
             const aid = parseInt(idStr, 10);
@@ -108,12 +114,15 @@ function BookingWizard() {
             if (addon) addonTotal += addon.price;
         }
         return basePrice + addonTotal;
-    }, [data.bedrooms, data.extras, services, addons]);
+    }, [data.bedrooms, data.extras, pricing, addons]);
 
     useEffect(() => {
         const subTotal = computeSubTotal();
-        setData((prev) => ({ ...prev, subTotal }));
-    }, [computeSubTotal]);
+        setData((prev) => {
+            const plan = getPricingByBedrooms(prev.bedrooms, pricing);
+            return { ...prev, subTotal, pricingId: plan?.id ?? null };
+        });
+    }, [computeSubTotal, pricing]);
 
     const nextStep = () => {
         setSubmitError(null);
@@ -129,14 +138,10 @@ function BookingWizard() {
         setSubmitError(null);
 
         try {
-            const svc = getServiceTypeByBedrooms(data.bedrooms, services);
-            if (!svc) {
-                throw new Error("Could not determine service type. Please check your selections.");
+            const plan = getPricingByBedrooms(data.bedrooms, pricing);
+            if (!plan) {
+                throw new Error("Could not determine pricing. Please check your bedroom selection.");
             }
-
-            const cleanTypeSvc = data.cleanType
-                ? services.find((s) => s.category === "clean_level" && s.name === data.cleanType)
-                : null;
 
             const frequencyMap: Record<string, string> = {
                 "Onetime": "one_time",
@@ -182,8 +187,8 @@ function BookingWizard() {
                     email,
                     phone: data.phone || undefined,
                 },
-                service_type_id: svc.id,
-                clean_type_id: cleanTypeSvc?.id || undefined,
+                pricing_id: plan.id,
+                clean_level_id: data.cleanLevelId || undefined,
                 booking_date: data.date,
                 time_slot_id: data.timeSlotId!,
                 frequency: freq as "one_time" | "weekly" | "fortnightly" | "monthly",
@@ -265,7 +270,8 @@ function BookingWizard() {
                         data={data}
                         updateData={updateData}
                         onNext={nextStep}
-                        services={services}
+                        pricing={getPricingByBedrooms(data.bedrooms, pricing) || pricing[0]}
+                        cleanLevels={cleanLevels}
                         addons={addons}
                     />
                 )}

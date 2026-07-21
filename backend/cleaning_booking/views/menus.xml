@@ -25,21 +25,27 @@
         sequence="90"
         groups="cleaning_booking.group_cleaning_manager"/>
 
-    <menuitem id="menu_cleaning_service_types"
-        name="Service Types"
+    <menuitem id="menu_cleaning_pricing"
+        name="Pricing Plans"
         parent="menu_cleaning_config"
-        action="action_clean_service_type"
+        action="action_clean_pricing"
         sequence="10"/>
+
+    <menuitem id="menu_cleaning_levels"
+        name="Clean Levels"
+        parent="menu_cleaning_config"
+        action="action_clean_level"
+        sequence="20"/>
 
     <menuitem id="menu_cleaning_addons"
         name="Add-ons"
         parent="menu_cleaning_config"
         action="action_clean_addon"
-        sequence="20"/>
+        sequence="30"/>
 
     <menuitem id="menu_cleaning_time_slots"
         name="Time Slots"
         parent="menu_cleaning_config"
         action="action_clean_time_slot"
-        sequence="30"/>
+        sequence="40"/>
 </odoo>

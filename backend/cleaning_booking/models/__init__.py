@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from . import service_type
+from . import clean_level
+from . import pricing
 from . import addon
 from . import time_slot
 from . import booking

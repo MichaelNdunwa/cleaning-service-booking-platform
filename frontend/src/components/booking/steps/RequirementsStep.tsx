@@ -2,34 +2,40 @@
 
 import { BookingState } from "@/app/booking/page";
 import Button from "@/components/ui/Button";
-import type { ServiceType, Addon } from "@/lib/types";
+import type { PricingPlan, CleanLevel, Addon } from "@/lib/types";
 
 interface Props {
     data: BookingState;
     updateData: (updates: Partial<BookingState>) => void;
     onNext: () => void;
-    services: ServiceType[];
+    pricing: PricingPlan;
+    cleanLevels: CleanLevel[];
     addons: Addon[];
 }
 
-export default function RequirementsStep({ data, updateData, onNext, services }: Props) {
+export default function RequirementsStep({ data, updateData, onNext, pricing, cleanLevels }: Props) {
     const bedrooms = ["Studio", "1", "2", "3", "4", "5"];
     const bathrooms = ["1", "2", "3", "4", "5"];
 
     const cleanTypes = [
         { id: "Standard", label: "Standard", time: "2 hours" },
-        ...services
-            .filter((s) => s.category === "clean_level")
+        ...cleanLevels
             .sort((a, b) => a.base_price - b.base_price)
-            .map((s) => ({
-                id: s.name,
-                label: s.name,
-                time: s.base_price <= 40 ? "2.5-3 hours" : "4.5-5 hours",
+            .map((l) => ({
+                id: l.code || l.name,
+                label: l.name,
+                time: l.base_price <= 40 ? "2.5-3 hours" : "4.5-5 hours",
             })),
     ];
 
     const handleCleanType = (typeId: string) => {
-        updateData({ cleanType: typeId });
+        const matchedLevel = typeId === "Standard"
+            ? null
+            : cleanLevels.find((l) => (l.code || l.name) === typeId);
+        updateData({
+            cleanType: typeId,
+            cleanLevelId: matchedLevel?.id ?? null,
+        });
     };
 
     const OptionButton = ({

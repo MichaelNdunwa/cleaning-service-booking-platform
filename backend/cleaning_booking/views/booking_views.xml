@@ -8,8 +8,8 @@
             <list string="Bookings" decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-danger="state == 'cancelled'" decoration-warning="state == 'in_progress'">
                 <field name="name"/>
                 <field name="customer_id"/>
-                <field name="service_type_id"/>
-                <field name="clean_type_id"/>
+                <field name="pricing_id"/>
+                <field name="clean_level_id"/>
                 <field name="booking_date"/>
                 <field name="time_slot_id"/>
                 <field name="frequency"/>
@@ -48,8 +48,8 @@
                             <field name="customer_phone"/>
                         </group>
                         <group string="Service">
-                            <field name="service_type_id"/>
-                            <field name="clean_type_id"/>
+                            <field name="pricing_id"/>
+                            <field name="clean_level_id"/>
                             <field name="bedrooms"/>
                             <field name="bathrooms"/>
                             <field name="frequency"/>
@@ -65,7 +65,7 @@
                             <field name="extras_amount"/>
                             <field name="amount_total"/>
                             <field name="payment_reference"/>
-                            <field name="payment_status"/>
+                            <field name="payment_status" widget="badge"/>
                         </group>
                     </group>
                     <notebook>
@@ -102,11 +102,11 @@
             <kanban default_group_by="state" class="o_kanban_small_column">
                 <field name="name"/>
                 <field name="customer_id"/>
-                <field name="service_type_id"/>
+                <field name="pricing_id"/>
                 <field name="booking_date"/>
                 <field name="amount_total"/>
                 <field name="state"/>
-                <field name="payment_status"/>
+                <field name="payment_status" widget="badge"/>
                 <templates>
                     <t t-name="card">
                         <div class="oe_kanban_content">
@@ -117,13 +117,13 @@
                                 <field name="customer_id"/>
                             </div>
                             <div>
-                                <field name="service_type_id"/> — <field name="booking_date"/>
+                                <field name="pricing_id"/> — <field name="booking_date"/>
                             </div>
                             <div class="text-muted">
                                 $<field name="amount_total"/>
                             </div>
                             <div>
-                                <field name="payment_status" widget="badge"/>
+                                <field name="payment_status"/>
                             </div>
                         </div>
                     </t>
@@ -139,7 +139,7 @@
             <search string="Search Bookings">
                 <field name="name"/>
                 <field name="customer_id"/>
-                <field name="service_type_id"/>
+                <field name="pricing_id"/>
                 <field name="postcode"/>
                 <separator/>
                 <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
@@ -155,7 +155,7 @@
                 <filter name="filter_pending_payment" string="Pending Payment" domain="[('payment_status', '=', 'pending')]"/>
                 <group>
                     <filter name="groupby_state" string="Status" context="{'group_by': 'state'}"/>
-                    <filter name="groupby_service" string="Service Type" context="{'group_by': 'service_type_id'}"/>
+                    <filter name="groupby_pricing" string="Pricing Plan" context="{'group_by': 'pricing_id'}"/>
                     <filter name="groupby_date" string="Date" context="{'group_by': 'booking_date:month'}"/>
                     <filter name="groupby_customer" string="Customer" context="{'group_by': 'customer_id'}"/>
                     <filter name="groupby_frequency" string="Frequency" context="{'group_by': 'frequency'}"/>
@@ -168,7 +168,7 @@
     <record id="action_clean_booking" model="ir.actions.act_window">
         <field name="name">Bookings</field>
         <field name="res_model">clean.booking</field>
-        <field name="view_mode">kanban,list,form</field>
+        <field name="view_mode">list,kanban,form</field>
         <field name="search_view_id" ref="view_clean_booking_search"/>
         <field name="context">{'search_default_filter_draft': 0}</field>
         <field name="help" type="html">

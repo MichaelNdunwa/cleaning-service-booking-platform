@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Cleaning Service Booking",
-    "version": "19.0.1.2.0",
+    "version": "19.0.1.3.0",
     "category": "Services",
     "summary": "Cleaning service booking system with REST API for frontend integration",
     "description": """
         Cleaning Service Booking Platform
         ==================================
         - Customer booking management
-        - Service types and add-ons
+        - Pricing plans and clean levels
         - Time slot availability
         - REST API for Next.js frontend
         - Kanban workflow (Draft → Confirmed → Scheduled → In Progress → Done → Cancelled)
@@ -27,15 +27,16 @@
         "security/cleaning_security.xml",
         "security/ir.model.access.csv",
         # Data
-        "data/property_types.xml",
-        "data/service_types.xml",
+        "data/pricing.xml",
+        "data/clean_levels.xml",
         "data/addons.xml",
         "data/time_slots.xml",
         "data/cron_data.xml",
         # Views
         "views/booking_views.xml",
+        "views/pricing_views.xml",
+        "views/clean_level_views.xml",
         "views/addon_views.xml",
-        "views/service_type_views.xml",
         "views/time_slot_views.xml",
         "views/menus.xml",
         # Custom login

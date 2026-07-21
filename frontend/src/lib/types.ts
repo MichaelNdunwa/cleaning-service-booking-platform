@@ -1,13 +1,20 @@
 /* ── TypeScript types for the Cleaning Service Booking Platform ── */
 
-export interface ServiceType {
+export interface PricingPlan {
+    id: number;
+    name: string;
+    code: string;
+    pricing_type: "bedroom" | "flat";
+    bedrooms: number | null;
+    base_price: number;
+}
+
+export interface CleanLevel {
     id: number;
     name: string;
     code: string;
     description: string;
     base_price: number;
-    category: "property" | "clean_level" | "specialty";
-    bedrooms: number | null;
 }
 
 export interface Addon {
@@ -59,7 +66,8 @@ export interface Booking {
     id: number;
     reference: string;
     customer: Customer;
-    service_type: Pick<ServiceType, "id" | "name">;
+    pricing: Pick<PricingPlan, "id" | "name">;
+    clean_level: Pick<CleanLevel, "id" | "name"> | null;
     addons: Pick<Addon, "id" | "name" | "price">[];
     booking_date: string;
     time_slot: Pick<TimeSlot, "id" | "name">;
@@ -82,7 +90,8 @@ export interface CreateBookingPayload {
         email: string;
         phone?: string;
     };
-    service_type_id: number;
+    pricing_id: number;
+    clean_level_id?: number;
     booking_date: string;
     time_slot_id: number;
     frequency: Frequency;
@@ -102,8 +111,12 @@ export interface ApiResponse<T> {
     error?: string;
 }
 
-export interface ServicesResponse {
-    services: ServiceType[];
+export interface PricingResponse {
+    pricing: PricingPlan[];
+}
+
+export interface LevelsResponse {
+    levels: CleanLevel[];
 }
 
 export interface AddonsResponse {
@@ -162,7 +175,7 @@ export interface OAuthPayload {
     provider: "google" | "apple";
     email: string;
     name: string;
-    provider_uid: string; // the `sub` (subject) from the Google/Apple ID token
+    provider_uid: string;
 }
 
 export interface ForgotPasswordPayload {

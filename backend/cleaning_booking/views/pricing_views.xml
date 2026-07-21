@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- ── Pricing Tree View ── -->
+    <record id="view_clean_pricing_tree" model="ir.ui.view">
+        <field name="name">clean.pricing.tree</field>
+        <field name="model">clean.pricing</field>
+        <field name="arch" type="xml">
+            <list string="Pricing Plans" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="pricing_type"/>
+                <field name="bedrooms" invisible="pricing_type != 'bedroom'"/>
+                <field name="base_price"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ── Pricing Form View ── -->
+    <record id="view_clean_pricing_form" model="ir.ui.view">
+        <field name="name">clean.pricing.form</field>
+        <field name="model">clean.pricing</field>
+        <field name="arch" type="xml">
+            <form string="Pricing Plan">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Plan name..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="pricing_type"/>
+                            <field name="bedrooms" invisible="pricing_type != 'bedroom'"/>
+                        </group>
+                        <group>
+                            <field name="base_price"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Pricing Action ── -->
+    <record id="action_clean_pricing" model="ir.actions.act_window">
+        <field name="name">Pricing Plans</field>
+        <field name="res_model">clean.pricing</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define your pricing plans based on property size.
+            </p>
+        </field>
+    </record>
+</odoo>
