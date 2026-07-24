@@ -49,6 +49,7 @@ class CleaningBookingAPI(CleaningAPIBase, http.Controller):
             "pricing": {
                 "id": booking.pricing_id.id,
                 "name": booking.pricing_id.name,
+                "label": booking.pricing_id.label,
             },
             "clean_level": {
                 "id": booking.clean_level_id.id,
@@ -70,10 +71,23 @@ class CleaningBookingAPI(CleaningAPIBase, http.Controller):
                 "city": booking.city or "",
                 "postcode": booking.postcode or "",
             },
+            "access_method": {
+                "id": booking.access_method_id.id,
+                "name": booking.access_method_id.name,
+                "code": booking.access_method_id.code,
+            } if booking.access_method_id else None,
+            "access_instructions": booking.access_instructions or "",
+            "contact_preference": {
+                "id": booking.contact_preference_id.id,
+                "name": booking.contact_preference_id.name,
+                "code": booking.contact_preference_id.code,
+            } if booking.contact_preference_id else None,
             "bedrooms": booking.bedrooms,
             "bathrooms": booking.bathrooms,
             "base_amount": booking.base_amount,
             "extras_amount": booking.extras_amount,
+            "bathroom_amount": booking.bathroom_amount,
+            "discount_amount": booking.discount_amount,
             "amount_total": booking.amount_total,
             "state": booking.state,
             "payment_status": booking.payment_status,
@@ -133,6 +147,24 @@ class CleaningBookingAPI(CleaningAPIBase, http.Controller):
         addon_ids = data.get("addon_ids", [])
         if addon_ids:
             vals["addon_ids"] = [(6, 0, [int(a) for a in addon_ids])]
+
+        # Resolve access method code to FK
+        access_method_code = data.get("access_method_code")
+        if access_method_code:
+            method = request.env["clean.access.method"].sudo().search(
+                [("code", "=", access_method_code), ("active", "=", True)], limit=1
+            )
+            if method:
+                vals["access_method_id"] = method.id
+
+        # Resolve contact preference code to FK
+        contact_preference_code = data.get("contact_preference_code")
+        if contact_preference_code:
+            pref = request.env["clean.contact.preference"].sudo().search(
+                [("code", "=", contact_preference_code), ("active", "=", True)], limit=1
+            )
+            if pref:
+                vals["contact_preference_id"] = pref.id
 
         booking = request.env["clean.booking"].sudo().create(vals)
 

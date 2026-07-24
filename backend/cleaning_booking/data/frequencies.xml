@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="freq_one_time" model="clean.frequency">
+            <field name="name">One-time</field>
+            <field name="code">one_time</field>
+            <field name="description"></field>
+            <field name="discount_pct">0.0</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="freq_weekly" model="clean.frequency">
+            <field name="name">Weekly</field>
+            <field name="code">weekly</field>
+            <field name="description">Save 20% annually</field>
+            <field name="discount_pct">20.0</field>
+            <field name="sequence">2</field>
+        </record>
+
+        <record id="freq_fortnightly" model="clean.frequency">
+            <field name="name">Every 2 Weeks</field>
+            <field name="code">fortnightly</field>
+            <field name="description">Save 15% annually</field>
+            <field name="discount_pct">15.0</field>
+            <field name="sequence">3</field>
+        </record>
+
+        <record id="freq_monthly" model="clean.frequency">
+            <field name="name">Every 4 Weeks</field>
+            <field name="code">monthly</field>
+            <field name="description">Save 10% annually</field>
+            <field name="discount_pct">10.0</field>
+            <field name="sequence">4</field>
+        </record>
+    </data>
+</odoo>

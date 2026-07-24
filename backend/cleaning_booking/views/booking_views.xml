@@ -47,22 +47,28 @@
                             <field name="customer_email"/>
                             <field name="customer_phone"/>
                         </group>
-                        <group string="Service">
+                        <group string="Property Details">
                             <field name="pricing_id"/>
-                            <field name="clean_level_id"/>
                             <field name="bedrooms"/>
                             <field name="bathrooms"/>
                             <field name="frequency"/>
                         </group>
                     </group>
                     <group>
+                        <group string="Clean Type">
+                            <field name="clean_level_id"/>
+                        </group>
                         <group string="Schedule">
                             <field name="booking_date"/>
                             <field name="time_slot_id"/>
                         </group>
+                    </group>
+                    <group>
                         <group string="Payment">
                             <field name="base_amount"/>
                             <field name="extras_amount"/>
+                            <field name="bathroom_amount"/>
+                            <field name="discount_amount"/>
                             <field name="amount_total"/>
                             <field name="payment_reference"/>
                             <field name="payment_status" widget="badge"/>
@@ -80,7 +86,13 @@
                                 <field name="postcode"/>
                             </group>
                             <group>
+                                <field name="access_method_id"/>
                                 <field name="access_instructions"/>
+                            </group>
+                        </page>
+                        <page string="Contact" name="contact">
+                            <group>
+                                <field name="contact_preference_id"/>
                             </group>
                         </page>
                         <page string="Notes" name="notes">

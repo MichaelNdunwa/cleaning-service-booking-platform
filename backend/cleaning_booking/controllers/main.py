@@ -22,6 +22,7 @@ class CleaningMainAPI(CleaningAPIBase, http.Controller):
             {
                 "id": p.id,
                 "name": p.name,
+                "label": p.label,
                 "code": p.code,
                 "pricing_type": p.pricing_type,
                 "bedrooms": p.bedrooms,
@@ -71,6 +72,91 @@ class CleaningMainAPI(CleaningAPIBase, http.Controller):
             for a in addons
         ]
         return self._json_response({"addons": data})
+
+    # ── Unified Catalog ──
+
+    @http.route("/api/v1/catalog", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False)
+    def get_catalog(self, **kwargs):
+        if request.httprequest.method == "OPTIONS":
+            return self._json_response({})
+
+        pricing = request.env["clean.pricing"].sudo().search([("active", "=", True)])
+        levels = request.env["clean.level"].sudo().search([("active", "=", True)])
+        addons = request.env["clean.addon"].sudo().search([("active", "=", True)])
+        frequencies = request.env["clean.frequency"].sudo().search([("active", "=", True)])
+        bathroom_options = request.env["clean.bathroom.option"].sudo().search([("active", "=", True)])
+        access_methods = request.env["clean.access.method"].sudo().search([("active", "=", True)])
+        contact_prefs = request.env["clean.contact.preference"].sudo().search([("active", "=", True)])
+
+        data = {
+            "pricing": [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "label": p.label,
+                    "code": p.code,
+                    "pricing_type": p.pricing_type,
+                    "bedrooms": p.bedrooms,
+                    "base_price": p.base_price,
+                }
+                for p in pricing
+            ],
+            "levels": [
+                {
+                    "id": l.id,
+                    "name": l.name,
+                    "code": l.code,
+                    "description": l.description or "",
+                    "base_price": l.base_price,
+                }
+                for l in levels
+            ],
+            "addons": [
+                {
+                    "id": a.id,
+                    "name": a.name,
+                    "code": a.code,
+                    "description": a.description or "",
+                    "price": a.price,
+                    "duration_delta": a.duration_delta,
+                }
+                for a in addons
+            ],
+            "frequencies": [
+                {
+                    "id": f.id,
+                    "name": f.name,
+                    "code": f.code,
+                    "discount_pct": f.discount_pct,
+                    "description": f.description or "",
+                }
+                for f in frequencies
+            ],
+            "bathroom_options": [
+                {
+                    "value": b.value,
+                    "name": b.name,
+                    "surcharge": b.surcharge,
+                }
+                for b in bathroom_options
+            ],
+            "access_methods": [
+                {
+                    "code": m.code,
+                    "name": m.name,
+                }
+                for m in access_methods
+            ],
+            "contact_preferences": [
+                {
+                    "code": c.code,
+                    "name": c.name,
+                }
+                for c in contact_prefs
+            ],
+        }
+
+        return self._json_response(data)
 
     # ── Availability ──
 

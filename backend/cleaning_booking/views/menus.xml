@@ -26,7 +26,7 @@
         groups="cleaning_booking.group_cleaning_manager"/>
 
     <menuitem id="menu_cleaning_pricing"
-        name="Pricing Plans"
+        name="Property Size Tiers"
         parent="menu_cleaning_config"
         action="action_clean_pricing"
         sequence="10"/>
@@ -48,4 +48,28 @@
         parent="menu_cleaning_config"
         action="action_clean_time_slot"
         sequence="40"/>
+
+    <menuitem id="menu_cleaning_frequencies"
+        name="Frequencies"
+        parent="menu_cleaning_config"
+        action="action_clean_frequency"
+        sequence="50"/>
+
+    <menuitem id="menu_cleaning_bathroom_options"
+        name="Bathroom Options"
+        parent="menu_cleaning_config"
+        action="action_clean_bathroom_option"
+        sequence="60"/>
+
+    <menuitem id="menu_cleaning_access_methods"
+        name="Access Methods"
+        parent="menu_cleaning_config"
+        action="action_clean_access_method"
+        sequence="70"/>
+
+    <menuitem id="menu_cleaning_contact_preferences"
+        name="Contact Preferences"
+        parent="menu_cleaning_config"
+        action="action_clean_contact_preference"
+        sequence="80"/>
 </odoo>

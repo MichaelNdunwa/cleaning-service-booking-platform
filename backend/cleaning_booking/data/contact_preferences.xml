@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="contact_text" model="clean.contact.preference">
+            <field name="name">Text Message</field>
+            <field name="code">text</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="contact_call" model="clean.contact.preference">
+            <field name="name">Phone Call</field>
+            <field name="code">call</field>
+            <field name="sequence">2</field>
+        </record>
+
+        <record id="contact_email" model="clean.contact.preference">
+            <field name="name">Email</field>
+            <field name="code">email</field>
+            <field name="sequence">3</field>
+        </record>
+    </data>
+</odoo>

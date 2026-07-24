@@ -40,7 +40,7 @@ class CleanBooking(models.Model):
     # ── Service Details ──
     pricing_id = fields.Many2one(
         "clean.pricing",
-        string="Pricing Plan",
+        string="Property / Size",
         required=True,
         tracking=True,
     )
@@ -85,9 +85,19 @@ class CleanBooking(models.Model):
     address_line_2 = fields.Char(string="Address Line 2")
     city = fields.Char(string="City")
     postcode = fields.Char(string="Postcode")
+    access_method_id = fields.Many2one(
+        "clean.access.method",
+        string="Access Method",
+    )
     access_instructions = fields.Text(
         string="Access Instructions",
         help="How the cleaner can access the property (key, doorbell, etc.)",
+    )
+
+    # ── Contact Preference ──
+    contact_preference_id = fields.Many2one(
+        "clean.contact.preference",
+        string="Preferred Contact",
     )
 
     # ── Property Details ──
@@ -103,6 +113,18 @@ class CleanBooking(models.Model):
     )
     extras_amount = fields.Float(
         string="Extras Amount",
+        digits=(10, 2),
+        compute="_compute_amounts",
+        store=True,
+    )
+    bathroom_amount = fields.Float(
+        string="Bathroom Surcharge",
+        digits=(10, 2),
+        compute="_compute_amounts",
+        store=True,
+    )
+    discount_amount = fields.Float(
+        string="Frequency Discount",
         digits=(10, 2),
         compute="_compute_amounts",
         store=True,
@@ -150,15 +172,47 @@ class CleanBooking(models.Model):
     internal_notes = fields.Text(string="Internal Notes")
 
     # ── Computed Fields ──
-    @api.depends("pricing_id.base_price", "clean_level_id.base_price", "addon_ids.price")
+    @api.depends(
+        "pricing_id.base_price",
+        "clean_level_id.base_price",
+        "addon_ids.price",
+        "bathrooms",
+        "frequency",
+    )
     def _compute_amounts(self):
+        FreqModel = self.env["clean.frequency"]
+        BathModel = self.env["clean.bathroom.option"]
+
         for booking in self:
+            # 1. Bedroom base price
             base = booking.pricing_id.base_price if booking.pricing_id else 0.0
+
+            # 2. Clean level surcharge
             clean = booking.clean_level_id.base_price if booking.clean_level_id else 0.0
+
+            # 3. Add-ons
             addons = sum(addon.price for addon in booking.addon_ids)
+
+            # 4. Bathroom surcharge — look up by integer value
+            bath_opt = BathModel.search(
+                [("value", "=", booking.bathrooms), ("active", "=", True)], limit=1
+            )
+            bath = bath_opt.surcharge if bath_opt else 0.0
+
+            subtotal = base + clean + addons + bath
+
+            # 5. Frequency discount — applied to the full subtotal
+            freq_rec = FreqModel.search(
+                [("code", "=", booking.frequency), ("active", "=", True)], limit=1
+            )
+            discount_pct = freq_rec.discount_pct if freq_rec else 0.0
+            discount = round(subtotal * (discount_pct / 100.0), 2)
+
             booking.base_amount = base
-            booking.extras_amount = clean + addons
-            booking.amount_total = base + clean + addons
+            booking.extras_amount = clean + addons + bath
+            booking.bathroom_amount = bath
+            booking.discount_amount = discount
+            booking.amount_total = subtotal - discount
 
     # ── Sequence ──
     @api.model_create_multi
