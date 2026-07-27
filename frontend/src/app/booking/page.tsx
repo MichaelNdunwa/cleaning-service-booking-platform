@@ -9,9 +9,9 @@ import DateStep from "@/components/booking/steps/DateStep";
 import TimeStep from "@/components/booking/steps/TimeStep";
 import DetailsStep from "@/components/booking/steps/DetailsStep";
 import PaymentStep from "@/components/booking/steps/PaymentStep";
-import { getPricing, getCleanLevels, getAddons, createBooking, signup, login } from "@/lib/api";
+import { getCatalog, createBooking, signup, login } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import type { PricingPlan, CleanLevel, Addon } from "@/lib/types";
+import type { CatalogResponse, PricingPlan } from "@/lib/types";
 
 export interface BookingState {
     bedrooms: string | number;
@@ -30,6 +30,7 @@ export interface BookingState {
     petDetails: string;
     notes: string;
     frequency: string;
+    frequencyCode: string;
     subTotal: number;
     fullName: string;
     email: string;
@@ -37,6 +38,7 @@ export interface BookingState {
     password: string;
     confirmPassword: string;
     contactPreference: string;
+    contactPreferenceCode: string;
 }
 
 const initialState: BookingState = {
@@ -56,6 +58,7 @@ const initialState: BookingState = {
     petDetails: "",
     notes: "",
     frequency: "",
+    frequencyCode: "one_time",
     subTotal: 0,
     fullName: "",
     email: "",
@@ -63,6 +66,7 @@ const initialState: BookingState = {
     password: "",
     confirmPassword: "",
     contactPreference: "Text",
+    contactPreferenceCode: "text",
 };
 
 function getPricingByBedrooms(bedrooms: string | number, pricing: PricingPlan[]): PricingPlan | undefined {
@@ -82,21 +86,13 @@ function BookingWizard() {
         bathrooms: searchParams.get("bathrooms") || "",
         cleanType: searchParams.get("cleanType") || "",
     }));
-    const [pricing, setPricing] = useState<PricingPlan[]>([]);
-    const [cleanLevels, setCleanLevels] = useState<CleanLevel[]>([]);
-    const [addons, setAddons] = useState<Addon[]>([]);
+    const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
 
     useEffect(() => {
-        getPricing()
-            .then((res) => setPricing(res.pricing))
-            .catch(() => {});
-        getCleanLevels()
-            .then((res) => setCleanLevels(res.levels))
-            .catch(() => {});
-        getAddons()
-            .then((res) => setAddons(res.addons))
+        getCatalog()
+            .then((res) => setCatalog(res))
             .catch(() => {});
     }, []);
 
@@ -105,24 +101,42 @@ function BookingWizard() {
     }, []);
 
     const computeSubTotal = useCallback((): number => {
-        const plan = getPricingByBedrooms(data.bedrooms, pricing);
+        if (!catalog) return 0;
+        const plan = getPricingByBedrooms(data.bedrooms, catalog.pricing);
         const basePrice = plan?.base_price ?? 0;
+
+        const cleanLevel = data.cleanLevelId
+            ? catalog.levels.find((l) => l.id === data.cleanLevelId)
+            : null;
+        const cleanSurcharge = cleanLevel?.base_price ?? 0;
+
         let addonTotal = 0;
         for (const idStr of data.extras) {
             const aid = parseInt(idStr, 10);
-            const addon = addons.find((a) => a.id === aid);
+            const addon = catalog.addons.find((a) => a.id === aid);
             if (addon) addonTotal += addon.price;
         }
-        return basePrice + addonTotal;
-    }, [data.bedrooms, data.extras, pricing, addons]);
+
+        const bathOpt = catalog.bathroom_options.find((b) => b.value === parseInt(String(data.bathrooms), 10));
+        const bathSurcharge = bathOpt?.surcharge ?? 0;
+
+        const subtotal = basePrice + cleanSurcharge + addonTotal + bathSurcharge;
+
+        const freqRec = catalog.frequencies.find((f) => f.code === data.frequencyCode);
+        const discountPct = freqRec?.discount_pct ?? 0;
+        const discount = Math.round(subtotal * (discountPct / 100) * 100) / 100;
+
+        return subtotal - discount;
+    }, [data.bedrooms, data.extras, data.cleanLevelId, data.bathrooms, data.frequencyCode, catalog]);
 
     useEffect(() => {
+        if (!catalog) return;
         const subTotal = computeSubTotal();
         setData((prev) => {
-            const plan = getPricingByBedrooms(prev.bedrooms, pricing);
+            const plan = getPricingByBedrooms(prev.bedrooms, catalog.pricing);
             return { ...prev, subTotal, pricingId: plan?.id ?? null };
         });
-    }, [computeSubTotal, pricing]);
+    }, [computeSubTotal, catalog]);
 
     const nextStep = () => {
         setSubmitError(null);
@@ -138,18 +152,16 @@ function BookingWizard() {
         setSubmitError(null);
 
         try {
-            const plan = getPricingByBedrooms(data.bedrooms, pricing);
+            if (!catalog) {
+                throw new Error("Catalog not loaded. Please refresh the page.");
+            }
+
+            const plan = getPricingByBedrooms(data.bedrooms, catalog.pricing);
             if (!plan) {
                 throw new Error("Could not determine pricing. Please check your bedroom selection.");
             }
 
-            const frequencyMap: Record<string, string> = {
-                "Onetime": "one_time",
-                "Weekly": "weekly",
-                "Every 2 weeks": "fortnightly",
-                "Every 4 Weeks": "monthly",
-            };
-            const freq = frequencyMap[data.frequency] || "one_time";
+            const freq = data.frequencyCode || "one_time";
 
             const city = data.address.split(",").length > 1
                 ? data.address.split(",").slice(-1)[0].trim()
@@ -265,24 +277,22 @@ function BookingWizard() {
             )}
 
             <main className="flex-1 w-full mx-auto px-6 py-6 md:py-16 mt-16 md:mt-0 flex flex-col items-center pb-[120px] md:pb-32">
-                {step === 1 && (
+                {step === 1 && catalog && (
                     <RequirementsStep
                         data={data}
                         updateData={updateData}
                         onNext={nextStep}
-                        pricing={getPricingByBedrooms(data.bedrooms, pricing) || pricing[0]}
-                        cleanLevels={cleanLevels}
-                        addons={addons}
+                        catalog={catalog}
                     />
                 )}
                 {step === 2 && <DateStep data={data} updateData={updateData} onNext={nextStep} />}
                 {step === 3 && <TimeStep data={data} updateData={updateData} onNext={nextStep} />}
-                {step === 4 && (
+                {step === 4 && catalog && (
                     <DetailsStep
                         data={data}
                         updateData={updateData}
                         onNext={nextStep}
-                        addons={addons}
+                        catalog={catalog}
                     />
                 )}
                 {step === 5 && (
@@ -292,6 +302,7 @@ function BookingWizard() {
                         onNext={handlePlaceOrder}
                         isSubmitting={isSubmitting}
                         submitError={submitError}
+                        catalog={catalog}
                     />
                 )}
             </main>

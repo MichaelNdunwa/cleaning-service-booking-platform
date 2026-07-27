@@ -5,6 +5,7 @@ import { BookingState } from "@/app/booking/page";
 import Button from "@/components/ui/Button";
 import CTABanner from "@/components/ui/CTABanner";
 import { useAuth } from "@/context/AuthContext";
+import type { CatalogResponse } from "@/lib/types";
 
 interface Props {
     data: BookingState;
@@ -12,12 +13,15 @@ interface Props {
     onNext: () => void;
     isSubmitting?: boolean;
     submitError?: string | null;
+    catalog: CatalogResponse | null;
 }
 
-export default function PaymentStep({ data, updateData, onNext, isSubmitting, submitError }: Props) {
+export default function PaymentStep({ data, updateData, onNext, isSubmitting, submitError, catalog }: Props) {
     const { user } = useAuth();
     const isLoggedIn = !!user;
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const contactPreferences = catalog?.contact_preferences ?? [];
 
     useEffect(() => {
         if (user) {
@@ -120,18 +124,18 @@ export default function PaymentStep({ data, updateData, onNext, isSubmitting, su
                     <div className="flex flex-col gap-2 col-span-full md:col-span-1">
                         <label className="text-[10px] font-extrabold text-neutral-300 uppercase tracking-widest pl-1">HOW DO WE CONTACT YOU</label>
                         <div className="flex gap-2">
-                            {["Text", "Call", "Email"].map((pref) => (
+                            {contactPreferences.map((pref) => (
                                 <button
-                                    key={pref}
+                                    key={pref.code}
                                     type="button"
-                                    onClick={() => updateData({ contactPreference: pref })}
+                                    onClick={() => updateData({ contactPreference: pref.name, contactPreferenceCode: pref.code })}
                                     className={`flex-1 h-[52px] rounded-lg border text-[14px] font-bold transition-colors ${
-                                        data.contactPreference === pref
+                                        data.contactPreferenceCode === pref.code
                                             ? "border-[#1E78FF] text-[#1E78FF] bg-blue-50"
                                             : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
                                     }`}
                                 >
-                                    {pref}
+                                    {pref.name}
                                 </button>
                             ))}
                         </div>
@@ -196,9 +200,9 @@ export default function PaymentStep({ data, updateData, onNext, isSubmitting, su
                 <div className="w-full bg-[#FCFCFD] p-8 rounded-xl border border-neutral-100 shadow-sm">
                     {/* Top Row Grid */}
                     <div className="grid grid-cols-3 divide-x divide-neutral-200 text-center mb-6">
-                        <div className="text-[14px] text-neutral-500 font-medium px-2">{data.bedrooms || "—"}</div>
-                        <div className="text-[14px] text-neutral-500 font-medium px-2">{data.bathrooms || "—"} Bathrooms</div>
-                        <div className="text-[14px] text-neutral-500 font-medium px-2">{data.cleanType || "—"}</div>
+                        <div className="text-[14px] text-neutral-500 font-medium px-2">{data.bedrooms || "---"}</div>
+                        <div className="text-[14px] text-neutral-500 font-medium px-2">{data.bathrooms || "---"} Bathrooms</div>
+                        <div className="text-[14px] text-neutral-500 font-medium px-2">{data.cleanType || "---"}</div>
                     </div>
 
                     <div className="w-full border-t border-neutral-100 mb-6" />
@@ -206,7 +210,7 @@ export default function PaymentStep({ data, updateData, onNext, isSubmitting, su
                     {/* Meta Info */}
                     <div className="flex flex-col gap-4 mb-6">
                         <div className="flex gap-3 text-[14px] font-bold">
-                            <span className="text-[#0B1536]">{data.frequency || "—"}</span>
+                            <span className="text-[#0B1536]">{data.frequency || "---"}</span>
                             {data.date && (
                                 <span className="text-[#1E78FF] font-medium">
                                     {new Date(data.date + "T12:00:00").toLocaleDateString("en-US", {
@@ -220,7 +224,7 @@ export default function PaymentStep({ data, updateData, onNext, isSubmitting, su
                             )}
                         </div>
                         <div className="text-[14px] font-bold text-[#0B1536]">
-                            {data.address || "—"}
+                            {data.address || "---"}
                         </div>
                         {data.extras.length > 0 && (
                             <div className="text-[14px] font-bold text-[#0B1536]">

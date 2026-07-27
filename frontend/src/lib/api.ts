@@ -1,7 +1,5 @@
 import type {
-    PricingResponse,
-    LevelsResponse,
-    AddonsResponse,
+    CatalogResponse,
     AvailabilityResponse,
     BookingResponse,
     BookingDetailResponse,
@@ -89,19 +87,9 @@ export async function resetPassword(payload: ResetPasswordPayload): Promise<Auth
     });
 }
 
-/* ── Pricing ── */
-export async function getPricing(): Promise<PricingResponse> {
-    return apiFetch<PricingResponse>("/api/v1/pricing");
-}
-
-/* ── Clean Levels ── */
-export async function getCleanLevels(): Promise<LevelsResponse> {
-    return apiFetch<LevelsResponse>("/api/v1/levels");
-}
-
-/* ── Add-ons ── */
-export async function getAddons(): Promise<AddonsResponse> {
-    return apiFetch<AddonsResponse>("/api/v1/addons");
+/* ── Catalog (unified endpoint) ── */
+export async function getCatalog(): Promise<CatalogResponse> {
+    return apiFetch<CatalogResponse>("/api/v1/catalog");
 }
 
 /* ── Availability ── */

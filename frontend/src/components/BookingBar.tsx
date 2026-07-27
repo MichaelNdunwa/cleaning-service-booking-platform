@@ -3,22 +3,14 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { getPricing, getCleanLevels } from "@/lib/api";
-import type { PricingPlan, CleanLevel } from "@/lib/types";
+import { getCatalog } from "@/lib/api";
+import type { CatalogResponse } from "@/lib/types";
 
-type Option = { label: string; value: string };
-
-const BATH_OPTIONS: Option[] = [
-    { label: "1 Bathroom", value: "1" },
-    { label: "2 Bathrooms", value: "2" },
-    { label: "3 Bathrooms", value: "3" },
-    { label: "4+ Bathrooms", value: "4" },
-];
+type Option = { label: string; value: string; id?: string | number };
 
 export default function BookingBar({ className }: { className?: string }) {
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-    const [pricing, setPricing] = useState<PricingPlan[]>([]);
-    const [levels, setLevels] = useState<CleanLevel[]>([]);
+    const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
 
     const [bed, setBed] = useState("");
     const [bath, setBath] = useState("");
@@ -27,11 +19,8 @@ export default function BookingBar({ className }: { className?: string }) {
     const barRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        getPricing()
-            .then((res) => setPricing(res.pricing))
-            .catch(() => {});
-        getCleanLevels()
-            .then((res) => setLevels(res.levels))
+        getCatalog()
+            .then((res) => setCatalog(res))
             .catch(() => {});
     }, []);
 
@@ -45,24 +34,37 @@ export default function BookingBar({ className }: { className?: string }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const bedOptions: Option[] = pricing
-        .filter((p) => p.pricing_type === "bedroom" && p.bedrooms !== null)
-        .sort((a, b) => (a.bedrooms ?? 0) - (b.bedrooms ?? 0))
-        .map((p) => ({
-            label: p.bedrooms === 0 ? "Studio" : `${p.bedrooms}+ Bedroom${(p.bedrooms ?? 0) > 1 ? "s" : ""}`,
-            value: String(p.bedrooms),
-        }));
+    const bedOptions: Option[] = catalog
+        ? catalog.pricing
+            .filter((p) => p.pricing_type === "bedroom" && p.bedrooms !== null)
+            .sort((a, b) => (a.bedrooms ?? 0) - (b.bedrooms ?? 0))
+            .map((p) => ({
+                id: p.id,
+                label: p.label || p.name || `${p.bedrooms} Bedroom`,
+                value: String(p.bedrooms),
+            }))
+        : [];
 
-    const levelOptions: Option[] = [
-        { label: "Standard", value: "Standard" },
-        ...levels
+    const bathOptions: Option[] = catalog
+        ? catalog.bathroom_options
+            .sort((a, b) => a.value - b.value)
+            .map((b) => ({
+                label: b.name,
+                value: String(b.value),
+            }))
+        : [];
+
+    const levelOptions: Option[] = catalog
+        ? catalog.levels
             .sort((a, b) => a.base_price - b.base_price)
-            .map((l) => ({ label: l.name, value: l.name })),
-    ];
+            .map((l) => ({ id: l.id, label: l.name, value: l.name }))
+        : [];
 
-    const minPrice = pricing
-        .filter((p) => p.pricing_type === "bedroom")
-        .reduce((min, p) => Math.min(min, p.base_price), Infinity);
+    const minPrice = catalog
+        ? catalog.pricing
+            .filter((p) => p.pricing_type === "bedroom")
+            .reduce((min, p) => Math.min(min, p.base_price), Infinity)
+        : Infinity;
 
     const Dropdown = ({ id, value, placeholder, options, setter, isFirst }: {
         id: string;
@@ -110,7 +112,7 @@ export default function BookingBar({ className }: { className?: string }) {
                     <div className="absolute top-[calc(100%+8px)] left-0 w-full min-w-[200px] bg-white rounded-[12px] shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-neutral-100 py-2 z-50 animate-fade-in-up" style={{ animationDuration: '0.2s' }}>
                         {options.map((opt) => (
                             <button
-                                key={opt.value}
+                                key={opt.id ?? opt.value}
                                 onClick={() => {
                                     setter(opt.value);
                                     setOpenDropdown(null);
@@ -149,7 +151,7 @@ export default function BookingBar({ className }: { className?: string }) {
 
                 <Dropdown id="bed" value={bed} placeholder="Select Bedrooms" options={bedOptions} setter={setBed} isFirst={true} />
 
-                <Dropdown id="bath" value={bath} placeholder="Select Bathrooms" options={BATH_OPTIONS} setter={setBath} />
+                <Dropdown id="bath" value={bath} placeholder="Select Bathrooms" options={bathOptions} setter={setBath} />
 
                 <Dropdown id="cleanLevel" value={cleanLevel} placeholder="Select Clean Level" options={levelOptions} setter={setCleanLevel} />
 

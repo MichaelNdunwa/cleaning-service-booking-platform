@@ -3,6 +3,7 @@
 export interface PricingPlan {
     id: number;
     name: string;
+    label: string;
     code: string;
     pricing_type: "bedroom" | "flat";
     bedrooms: number | null;
@@ -24,6 +25,40 @@ export interface Addon {
     description: string;
     price: number;
     duration_delta: number;
+}
+
+export interface Frequency {
+    id: number;
+    name: string;
+    code: string;
+    discount_pct: number;
+    description: string;
+}
+
+export interface BathroomOption {
+    value: number;
+    name: string;
+    surcharge: number;
+}
+
+export interface AccessMethod {
+    code: string;
+    name: string;
+}
+
+export interface ContactPreference {
+    code: string;
+    name: string;
+}
+
+export interface CatalogResponse {
+    pricing: PricingPlan[];
+    levels: CleanLevel[];
+    addons: Addon[];
+    frequencies: Frequency[];
+    bathroom_options: BathroomOption[];
+    access_methods: AccessMethod[];
+    contact_preferences: ContactPreference[];
 }
 
 export interface TimeSlot {
@@ -50,7 +85,7 @@ export interface Address {
     postcode: string;
 }
 
-export type Frequency = "one_time" | "weekly" | "fortnightly" | "monthly";
+export type FrequencyCode = "one_time" | "weekly" | "fortnightly" | "monthly";
 
 export type BookingState =
     | "draft"
@@ -71,7 +106,7 @@ export interface Booking {
     addons: Pick<Addon, "id" | "name" | "price">[];
     booking_date: string;
     time_slot: Pick<TimeSlot, "id" | "name">;
-    frequency: Frequency;
+    frequency: FrequencyCode;
     address: Address;
     bedrooms: number;
     bathrooms: number;
@@ -94,7 +129,7 @@ export interface CreateBookingPayload {
     clean_level_id?: number;
     booking_date: string;
     time_slot_id: number;
-    frequency: Frequency;
+    frequency: FrequencyCode;
     addon_ids?: number[];
     address_line_1: string;
     address_line_2?: string;

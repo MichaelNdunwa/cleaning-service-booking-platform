@@ -2,36 +2,42 @@
 
 import { BookingState } from "@/app/booking/page";
 import Button from "@/components/ui/Button";
-import type { PricingPlan, CleanLevel, Addon } from "@/lib/types";
+import type { CatalogResponse } from "@/lib/types";
 
 interface Props {
     data: BookingState;
     updateData: (updates: Partial<BookingState>) => void;
     onNext: () => void;
-    pricing: PricingPlan;
-    cleanLevels: CleanLevel[];
-    addons: Addon[];
+    catalog: CatalogResponse;
 }
 
-export default function RequirementsStep({ data, updateData, onNext, pricing, cleanLevels }: Props) {
-    const bedrooms = ["Studio", "1", "2", "3", "4", "5"];
-    const bathrooms = ["1", "2", "3", "4", "5"];
+export default function RequirementsStep({ data, updateData, onNext, catalog }: Props) {
+    const bedroomOptions = catalog.pricing
+        .filter((p) => p.pricing_type === "bedroom" && p.bedrooms !== null)
+        .sort((a, b) => (a.bedrooms ?? 0) - (b.bedrooms ?? 0))
+        .map((p) => ({
+            id: p.id,
+            label: String(p.bedrooms),
+            value: String(p.bedrooms),
+        }));
 
-    const cleanTypes = [
-        { id: "Standard", label: "Standard", time: "2 hours" },
-        ...cleanLevels
-            .sort((a, b) => a.base_price - b.base_price)
-            .map((l) => ({
-                id: l.code || l.name,
-                label: l.name,
-                time: l.base_price <= 40 ? "2.5-3 hours" : "4.5-5 hours",
-            })),
-    ];
+    const bathroomOptions = catalog.bathroom_options
+        .sort((a, b) => a.value - b.value)
+        .map((b) => ({
+            label: String(b.value),
+            value: String(b.value),
+        }));
+
+    const cleanTypes = catalog.levels
+        .sort((a, b) => a.base_price - b.base_price)
+        .map((l) => ({
+            id: l.code || l.name,
+            label: l.name,
+            time: l.base_price <= 20 ? "2 hours" : l.base_price <= 40 ? "2.5-3 hours" : "4.5-5 hours",
+        }));
 
     const handleCleanType = (typeId: string) => {
-        const matchedLevel = typeId === "Standard"
-            ? null
-            : cleanLevels.find((l) => (l.code || l.name) === typeId);
+        const matchedLevel = catalog.levels.find((l) => (l.code || l.name) === typeId);
         updateData({
             cleanType: typeId,
             cleanLevelId: matchedLevel?.id ?? null,
@@ -77,14 +83,14 @@ export default function RequirementsStep({ data, updateData, onNext, pricing, cl
                     NUMBER OF BEDROOMS
                 </p>
                 <div className="flex flex-wrap justify-start md:justify-center gap-3 w-full">
-                    {bedrooms.map((bed) => (
+                    {bedroomOptions.map((opt) => (
                         <OptionButton
-                            key={bed}
-                            active={data.bedrooms.toString() === bed}
-                            onClick={() => updateData({ bedrooms: bed })}
-                            className={bed === "Studio" ? "min-w-[90px]" : ""}
+                            key={opt.id ?? opt.value}
+                            active={data.bedrooms.toString() === opt.value}
+                            onClick={() => updateData({ bedrooms: opt.value })}
+                            className="min-w-[64px]"
                         >
-                            {bed}
+                            {opt.label}
                         </OptionButton>
                     ))}
                 </div>
@@ -96,14 +102,14 @@ export default function RequirementsStep({ data, updateData, onNext, pricing, cl
                     NUMBER OF BATHROOMS
                 </p>
                 <div className="flex flex-wrap justify-start md:justify-center gap-3 w-full">
-                    {bathrooms.map((bath) => (
+                    {bathroomOptions.map((opt) => (
                         <OptionButton
-                            key={bath}
-                            active={data.bathrooms.toString() === bath}
-                            onClick={() => updateData({ bathrooms: bath })}
+                            key={opt.value}
+                            active={data.bathrooms.toString() === opt.value}
+                            onClick={() => updateData({ bathrooms: opt.value })}
                             className="min-w-[64px]"
                         >
-                            {bath}
+                            {opt.label}
                         </OptionButton>
                     ))}
                 </div>
