@@ -96,6 +96,16 @@ function BookingWizard() {
             .catch(() => {});
     }, []);
 
+    useEffect(() => {
+        if (!catalog || !data.cleanType || data.cleanLevelId) return;
+        const matched = catalog.levels.find(
+            (l) => (l.code || l.name) === data.cleanType
+        );
+        if (matched) {
+            setData((prev) => ({ ...prev, cleanLevelId: matched.id }));
+        }
+    }, [catalog, data.cleanType, data.cleanLevelId]);
+
     const updateData = useCallback((updates: Partial<BookingState>) => {
         setData((prev) => ({ ...prev, ...updates }));
     }, []);

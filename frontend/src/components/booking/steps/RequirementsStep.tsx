@@ -17,7 +17,7 @@ export default function RequirementsStep({ data, updateData, onNext, catalog }: 
         .sort((a, b) => (a.bedrooms ?? 0) - (b.bedrooms ?? 0))
         .map((p) => ({
             id: p.id,
-            label: String(p.bedrooms),
+            label: p.bedrooms === 0 ? "Studio" : String(p.bedrooms),
             value: String(p.bedrooms),
         }));
 

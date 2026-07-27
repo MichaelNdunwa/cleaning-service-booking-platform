@@ -57,7 +57,7 @@ export default function BookingBar({ className }: { className?: string }) {
     const levelOptions: Option[] = catalog
         ? catalog.levels
             .sort((a, b) => a.base_price - b.base_price)
-            .map((l) => ({ id: l.id, label: l.name, value: l.name }))
+            .map((l) => ({ id: l.id, label: l.name, value: l.code || l.name }))
         : [];
 
     const minPrice = catalog
