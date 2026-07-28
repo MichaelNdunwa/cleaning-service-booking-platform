@@ -10,6 +10,7 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="base_price" string="Surcharge"/>
+                <field name="duration"/>
                 <field name="description"/>
                 <field name="active"/>
             </list>
@@ -32,6 +33,7 @@
                         <group>
                             <field name="code"/>
                             <field name="base_price" string="Surcharge"/>
+                            <field name="duration"/>
                         </group>
                         <group>
                             <field name="sequence"/>

@@ -108,6 +108,7 @@ class CleaningMainAPI(CleaningAPIBase, http.Controller):
                     "name": l.name,
                     "code": l.code,
                     "description": l.description or "",
+                    "duration": l.duration or "",
                     "base_price": l.base_price,
                 }
                 for l in levels

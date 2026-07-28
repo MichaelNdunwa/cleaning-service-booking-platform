@@ -15,6 +15,7 @@ export interface CleanLevel {
     name: string;
     code: string;
     description: string;
+    duration: string;
     base_price: number;
 }
 

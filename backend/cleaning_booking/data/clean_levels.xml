@@ -5,6 +5,7 @@
             <field name="name">Standard</field>
             <field name="code">standard</field>
             <field name="description">Regular residential clean — surfaces, floors, kitchen and bathrooms.</field>
+            <field name="duration">2 hours</field>
             <field name="base_price">20.00</field>
             <field name="sequence">0</field>
         </record>
@@ -13,6 +14,7 @@
             <field name="name">Deep Clean</field>
             <field name="code">deep_clean</field>
             <field name="description">Intensive deep cleaning — inside appliances, behind furniture, detailed scrub.</field>
+            <field name="duration">2.5-3 hours</field>
             <field name="base_price">35.00</field>
             <field name="sequence">1</field>
         </record>
@@ -21,6 +23,7 @@
             <field name="name">Moving In/Out</field>
             <field name="code">end_of_tenancy</field>
             <field name="description">Move-out ready clean — deep clean every room to meet landlord/agency standards.</field>
+            <field name="duration">4.5-5 hours</field>
             <field name="base_price">50.00</field>
             <field name="sequence">2</field>
         </record>
@@ -29,6 +32,7 @@
             <field name="name">Post Construction</field>
             <field name="code">post_construction</field>
             <field name="description">After-build cleanup — dust removal, debris, polish all surfaces.</field>
+            <field name="duration">4.5-5 hours</field>
             <field name="base_price">60.00</field>
             <field name="sequence">3</field>
         </record>

@@ -31,7 +31,7 @@ export default function RequirementsStep({ data, updateData, onNext, catalog }: 
         .map((l) => ({
             id: l.code || l.name,
             label: l.name,
-            time: l.base_price <= 20 ? "2 hours" : l.base_price <= 40 ? "2.5-3 hours" : "4.5-5 hours",
+            time: l.duration,
         }));
 
     const handleCleanType = (typeId: string) => {
