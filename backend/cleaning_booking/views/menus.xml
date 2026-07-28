@@ -55,6 +55,12 @@
         action="action_clean_frequency"
         sequence="50"/>
 
+    <menuitem id="menu_cleaning_bedroom_options"
+        name="Bedroom Options"
+        parent="menu_cleaning_config"
+        action="action_clean_bedroom_option"
+        sequence="55"/>
+
     <menuitem id="menu_cleaning_bathroom_options"
         name="Bathroom Options"
         parent="menu_cleaning_config"

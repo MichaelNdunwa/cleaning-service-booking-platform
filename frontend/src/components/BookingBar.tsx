@@ -35,13 +35,11 @@ export default function BookingBar({ className }: { className?: string }) {
     }, []);
 
     const bedOptions: Option[] = catalog
-        ? catalog.pricing
-            .filter((p) => p.pricing_type === "bedroom" && p.bedrooms !== null)
-            .sort((a, b) => (a.bedrooms ?? 0) - (b.bedrooms ?? 0))
-            .map((p) => ({
-                id: p.id,
-                label: p.label || p.name || `${p.bedrooms} Bedroom`,
-                value: String(p.bedrooms),
+        ? catalog.bedroom_options
+            .sort((a, b) => a.value - b.value)
+            .map((b) => ({
+                label: b.name,
+                value: String(b.value),
             }))
         : [];
 

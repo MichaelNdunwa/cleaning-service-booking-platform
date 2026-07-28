@@ -12,13 +12,11 @@ interface Props {
 }
 
 export default function RequirementsStep({ data, updateData, onNext, catalog }: Props) {
-    const bedroomOptions = catalog.pricing
-        .filter((p) => p.pricing_type === "bedroom" && p.bedrooms !== null)
-        .sort((a, b) => (a.bedrooms ?? 0) - (b.bedrooms ?? 0))
-        .map((p) => ({
-            id: p.id,
-            label: p.bedrooms === 0 ? "Studio" : String(p.bedrooms),
-            value: String(p.bedrooms),
+    const bedroomOptions = catalog.bedroom_options
+        .sort((a, b) => a.value - b.value)
+        .map((b) => ({
+            label: b.value === 0 ? "Studio" : String(b.value),
+            value: String(b.value),
         }));
 
     const bathroomOptions = catalog.bathroom_options
@@ -85,7 +83,7 @@ export default function RequirementsStep({ data, updateData, onNext, catalog }: 
                 <div className="flex flex-wrap justify-start md:justify-center gap-3 w-full">
                     {bedroomOptions.map((opt) => (
                         <OptionButton
-                            key={opt.id ?? opt.value}
+                            key={opt.value}
                             active={data.bedrooms.toString() === opt.value}
                             onClick={() => updateData({ bedrooms: opt.value })}
                             className="min-w-[64px]"

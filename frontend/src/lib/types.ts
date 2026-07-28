@@ -41,6 +41,12 @@ export interface BathroomOption {
     surcharge: number;
 }
 
+export interface BedroomOption {
+    value: number;
+    name: string;
+    surcharge: number;
+}
+
 export interface AccessMethod {
     code: string;
     name: string;
@@ -57,6 +63,7 @@ export interface CatalogResponse {
     addons: Addon[];
     frequencies: Frequency[];
     bathroom_options: BathroomOption[];
+    bedroom_options: BedroomOption[];
     access_methods: AccessMethod[];
     contact_preferences: ContactPreference[];
 }

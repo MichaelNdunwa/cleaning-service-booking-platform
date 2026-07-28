@@ -85,6 +85,7 @@ class CleaningMainAPI(CleaningAPIBase, http.Controller):
         addons = request.env["clean.addon"].sudo().search([("active", "=", True)])
         frequencies = request.env["clean.frequency"].sudo().search([("active", "=", True)])
         bathroom_options = request.env["clean.bathroom.option"].sudo().search([("active", "=", True)])
+        bedroom_options = request.env["clean.bedroom.option"].sudo().search([("active", "=", True)])
         access_methods = request.env["clean.access.method"].sudo().search([("active", "=", True)])
         contact_prefs = request.env["clean.contact.preference"].sudo().search([("active", "=", True)])
 
@@ -139,6 +140,14 @@ class CleaningMainAPI(CleaningAPIBase, http.Controller):
                     "surcharge": b.surcharge,
                 }
                 for b in bathroom_options
+            ],
+            "bedroom_options": [
+                {
+                    "value": b.value,
+                    "name": b.name,
+                    "surcharge": b.surcharge,
+                }
+                for b in bedroom_options
             ],
             "access_methods": [
                 {

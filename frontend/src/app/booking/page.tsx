@@ -112,6 +112,10 @@ function BookingWizard() {
 
     const computeSubTotal = useCallback((): number => {
         if (!catalog) return 0;
+
+        const bedOpt = catalog.bedroom_options.find((b) => b.value === parseInt(String(data.bedrooms), 10));
+        const bedSurcharge = bedOpt?.surcharge ?? 0;
+
         const plan = getPricingByBedrooms(data.bedrooms, catalog.pricing);
         const basePrice = plan?.base_price ?? 0;
 
@@ -130,7 +134,7 @@ function BookingWizard() {
         const bathOpt = catalog.bathroom_options.find((b) => b.value === parseInt(String(data.bathrooms), 10));
         const bathSurcharge = bathOpt?.surcharge ?? 0;
 
-        const subtotal = basePrice + cleanSurcharge + addonTotal + bathSurcharge;
+        const subtotal = basePrice + bedSurcharge + cleanSurcharge + addonTotal + bathSurcharge;
 
         const freqRec = catalog.frequencies.find((f) => f.code === data.frequencyCode);
         const discountPct = freqRec?.discount_pct ?? 0;
