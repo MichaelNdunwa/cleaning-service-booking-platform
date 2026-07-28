@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { BookingState } from "@/app/booking/page";
 import { TOTAL_STEPS } from "@/lib/constants";
+import type { CatalogResponse } from "@/lib/types";
 
 interface BookingHeaderProps {
     step: number;
     data: BookingState;
+    catalog?: CatalogResponse | null;
 }
 
-export default function BookingHeader({ step, data }: BookingHeaderProps) {
+export default function BookingHeader({ step, data, catalog }: BookingHeaderProps) {
     const progressWidth = `${(step / TOTAL_STEPS) * 100}%`;
 
     return (
@@ -35,7 +37,7 @@ export default function BookingHeader({ step, data }: BookingHeaderProps) {
                             </svg>
                             <div>
                                 <div className="text-[15px] font-bold text-[#0B1536] leading-tight flex items-baseline gap-1">
-                                    {data.bedrooms}
+                                    {data.bedrooms === "0" || data.bedrooms === 0 ? "Studio" : data.bedrooms}
                                 </div>
                                 <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Bedrooms</div>
                             </div>
@@ -60,7 +62,9 @@ export default function BookingHeader({ step, data }: BookingHeaderProps) {
                         </svg>
                         <div>
                             <div className="text-[15px] font-bold text-[#0B1536] leading-tight">
-                                {data.cleanType || "Select"}
+                                {data.cleanType
+                                    ? catalog?.levels.find((l) => (l.code || l.name) === data.cleanType)?.name || data.cleanType
+                                    : "Select"}
                             </div>
                             <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Clean Type</div>
                         </div>

@@ -241,7 +241,7 @@ function BookingWizard() {
     return (
         <div className="flex flex-col min-h-screen bg-white pt-[88px] relative">
             <div className="hidden md:block">
-                <BookingHeader step={step} data={data} />
+                <BookingHeader step={step} data={data} catalog={catalog} />
             </div>
 
             {/* Mobile Header Override */}
