@@ -22,11 +22,41 @@ import urllib.request
 _logger = logging.getLogger(__name__)
 
 _DEFAULT_BASE_URL = "https://uselumora.io"
+_DEFAULT_FRONTEND_URL = "https://tidyslot.xyz"
 _TIMEOUT_SECONDS = 15
 
 
 class LumoraMailService:
     """Stateless client for Lumora REST API."""
+
+    @classmethod
+    def get_frontend_url(cls) -> str:
+        """
+        Dynamically determine frontend URL:
+        1. Active HTTP request Origin or Referer header (matches calling domain, e.g. tidyslot.xyz vs localhost)
+        2. CLEANING_FRONTEND_URL environment variable (if explicitly set and not localhost)
+        3. Fallback to production custom domain: https://tidyslot.xyz
+        """
+        try:
+            from odoo.http import request
+            if request and hasattr(request, "httprequest") and request.httprequest:
+                origin = (request.httprequest.headers.get("Origin") or "").strip().rstrip("/")
+                if origin and (origin.startswith("http://") or origin.startswith("https://")):
+                    return origin
+
+                referer = (request.httprequest.headers.get("Referer") or "").strip()
+                if referer:
+                    parsed = urllib.parse.urlparse(referer)
+                    if parsed.scheme and parsed.netloc:
+                        return f"{parsed.scheme}://{parsed.netloc}".rstrip("/")
+        except Exception:
+            pass
+
+        env_url = (os.getenv("CLEANING_FRONTEND_URL") or "").strip().rstrip("/")
+        if env_url:
+            return env_url
+
+        return _DEFAULT_FRONTEND_URL
 
     @classmethod
     def _get_config(cls) -> tuple[str, str, str, str]:
@@ -157,11 +187,11 @@ class LumoraMailService:
         """Send a post-signup welcome email."""
         company = company_name or os.getenv("CLEANING_COMPANY_NAME", "Shield Cleaning")
         subject = f"Welcome to {company}! 🧹"
-        frontend_url = os.getenv("CLEANING_FRONTEND_URL", "http://localhost:3000")
+        frontend_url = cls.get_frontend_url()
 
         html = f"""\
-<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:20px;border:1px solid #e5e7eb;border-radius:12px;">
-  <h2 style="color:#0B1536;margin-bottom:12px;">Welcome, {to_name or 'there'}!</h2>
+<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#ffffff;">
+  <h2 style="color:#0B1536;margin-bottom:12px;font-size:20px;">Welcome, {to_name or 'there'}!</h2>
   <p style="color:#4b5563;font-size:15px;line-height:1.6;">
     Your <strong>{company}</strong> account is ready. You can now book residential,
     office, or deep cleaning services in under 60 seconds.
@@ -175,15 +205,17 @@ class LumoraMailService:
     </a>
   </div>
   <p style="color:#9ca3af;font-size:13px;line-height:1.5;">
-    If you did not sign up for this account, you can safely ignore this email.
+    If you did not create this account, you can safely ignore this email.
   </p>
   <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;"/>
-  <p style="color:#9ca3af;font-size:12px;">The {company} team &nbsp;·&nbsp; {frontend_url}</p>
+  <p style="color:#9ca3af;font-size:12px;line-height:1.5;margin:0;">
+    {company} &nbsp;·&nbsp; <a href="{frontend_url}" style="color:#1E78FF;text-decoration:none;">Visit Website</a>
+  </p>
 </div>"""
         text = (
             f"Welcome, {to_name or 'there'}!\n\n"
             f"Your {company} account is ready. Book your first clean at {frontend_url}/booking\n\n"
-            f"— The {company} team"
+            f"— The {company} team\n{frontend_url}"
         )
         return cls.send(
             to_email=to_email,
@@ -209,8 +241,9 @@ class LumoraMailService:
         """Send a password reset email with a one-time link."""
         company = company_name or os.getenv("CLEANING_COMPANY_NAME", "Shield Cleaning")
         subject = f"Reset your {company} password"
+        frontend_url = cls.get_frontend_url()
         html = f"""\
-<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:20px;border:1px solid #e5e7eb;border-radius:12px;">
+<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#ffffff;">
   <p style="color:#0B1536;font-size:16px;">Hi {to_name or 'there'},</p>
   <p style="color:#4b5563;font-size:15px;line-height:1.6;">
     We received a request to reset your <strong>{company}</strong> account password.
@@ -228,13 +261,15 @@ class LumoraMailService:
     your password will remain unchanged.
   </p>
   <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;"/>
-  <p style="color:#9ca3af;font-size:12px;">The {company} team</p>
+  <p style="color:#9ca3af;font-size:12px;line-height:1.5;margin:0;">
+    {company} &nbsp;·&nbsp; <a href="{frontend_url}" style="color:#1E78FF;text-decoration:none;">Visit Website</a>
+  </p>
 </div>"""
         text = (
             f"Hi {to_name or 'there'},\n\n"
             f"Reset your {company} password by visiting:\n{reset_url}\n\n"
             "This link expires in 24 hours.\n\n"
-            f"— The {company} team"
+            f"— The {company} team\n{frontend_url}"
         )
         return cls.send(
             to_email=to_email,
@@ -266,7 +301,7 @@ class LumoraMailService:
     ) -> tuple[bool, dict]:
         """Send a booking confirmation email to the customer."""
         company = company_name or os.getenv("CLEANING_COMPANY_NAME", "Shield Cleaning")
-        frontend_url = os.getenv("CLEANING_FRONTEND_URL", "http://localhost:3000")
+        frontend_url = cls.get_frontend_url()
 
         freq_labels = {
             "one_time": "One-time",
@@ -281,8 +316,8 @@ class LumoraMailService:
 
         subject = f"Booking confirmed – {booking_reference} | {company}"
         html = f"""\
-<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:20px;border:1px solid #e5e7eb;border-radius:12px;">
-  <h2 style="color:#0B1536;margin-bottom:8px;">Your booking is confirmed! 🧹</h2>
+<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:#ffffff;">
+  <h2 style="color:#0B1536;margin-bottom:8px;font-size:20px;">Your booking is confirmed! 🧹</h2>
   <p style="color:#4b5563;font-size:15px;line-height:1.6;">
     Hi {to_name or 'there'}, thank you for booking with <strong>{company}</strong>.
   </p>
@@ -322,8 +357,36 @@ class LumoraMailService:
     Need to make changes or reschedule? Contact our support team or check your booking status online.
   </p>
   <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;"/>
-  <p style="color:#9ca3af;font-size:12px;">The {company} team &nbsp;·&nbsp; {frontend_url}</p>
+  <p style="color:#9ca3af;font-size:12px;line-height:1.5;margin:0;">
+    {company} &nbsp;·&nbsp; <a href="{frontend_url}" style="color:#1E78FF;text-decoration:none;">Visit Website</a>
+  </p>
 </div>"""
+        text = (
+            f"Your booking is confirmed!\n\n"
+            f"Reference: {booking_reference}\n"
+            f"Date: {booking_date}\n"
+            f"Time: {time_slot_name}\n"
+            f"Service: {pricing_label}\n"
+            f"Frequency: {freq_label}\n"
+            f"Address: {address_str}\n"
+            f"Total: ${amount_total:.2f}\n\n"
+            f"— The {company} team\n{frontend_url}"
+        )
+        return cls.send(
+            to_email=to_email,
+            to_name=to_name,
+            subject=subject,
+            html=html,
+            text=text,
+            from_email=from_email,
+            from_name=from_name,
+            variables={
+                "name": to_name,
+                "reference": booking_reference,
+                "date": booking_date,
+                "total": f"${amount_total:.2f}",
+            },
+        )
         text = (
             f"Your booking is confirmed!\n\n"
             f"Reference: {booking_reference}\n"
