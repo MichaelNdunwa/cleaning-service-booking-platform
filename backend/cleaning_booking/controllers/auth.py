@@ -159,9 +159,11 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
             env = request.env(su=True)
             existing_user = env["res.users"].search([("login", "=", email)], limit=1)
 
+            is_new_user = False
             if existing_user:
                 user_name = existing_user.name
             else:
+                is_new_user = True
                 random_password = secrets.token_urlsafe(32)
                 portal_group = env.ref("base.group_portal")
                 new_user = env["res.users"].with_context(no_reset_password=True).create({
@@ -179,6 +181,25 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
 
             env["res.users.log"].with_user(existing_user.id).sudo().create({})
             user_data = {"id": existing_user.id, "name": existing_user.name, "email": email}
+
+            # ── Send welcome email & sync contact for new OAuth users ──
+            if is_new_user:
+                try:
+                    LumoraMailService.send_welcome(
+                        to_email=email,
+                        to_name=existing_user.name,
+                    )
+                    name_parts = existing_user.name.split(" ", 1)
+                    first_name = name_parts[0]
+                    last_name = name_parts[1] if len(name_parts) > 1 else ""
+                    LumoraMailService.upsert_contact(
+                        email=email,
+                        first_name=first_name,
+                        last_name=last_name,
+                        tags=["portal-user", f"oauth-{provider}"],
+                    )
+                except Exception:
+                    _logger.debug("[Lumora] Welcome/contact sync skipped on oauth signup")
         except Exception:
             _logger.exception("OAuth login error")
             return self._error_response("OAuth login failed. Please try again.", status=500)
