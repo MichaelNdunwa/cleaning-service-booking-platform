@@ -17,6 +17,7 @@ import Google from "next-auth/providers/google";
 const ODOO_BASE_URL = process.env.ODOO_BASE_URL ?? "http://localhost:9090";
 
 const handler = NextAuth({
+    trustHost: true,
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID!,
