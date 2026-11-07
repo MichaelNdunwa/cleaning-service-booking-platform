@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+import logging
 from datetime import datetime
 
 from odoo import http
 from odoo.http import request
 
 from .common import CleaningAPIBase
+from ..services.lumora import LumoraMailService
+
+_logger = logging.getLogger(__name__)
 
 
 class CleaningBookingAPI(CleaningAPIBase, http.Controller):
@@ -167,6 +171,45 @@ class CleaningBookingAPI(CleaningAPIBase, http.Controller):
                 vals["contact_preference_id"] = pref.id
 
         booking = request.env["clean.booking"].sudo().create(vals)
+
+        # ── Send booking confirmation via Lumora ──
+        try:
+            customer_email = booking.customer_id.email or ""
+            customer_name = booking.customer_id.name or ""
+            if customer_email:
+                ok, lumora_result = LumoraMailService.send_booking_confirmation(
+                    to_email=customer_email,
+                    to_name=customer_name,
+                    booking_reference=booking.name,
+                    booking_date=str(booking.booking_date),
+                    time_slot_name=booking.time_slot_id.name or "",
+                    pricing_label=booking.pricing_id.label or booking.pricing_id.name or "",
+                    amount_total=booking.amount_total,
+                    frequency=booking.frequency,
+                    address_line_1=booking.address_line_1 or "",
+                    city=booking.city or "",
+                )
+                if not ok:
+                    _logger.warning("[Lumora] Booking confirmation not sent for %s: %s", customer_email, lumora_result)
+
+                # Sync customer contact & booking metadata to Lumora Audience
+                name_parts = customer_name.split(" ", 1)
+                first_name = name_parts[0]
+                last_name = name_parts[1] if len(name_parts) > 1 else ""
+                LumoraMailService.upsert_contact(
+                    email=customer_email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone=booking.customer_phone or "",
+                    tags=["customer", f"freq-{booking.frequency}"],
+                    custom_fields={
+                        "latest_booking_ref": booking.name,
+                        "latest_booking_date": str(booking.booking_date),
+                        "frequency": booking.frequency,
+                    },
+                )
+        except Exception:
+            _logger.exception("[Lumora] Error sending booking confirmation for booking %s", booking.name)
 
         return self._json_response({
             "booking": {

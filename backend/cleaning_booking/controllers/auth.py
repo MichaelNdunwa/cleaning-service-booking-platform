@@ -2,13 +2,13 @@
 import logging
 import os
 import secrets
-from markupsafe import Markup, escape
 
 from odoo import http
 from odoo.http import request
 from odoo.exceptions import AccessDenied, UserError, ValidationError
 
 from .common import CleaningAPIBase
+from ..services.lumora import LumoraMailService
 
 _logger = logging.getLogger(__name__)
 
@@ -62,6 +62,27 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
         except Exception:
             _logger.exception("Signup error")
             return self._error_response("Signup failed.", status=500)
+
+        # ── Send welcome email & sync contact via Lumora ──
+        ok, lumora_result = LumoraMailService.send_welcome(
+            to_email=email,
+            to_name=name,
+        )
+        if not ok:
+            _logger.warning("[Lumora] Welcome email not sent to %s: %s", email, lumora_result)
+
+        try:
+            name_parts = name.split(" ", 1)
+            first_name = name_parts[0]
+            last_name = name_parts[1] if len(name_parts) > 1 else ""
+            LumoraMailService.upsert_contact(
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                tags=["portal-user", "signup"],
+            )
+        except Exception:
+            _logger.debug("[Lumora] Contact sync skipped on signup")
 
         return self._json_response({
             "success": True,
@@ -138,9 +159,11 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
             env = request.env(su=True)
             existing_user = env["res.users"].search([("login", "=", email)], limit=1)
 
+            is_new_user = False
             if existing_user:
                 user_name = existing_user.name
             else:
+                is_new_user = True
                 random_password = secrets.token_urlsafe(32)
                 portal_group = env.ref("base.group_portal")
                 new_user = env["res.users"].with_context(no_reset_password=True).create({
@@ -158,6 +181,25 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
 
             env["res.users.log"].with_user(existing_user.id).sudo().create({})
             user_data = {"id": existing_user.id, "name": existing_user.name, "email": email}
+
+            # ── Send welcome email & sync contact for new OAuth users ──
+            if is_new_user:
+                try:
+                    LumoraMailService.send_welcome(
+                        to_email=email,
+                        to_name=existing_user.name,
+                    )
+                    name_parts = existing_user.name.split(" ", 1)
+                    first_name = name_parts[0]
+                    last_name = name_parts[1] if len(name_parts) > 1 else ""
+                    LumoraMailService.upsert_contact(
+                        email=email,
+                        first_name=first_name,
+                        last_name=last_name,
+                        tags=["portal-user", f"oauth-{provider}"],
+                    )
+                except Exception:
+                    _logger.debug("[Lumora] Welcome/contact sync skipped on oauth signup")
         except Exception:
             _logger.exception("OAuth login error")
             return self._error_response("OAuth login failed. Please try again.", status=500)
@@ -217,42 +259,14 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
                 _logger.info("[Password Reset] URL for %s : %s", email, reset_url)
 
                 company_name = os.getenv("CLEANING_COMPANY_NAME", "Shield Cleaning")
-                try:
-                    safe_name = escape(user.name)
-                    body_html = Markup(
-                        "<div style='font-family:Arial,sans-serif;max-width:560px;margin:0 auto;'>"
-                        "<p>Hi %(name)s,</p>"
-                        "<p>We received a request to reset your <strong>%(company)s</strong> account password.</p>"
-                        "<p style='margin:28px 0;'>"
-                        "<a href='%(url)s' "
-                        "style='display:inline-block;padding:13px 28px;background:#1E78FF;"
-                        "color:#ffffff;border-radius:8px;text-decoration:none;"
-                        "font-weight:700;font-size:15px;'>"
-                        "Reset my password"
-                        "</a></p>"
-                        "<p style='color:#6b7280;font-size:13px;'>"
-                        "This link expires in <strong>24 hours</strong>. "
-                        "If you did not request a password reset, you can safely ignore this email — "
-                        "your password will remain unchanged."
-                        "</p>"
-                        "<hr style='border:none;border-top:1px solid #e5e7eb;margin:24px 0;'/>"
-                        "<p style='color:#9ca3af;font-size:12px;'>The %(company)s team</p>"
-                        "</div>"
-                    ) % {"name": safe_name, "company": escape(company_name), "url": reset_url}
-
-                    email_from = os.getenv(
-                        "CLEANING_EMAIL_FROM",
-                        f"{company_name} <noreply@shieldcleaning.co>",
-                    )
-                    env["mail.mail"].create({
-                        "subject": f"Reset your {company_name} password",
-                        "email_from": email_from,
-                        "email_to": email,
-                        "body_html": body_html,
-                        "auto_delete": True,
-                    }).send()
-                except Exception as mail_err:
-                    _logger.warning("[Password Reset] Email not sent for %s: %s", email, mail_err)
+                ok, lumora_result = LumoraMailService.send_password_reset(
+                    to_email=email,
+                    to_name=user.name,
+                    reset_url=reset_url,
+                    company_name=company_name,
+                )
+                if not ok:
+                    _logger.warning("[Lumora] Password reset email not sent for %s: %s", email, lumora_result)
 
         except Exception:
             _logger.exception("Forgot-password error")
