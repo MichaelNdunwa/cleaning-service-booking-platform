@@ -22,7 +22,6 @@ import urllib.request
 _logger = logging.getLogger(__name__)
 
 _DEFAULT_BASE_URL = "https://uselumora.io"
-_DEFAULT_API_KEY = "esk_8c0e055cc7fa2221c94ac054ac4698fa42c28e07970d19fc378d64fe7b041023"
 _TIMEOUT_SECONDS = 15
 
 
@@ -31,7 +30,7 @@ class LumoraMailService:
 
     @classmethod
     def _get_config(cls) -> tuple[str, str, str, str]:
-        api_key = os.getenv("LUMORA_API_KEY", "").strip() or _DEFAULT_API_KEY
+        api_key = os.getenv("LUMORA_API_KEY", "").strip()
         base_url = os.getenv("LUMORA_API_BASE_URL", _DEFAULT_BASE_URL).strip().rstrip("/")
         from_email = os.getenv("LUMORA_FROM_EMAIL", "").strip()
         from_name = os.getenv("LUMORA_FROM_NAME", "Shield Cleaning").strip()
