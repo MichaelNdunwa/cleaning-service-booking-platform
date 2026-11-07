@@ -42,31 +42,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setIsLoading(true);
             try {
                 // PATH 1 — Google OAuth user
-                // The NextAuth server callback already syncs the Google user to
-                // Odoo. Reuse that result when available so one Google login
-                // creates one Odoo login log entry.
+                // If NextAuth has authenticated the session, establish user immediately.
                 if (status === "authenticated" && session?.user?.email) {
+                    const authenticatedUser: User = {
+                        id: session.user.odooId || 0,
+                        name: session.user.name ?? session.user.email.split("@")[0],
+                        email: session.user.email,
+                    };
+                    setUser(authenticatedUser);
+
                     if (session.user.odooId) {
                         odooSyncedRef.current = true;
-                        setUser({
-                            id: session.user.odooId,
-                            name: session.user.name ?? "",
-                            email: session.user.email,
-                        });
                         return;
                     }
 
-                    // Fallback: if the server-side sync did not attach an Odoo
-                    // user id, try once from the browser.
+                    // Fallback: sync with Odoo in the background to get Odoo partner/user ID
                     if (!odooSyncedRef.current) {
                         odooSyncedRef.current = true;
-                        const oauthRes = await oauthLogin({
-                            provider: "google",
-                            email: session.user.email,
-                            name: session.user.name ?? "",
-                            provider_uid: session.user.email,
-                        });
-                        setUser(oauthRes?.user ? (oauthRes.user as User) : null);
+                        try {
+                            const oauthRes = await oauthLogin({
+                                provider: "google",
+                                email: session.user.email,
+                                name: session.user.name ?? "",
+                                provider_uid: session.user.email,
+                            });
+                            if (oauthRes?.user) {
+                                setUser(oauthRes.user as User);
+                            }
+                        } catch (err) {
+                            console.error("[AuthContext] Odoo OAuth sync background error:", err);
+                            // Keep authenticatedUser active so the user remains logged in!
+                        }
                     }
                     return;
                 }

@@ -253,7 +253,7 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
                 Token = env["clean.password.reset.token"]
                 token_str = Token.create_token_for_user(user)
 
-                frontend_url = os.getenv("CLEANING_FRONTEND_URL", "http://localhost:3000")
+                frontend_url = LumoraMailService.get_frontend_url()
                 reset_url = f"{frontend_url}/reset-password?token={token_str}"
 
                 _logger.info("[Password Reset] URL for %s : %s", email, reset_url)

@@ -7,10 +7,11 @@ const nextConfig: NextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async rewrites() {
+    const odooBaseUrl = (process.env.ODOO_BASE_URL || "http://localhost:9090").replace(/\/+$/, "");
     return [
       {
         source: "/api/v1/:path*",
-        destination: `${process.env.ODOO_BASE_URL}/api/v1/:path*`,
+        destination: `${odooBaseUrl}/api/v1/:path*`,
       },
     ];
   },
