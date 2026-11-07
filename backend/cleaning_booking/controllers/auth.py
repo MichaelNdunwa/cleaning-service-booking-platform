@@ -127,15 +127,10 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
 
     # ── OAuth (Google / Apple) ──
 
-    @http.route("/api/v1/auth/oauth", type="http", auth="none", methods=["POST", "OPTIONS"], csrf=False)
+    @http.route("/api/v1/auth/oauth", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False)
     def auth_oauth(self, **kwargs):
         if request.httprequest.method == "OPTIONS":
             return self._json_response({})
-
-        try:
-            request.session.logout(keep_db=True)
-        except Exception:
-            pass
 
         data, err = self._parse_json()
         if err:
@@ -156,8 +151,8 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
             return self._error_response("Invalid OAuth secret.", status=403)
 
         try:
-            env = request.env(su=True)
-            existing_user = env["res.users"].search([("login", "=", email)], limit=1)
+            env = request.env
+            existing_user = env["res.users"].sudo().search([("login", "=", email)], limit=1)
 
             is_new_user = False
             if existing_user:
@@ -166,7 +161,7 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
                 is_new_user = True
                 random_password = secrets.token_urlsafe(32)
                 portal_group = env.ref("base.group_portal")
-                new_user = env["res.users"].with_context(no_reset_password=True).create({
+                new_user = env["res.users"].sudo().with_context(no_reset_password=True).create({
                     "name": name or email.split("@")[0],
                     "login": email,
                     "email": email,
@@ -174,32 +169,39 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
                     "group_ids": [(6, 0, [portal_group.id])],
                 })
                 try:
-                    new_user.partner_id.write({"customer_rank": 1})
+                    new_user.partner_id.sudo().write({"customer_rank": 1})
                 except (KeyError, ValueError):
                     pass
                 existing_user = new_user
 
-            env["res.users.log"].with_user(existing_user.id).sudo().create({})
             user_data = {"id": existing_user.id, "name": existing_user.name, "email": email}
 
             # ── Send welcome email & sync contact for new OAuth users ──
             if is_new_user:
                 try:
-                    LumoraMailService.send_welcome(
+                    ok, res = LumoraMailService.send_welcome(
                         to_email=email,
                         to_name=existing_user.name,
                     )
+                    if not ok:
+                        _logger.warning("[Lumora] Welcome email skipped/failed for %s: %s", email, res)
+
                     name_parts = existing_user.name.split(" ", 1)
                     first_name = name_parts[0]
                     last_name = name_parts[1] if len(name_parts) > 1 else ""
-                    LumoraMailService.upsert_contact(
+                    ok_crm, res_crm = LumoraMailService.upsert_contact(
                         email=email,
                         first_name=first_name,
                         last_name=last_name,
                         tags=["portal-user", f"oauth-{provider}"],
                     )
-                except Exception:
-                    _logger.debug("[Lumora] Welcome/contact sync skipped on oauth signup")
+                    if not ok_crm:
+                        _logger.warning("[Lumora] Contact sync skipped/failed for %s: %s", email, res_crm)
+                except Exception as lum_err:
+                    _logger.warning("[Lumora] Exception on oauth welcome/contact sync: %s", lum_err)
+        except (ValidationError, UserError) as e:
+            _logger.warning("OAuth user creation failed: %s", e)
+            return self._error_response(str(e), status=400)
         except Exception:
             _logger.exception("OAuth login error")
             return self._error_response("OAuth login failed. Please try again.", status=500)

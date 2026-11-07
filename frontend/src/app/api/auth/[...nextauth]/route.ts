@@ -33,9 +33,17 @@ const handler = NextAuth({
         async signIn({ user, account }) {
             if (account?.provider === "google") {
                 try {
+                    const headers: Record<string, string> = {
+                        "Content-Type": "application/json",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 NextAuth-Server/1.0",
+                    };
+                    if (process.env.CLEANING_OAUTH_SECRET) {
+                        headers["X-OAuth-Secret"] = process.env.CLEANING_OAUTH_SECRET;
+                    }
+
                     const res = await fetch(`${ODOO_BASE_URL}/api/v1/auth/oauth`, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers,
                         body: JSON.stringify({
                             provider: "google",
                             email: user.email,
@@ -46,7 +54,8 @@ const handler = NextAuth({
                     });
 
                     if (!res.ok) {
-                        console.error("[NextAuth] Odoo OAuth sync failed:", res.status);
+                        const errBody = await res.text().catch(() => "");
+                        console.error("[NextAuth] Odoo OAuth sync failed:", res.status, errBody);
                         // Still allow sign-in — Odoo sync failure should not block login
                     } else {
                         const data = await res.json();
