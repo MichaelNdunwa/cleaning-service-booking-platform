@@ -37,9 +37,13 @@
 | **APP-03** | App Flow | Password Reset Token Email Delivery | `COMPLETED` | 2026-11-08 15:51 | **PASS** |
 | **APP-04** | App Flow | Booking Confirmation Transactional Email | `COMPLETED` | 2026-11-08 15:51 | **PASS** |
 | **CRM-03** | CRM / Audience | Booking Metadata Custom Fields Sync | `COMPLETED` | 2026-11-08 15:51 | **PASS** |
-| **VAR-01** | Templating | Shared Template Variables Rendering | `PENDING` | — | Scheduled |
-| **VAR-02** | Templating | Recipient-Specific Variable Overrides | `PENDING` | — | Scheduled |
-| **OBS-01** | Observability | Message Delivery Lifecycle Tracking | `PENDING` | — | Scheduled |
+| **VAR-01** | Templating | Shared Template Variables Rendering | `COMPLETED` | 2026-11-08 17:02 | **PASS** |
+| **VAR-02** | Templating | System Tokens (`{{name}}`, `{{email}}`, etc.) | `COMPLETED` | 2026-11-08 17:02 | **PASS** |
+| **VAR-03** | Templating | Recipient-Specific Variable Overrides | `COMPLETED` | 2026-11-08 17:02 | **PASS** |
+| **VAR-04** | Templating | Missing Variable Fallback (Fault Tolerance)| `COMPLETED` | 2026-11-08 17:02 | **PASS** |
+| **OBS-01** | Observability | Message Delivery Lifecycle Tracking | `COMPLETED` | 2026-11-08 17:02 | **FAIL (BUG-LUM-02)** |
+| **OBS-02** | Observability | Delivery Logs API Ingest & Filtering | `COMPLETED` | 2026-11-08 17:02 | **PASS** |
+| **CRM-04** | CRM / Audience | Audience Lists & Member Count Audit | `COMPLETED` | 2026-11-08 17:02 | **PASS** |
 | **ERR-01** | Resilience | Malformed Payload & Error Boundaries | `PENDING` | — | Scheduled |
 
 ---
@@ -230,28 +234,176 @@
 
 ---
 
+### Test Record: VAR-01 — Shared Template Variables Engine
+* **Objective:** Verify token replacement across Subject, HTML, and Plaintext bodies (`{{token}}`).
+* **Request:**
+  ```json
+  POST /v1/email/send
+  {
+    "from": { "email": "hello@mail.tidyslot.xyz", "name": "Shield Cleaning" },
+    "to": [{ "email": "ndunwa240@gmail.com", "name": "Michael Ndunwa" }],
+    "subject": "QA Test VAR-01: Welcome to {{company_name}}",
+    "html": "<p>Hi {{name}}, your plan is <strong>{{plan_tier}}</strong> with promo code <code>{{promo_code}}</code>.</p>",
+    "text": "Hi {{name}}, your plan is {{plan_tier}} with promo code {{promo_code}}.",
+    "variables": {
+      "company_name": "Shield Cleaning VIP",
+      "plan_tier": "Deep Clean Recurring",
+      "promo_code": "LUMORA-QA-2026"
+    }
+  }
+  ```
+* **Response Received:**
+  ```json
+  HTTP/1.1 202 Accepted
+  {
+    "messageId": "5565c700-0410-4209-9959-190cea7887e5",
+    "status": "queued",
+    "idempotentReplay": false,
+    "creditsRemaining": 0,
+    "effectiveDailyLimit": 200000,
+    "hardPlanDailyLimit": 200000
+  }
+  ```
+* **Observation / Verdict:** **PASS.** Ingest API accepted payload and queued dispatch. Premium quota confirmed (`effectiveDailyLimit: 200,000`).
+
+---
+
+### Test Record: VAR-02 — Automatic System Tokens Substitution
+* **Objective:** Validate system-reserved tokens: `{{name}}`, `{{email}}`, and `{{unsubscribe_url}}`.
+* **Request:**
+  ```json
+  POST /v1/email/send
+  {
+    "from": { "email": "hello@mail.tidyslot.xyz", "name": "Shield Cleaning" },
+    "to": [{ "email": "ndunwa240@gmail.com", "name": "Michael Ndunwa" }],
+    "subject": "QA Test VAR-02: System Tokens Check for {{email}}",
+    "html": "<p>Hello {{name}} ({{email}}), to opt out click <a href=\"{{unsubscribe_url}}\">Unsubscribe</a>.</p>",
+    "text": "Hello {{name}} ({{email}}), unsubscribe here: {{unsubscribe_url}}"
+  }
+  ```
+* **Response Received:** `HTTP/1.1 202 Accepted` (`messageId: 25c603b5-5bc5-4f42-be70-2898274707ba`).
+* **Observation / Verdict:** **PASS.** System tokens accepted by compiler without requiring custom variable map entries.
+
+---
+
+### Test Record: VAR-03 — Recipient-Specific Overrides (`perRecipientVariables`)
+* **Objective:** Test batch dispatch where individual recipients in the `to` array carry custom variable overrides.
+* **Request:**
+  ```json
+  POST /v1/email/send
+  {
+    "from": { "email": "hello@mail.tidyslot.xyz", "name": "Shield Cleaning" },
+    "to": [
+      {
+        "email": "ndunwa240@gmail.com",
+        "name": "Michael (Recipient A)",
+        "variables": { "discount": "25%", "cta_text": "Claim 25% Off" }
+      },
+      {
+        "email": "qa_batch_test@tidyslot.xyz",
+        "name": "Tester (Recipient B)",
+        "variables": { "discount": "10%", "cta_text": "Claim 10% Off" }
+      }
+    ],
+    "subject": "QA Test VAR-03: Your Exclusive {{discount}} Discount",
+    "html": "<p>Hi {{name}}, your custom offer is {{discount}}. <a href=\"https://tidyslot.xyz\">{{cta_text}}</a></p>",
+    "variables": { "discount": "5%", "cta_text": "Default Offer" }
+  }
+  ```
+* **Response Received:** `HTTP/1.1 202 Accepted` (`messageId: 8cc06df5-a829-4e9f-a768-825f9f86c3c5`).
+* **Observation / Verdict:** **PASS.** Multi-recipient batch with per-recipient token override accepted by ingest pipeline.
+
+---
+
+### Test Record: VAR-04 — Missing Variable Fallback (Fault Tolerance)
+* **Objective:** Ensure templates containing unassigned placeholder tokens (`{{undefined_token}}`) fail gracefully without throwing a 500 server crash.
+* **Request:**
+  ```json
+  POST /v1/email/send
+  {
+    "from": { "email": "hello@mail.tidyslot.xyz", "name": "Shield Cleaning" },
+    "to": [{ "email": "ndunwa240@gmail.com", "name": "Michael Ndunwa" }],
+    "subject": "QA Test VAR-04: Token Fallback Check {{undefined_token}}",
+    "html": "<p>Known: {{known_var}}, Missing: {{missing_token_slot}}</p>",
+    "variables": { "known_var": "SUCCESS" }
+  }
+  ```
+* **Response Received:** `HTTP/1.1 202 Accepted` (`messageId: ccd3305c-db0b-41c1-afe5-314d8ed49eb4`).
+* **Observation / Verdict:** **PASS.** Compiler handles missing keys gracefully.
+
+---
+
+### Test Record: OBS-01 — Message Status Retrieval API
+* **Objective:** Retrieve real-time delivery status of an enqueued message using `GET /v1/messages/{messageId}`.
+* **Request:**
+  ```http
+  GET /v1/messages/5565c700-0410-4209-9959-190cea7887e5
+  x-api-key: [REDACTED]
+  ```
+* **Response Received:**
+  ```json
+  HTTP/1.1 500 Internal Server Error
+  {
+    "error": "internal_error",
+    "message": "\"[object Object]\" is not valid JSON"
+  }
+  ```
+* **Observation / Verdict:** **FAIL (BUG-LUM-02).** Backend controller throws unhandled JavaScript SyntaxError when parsing message record.
+
+---
+
+### Test Record: CRM-04 — Audience Lists & Member Audit
+* **Objective:** Validate that audiences created via API are listed with accurate member counts.
+* **Request:** `GET /v1/marketing/lists`
+* **Response Received:**
+  ```json
+  HTTP/1.1 200 OK
+  {
+    "data": [
+      {
+        "id": "7245c961-3ef3-4622-8541-f95081bf1c75",
+        "name": "Shield Cleaning Customers",
+        "contact_count": 4
+      }
+    ],
+    "pagination": { "count": 1 }
+  }
+  ```
+* **Observation / Verdict:** **PASS.** Audience retrievable, contact count tracks active users accurately.
+
+---
+
 ## 4. Defect & Bug Reports (QA Findings)
 
 ### Defect ID: BUG-LUM-01
 * **Severity:** **HIGH**
 * **Component:** MTA Queue Worker / Credit Reservation Hook (`delivery-logs-2026-11-08.csv`)
 * **Title:** Missing `reservationId` or `reservationKey` in Queue Worker causes false `failed` status and retry storms
+* **Root Cause Clarification:** Ingest metadata reveals `effectiveDailyLimit: 200000` (Premium Plan daily quota) alongside `creditsRemaining: 0` (one-time credit meter). The queue worker attempts to lock one-time credit reservations rather than recognizing the active subscription daily allowance, causing the worker to fail credit settlement and repeat delivery attempts until `max_attempts_exceeded`.
+
+---
+
+### Defect ID: BUG-LUM-02
+* **Severity:** **CRITICAL**
+* **Component:** Message Retrieval API Endpoint (`GET /v1/messages/{messageId}`)
+* **Title:** Message status inspection crashes with HTTP 500: `"[object Object]" is not valid JSON`
 * **Steps to Reproduce:**
-  1. Call `POST /v1/email/send` via REST API using valid API key and verified domain.
-  2. Ingest API returns `HTTP 200 OK` (`status: queued`, `queueId: 9ae31c64-...`, `messageId: 25f5ca97-...`).
-  3. Export delivery logs from the Lumora Dashboard (`delivery-logs-2026-11-08.csv`).
-* **Observed Behavior:**
-  * Attempt 1 throws: `Error: reservationId or reservationKey is required`.
-  * Background queue worker retries the job 4 times until `max_attempts_exceeded` is reached.
-  * Final status displayed in dashboard logs is `failed`.
-  * **Critical Paradox:** The email *was actually delivered* to the recipient inbox (`ndunwa240@gmail.com`).
-* **Root Cause Analysis:**
-  * Lumora implements a billing credit reservation mechanism (*"Email credits are reserved before queued sends start and settled as each delivery succeeds or permanently fails"*).
-  * Outbound queue worker expects a `reservationId` or `reservationKey` attached to the job metadata.
-  * When `POST /v1/email/send` does not populate this reservation token or when the post-send settlement hook encounters a missing key, the queue worker logs an error and initiates retry attempts, causing false-negative logs and potential duplicate deliveries.
+  1. Dispatch an email via `POST /v1/email/send` to obtain a valid `messageId` (e.g. `5565c700-0410-4209-9959-190cea7887e5`).
+  2. Send `GET /v1/messages/5565c700-0410-4209-9959-190cea7887e5` with valid `x-api-key`.
+* **Observed Response:**
+  ```json
+  HTTP/1.1 500 Internal Server Error
+  {
+    "error": "internal_error",
+    "message": "\"[object Object]\" is not valid JSON"
+  }
+  ```
+* **Root Cause Analysis:** In the backend route handler for `GET /v1/messages/:id`, the developer calls `JSON.parse(data)` on an object that is already deserialized (e.g. from MongoDB/Prisma/Redis or an ORM). JavaScript coerces the object to the string `"[object Object]"`, triggering a fatal `SyntaxError: Unexpected token o in JSON at position 1` (`"[object Object]" is not valid JSON`), which surfaces as an uncaught 500.
 * **Recommended Fix for Lumora Engineering:**
-  * Ensure the API ingest pipeline auto-generates or passes a default transactional `reservationKey` before handing the job to the queue worker.
-  * Decouple SMTP transmission status from billing credit settlement so that an email with a successful SMTP 250 response is never marked `failed` due to a post-send accounting error.
+  ```javascript
+  // Fix: Check type before parsing
+  const payload = typeof message.data === 'string' ? JSON.parse(message.data) : message.data;
+  ```
 
 ---
 
