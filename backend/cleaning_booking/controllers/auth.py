@@ -84,6 +84,12 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
         except Exception:
             _logger.debug("[Lumora] Contact sync skipped on signup")
 
+        # ── Record initial login timestamp ──
+        try:
+            new_user.with_user(new_user).sudo()._update_last_login()
+        except Exception:
+            _logger.debug("Failed to update initial login_date for %s", email)
+
         return self._json_response({
             "success": True,
             "message": "Account created successfully. You can now log in.",
@@ -116,6 +122,10 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
             request._save_session()
 
             user = request.env["res.users"].sudo().browse(auth_info["uid"])
+            try:
+                user.with_user(user).sudo()._update_last_login()
+            except Exception:
+                pass
             user_data = {"id": user.id, "name": user.name, "email": user.login}
         except AccessDenied:
             return self._error_response("Invalid email or password.", status=401)
@@ -175,6 +185,12 @@ class CleaningAuthAPI(CleaningAPIBase, http.Controller):
                 existing_user = new_user
 
             user_data = {"id": existing_user.id, "name": existing_user.name, "email": email}
+
+            # ── Record login timestamp (res.users.log -> login_date) ──
+            try:
+                existing_user.with_user(existing_user).sudo()._update_last_login()
+            except Exception:
+                _logger.debug("Failed to update last login for %s", email)
 
             # ── Send welcome email & sync contact for new OAuth users ──
             if is_new_user:
