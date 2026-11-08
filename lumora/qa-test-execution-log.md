@@ -44,6 +44,7 @@
 | **OBS-01** | Observability | Message Delivery Lifecycle Tracking | `COMPLETED` | 2026-11-08 17:02 | **FAIL (BUG-LUM-02)** |
 | **OBS-02** | Observability | Delivery Logs API Ingest & Filtering | `COMPLETED` | 2026-11-08 17:02 | **PASS** |
 | **CRM-04** | CRM / Audience | Audience Lists & Member Count Audit | `COMPLETED` | 2026-11-08 17:02 | **PASS** |
+| **APP-05** | App Flow | Full E2E User Signup + Booking Funnel (`anyichiechristopher@gmail.com`) | `COMPLETED` | 2026-11-08 17:04 | **PASS (Delivered to Spam, Dashboard false failed)** |
 | **ERR-01** | Resilience | Malformed Payload & Error Boundaries | `PENDING` | — | Scheduled |
 
 ---
@@ -377,9 +378,44 @@
 
 ### Defect ID: BUG-LUM-01
 * **Severity:** **HIGH**
-* **Component:** MTA Queue Worker / Credit Reservation Hook (`delivery-logs-2026-11-08.csv`)
-* **Title:** Missing `reservationId` or `reservationKey` in Queue Worker causes false `failed` status and retry storms
-* **Root Cause Clarification:** Ingest metadata reveals `effectiveDailyLimit: 200000` (Premium Plan daily quota) alongside `creditsRemaining: 0` (one-time credit meter). The queue worker attempts to lock one-time credit reservations rather than recognizing the active subscription daily allowance, causing the worker to fail credit settlement and repeat delivery attempts until `max_attempts_exceeded`.
+* **Component:** MTA Queue Worker / Credit Reservation Settlement Hook (`delivery-logs-2026-11-08(2).csv`)
+* **Title:** Missing `reservationId` or `reservationKey` in Queue Worker causes false `failed` status and duplicate retry storms
+* **Live Evidence from Delivery Logs (2026-11-08 17:03 - 17:04):**
+  - **Welcome Email:** Recipient: `anyichiechristopher@gmail.com` | Message ID: `2361d8e4-8227-4b8f-a962-489ba6055ce7` | Queue ID: `5078d1a6-23a9-41ce-84ae-fdd50324ff3b` | Attempt: 1 | Error: `reservationId or reservationKey is required`
+  - **Booking Email (CLN-00004):** Recipient: `anyichiechristopher@gmail.com` | Message ID: `16d47c15-2755-4667-9e80-7b27654d9db6` | Queue ID: `b2916127-8b55-4af5-80e5-ef5891fa0f9d` | Attempt: 1 | Error: `reservationId or reservationKey is required`
+* **Real-World Anomaly & Paradox:**
+  - The emails **were physically delivered to the recipient's Gmail account** (landing in Spam due to fresh domain reputation).
+  - Yet on the Lumora Dashboard and exported CSV log, the status is marked as `failed` with error `reservationId or reservationKey is required`.
+* **Root Cause Clarification:**
+  1. **Ingest Phase:** Lumora accepts the email request via REST API and assigns a message ID. On the **Premium Tier ($35/mo)**, accounts have `effectiveDailyLimit: 200000` rather than consuming prepaid one-time credits (`creditsRemaining: 0`). Consequently, the ingest gateway does *not* issue a prepaid reservation ID (`reservationId`).
+  2. **MTA Dispatch Phase:** The background queue worker connects to Google MX servers and successfully transmits the message over SMTP.
+  3. **Settlement Hook Crash:** Post-dispatch, the worker executes a credit deduction/settlement routine. The code unconditionally calls a reservation resolution function that expects `reservationId` or `reservationKey`. Because the subscription tier bypasses credit reservations, this function throws:
+     `Error: reservationId or reservationKey is required`.
+  4. **False Status & Retry Storm:** The unhandled throw causes the worker to mark the delivery task as `failed`. The queue scheduler then retries sending up to 4 times (eventually logging `max_attempts_exceeded` ~30 minutes later), potentially causing duplicate emails to be delivered to real customers.
+* **Recommended Fix for Lumora Engineering:**
+  ```javascript
+  // In MTA queue settlement worker:
+  if (tenant.planTier === 'premium' || tenant.effectiveDailyLimit > 0) {
+    // Subscription tier sends bypass prepaid credit reservations
+    await markMessageSent(messageId, smtpResponse);
+  } else {
+    // Only require reservationId for prepaid pay-as-you-go credit buckets
+    if (!reservationId && !reservationKey) {
+      throw new Error('reservationId or reservationKey is required');
+    }
+    await settleCreditReservation(reservationId, reservationKey);
+  }
+  ```
+
+---
+
+### Deliverability & Spam Filter Insights (`mail.tidyslot.xyz`)
+* **Observation:** Transactional emails sent to `anyichiechristopher@gmail.com` and `ndunwa240@gmail.com` were delivered directly to the Gmail **Spam** folder.
+* **Deliverability Factors:**
+  1. **Domain Warmup / Zero Reputation:** `mail.tidyslot.xyz` is a newly provisioned custom sending domain. Anti-spam systems (SpamAssassin, Google Postmaster) apply high scrutiny to unknown domains sending bulk/transactional messages.
+  2. **Engagement Training Required:** When recipient clicks **"Report not spam"** / **"Move to Inbox"**, Gmail’s Bayesian filters learn that messages from `mail.tidyslot.xyz` are wanted.
+  3. **Authentication Audit:** Ensure DKIM (2048-bit), SPF (`v=spf1 include:uselumora.io ~all`), and DMARC (`v=DMARC1; p=none`) are 100% verified in the Lumora **Domain Health** tab.
+  4. **Clean URLs:** Ensure all URLs in transactional templates point to the production domain `https://tidyslot.xyz` and match the SSL certificate.
 
 ---
 
