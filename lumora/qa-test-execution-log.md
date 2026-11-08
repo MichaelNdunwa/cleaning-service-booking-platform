@@ -45,7 +45,20 @@
 | **OBS-02** | Observability | Delivery Logs API Ingest & Filtering | `COMPLETED` | 2026-11-08 17:02 | **PASS** |
 | **CRM-04** | CRM / Audience | Audience Lists & Member Count Audit | `COMPLETED` | 2026-11-08 17:02 | **PASS** |
 | **APP-05** | App Flow | Full E2E User Signup + Booking Funnel (`anyichiechristopher@gmail.com`) | `COMPLETED` | 2026-11-08 17:04 | **PASS (Delivered to Spam, Dashboard false failed)** |
-| **ERR-01** | Resilience | Malformed Payload & Error Boundaries | `PENDING` | — | Scheduled |
+| **ERR-01** | Resilience | Malformed Recipient Address Syntax Validation | `COMPLETED` | 2026-11-08 17:29 | **PASS** |
+| **ERR-02** | Resilience | Missing Required Fields (Undefined Subject) | `COMPLETED` | 2026-11-08 17:29 | **PASS** |
+| **ERR-03** | Resilience | Empty Recipients Array Boundary (`to: []`) | `COMPLETED` | 2026-11-08 17:29 | **PASS** |
+| **ERR-04** | Resilience | Missing Message Content (No Text, No HTML) | `COMPLETED` | 2026-11-08 17:30 | **PASS** |
+| **ERR-05** | Resilience | Large Rich HTML Payload Ingestion (600KB) | `COMPLETED` | 2026-11-08 17:30 | **PASS** |
+| **ERR-06** | Resilience | Unrouteable Non-Existent Domain Hard-Bounce | `COMPLETED` | 2026-11-08 17:31 | **PASS** |
+| **ERR-07** | Resilience | Extreme Request Size Boundary (10MB HTML) | `COMPLETED` | 2026-11-08 17:30 | **PASS (HTTP 413 Payload Too Large)** |
+| **IDEM-01**| Protocol | Idempotency Key Replay Protection | `COMPLETED` | 2026-11-08 17:34 | **PASS** |
+| **ATT-01** | Media | MIME Email Attachment Ingestion (PDF) | `COMPLETED` | 2026-11-08 17:34 | **PASS** |
+| **CRM-05** | CRM / Audience | Audience Members List Query & Single Import | `COMPLETED` | 2026-11-08 17:37 | **PASS** |
+| **CRM-06** | CRM / Audience | Bulk Batch Contact Import (Atomic 500 cap) | `COMPLETED` | 2026-11-08 17:37 | **PASS (HTTP 201 Created)** |
+| **CRM-07** | CRM / Audience | Audience List Metadata Patching (`PATCH`) | `COMPLETED` | 2026-11-08 17:38 | **PASS** |
+| **CRM-08** | CRM / Audience | Contact Retrieval by Email Query Param | `COMPLETED` | 2026-11-08 17:33 | **PASS** |
+| **TMP-01** | Templating | Create Reusable Template via API | `COMPLETED` | 2026-11-08 17:36 | **FAIL (BUG-LUM-03: 404 Not Found)** |
 
 ---
 
@@ -443,9 +456,139 @@
 
 ---
 
-## 5. Upcoming Test Suite: Phase 2 (Active)
+### Defect ID: BUG-LUM-03
+* **Severity:** **MEDIUM**
+* **Component:** Templates REST API (`POST /v1/templates`, `GET /v1/templates`)
+* **Title:** Documented template management endpoint returns HTTP 404 Not Found
+* **Steps to Reproduce:**
+  1. Make a request to create or list templates:
+     ```http
+     POST /v1/templates
+     x-api-key: [ACTIVE_KEY]
+     Content-Type: application/json
 
-1. **VAR-01 (Shared Template Variables):** Test variable substitution across Subject, HTML, and Text bodies.
-2. **VAR-02 (Recipient Overrides):** Test `perRecipientVariables` batch dispatch.
-3. **OBS-01 (Observability):** Test `GET /v1/messages/{messageId}` and delivery webhook listeners.
+     { "name": "Test Template", "slug": "test-tpl" }
+     ```
+  2. Observe response:
+     ```json
+     HTTP/1.1 404 Not Found
+     { "error": "not_found" }
+     ```
+* **Impact:** Developer documentation at `https://uselumora.io/docs#create-template` references `POST /v1/templates` as an available endpoint. However, the route is either unmounted or requires undocumented portal-specific credentials, breaking automated CI/CD template deployment workflows.
+
+---
+
+## 5. Phase 6 Resilience & Negative Test Records
+
+### Test Record: ERR-01 — Malformed Recipient Address Syntax
+* **Objective:** Ensure Lumora rejects syntactically invalid email addresses before enqueueing.
+* **Request:** `POST /v1/email/send` with `to: ["not-a-valid-email"]`
+* **Response Received:**
+  ```json
+  HTTP/1.1 400 Bad Request
+  {
+    "error": "validation_error",
+    "details": {
+      "formErrors": [],
+      "fieldErrors": { "to": ["Invalid email address"] }
+    }
+  }
+  ```
+* **Verdict:** **PASS.** Zod email validator rejects invalid format immediately.
+
+---
+
+### Test Record: ERR-02 & ERR-03 — Schema Boundaries (Missing Subject & Empty Recipients)
+* **Objective:** Verify mandatory field constraints.
+* **Missing Subject:** Returns `HTTP 400 Bad Request` with `fieldErrors: { "subject": ["Invalid input: expected string, received undefined"] }`.
+* **Empty `to` Array (`[]`):** Returns `HTTP 400 Bad Request` with `fieldErrors: { "to": ["Too small: expected array to have >=1 items"] }`.
+* **Verdict:** **PASS.**
+
+---
+
+### Test Record: ERR-04 — Missing Message Content
+* **Objective:** Verify that emails without both `text` and `html` are rejected.
+* **Response Received:**
+  ```json
+  HTTP/1.1 400 Bad Request
+  {
+    "error": "validation_error",
+    "details": {
+      "formErrors": [],
+      "fieldErrors": { "text": ["text_or_html_required"] }
+    }
+  }
+  ```
+* **Verdict:** **PASS.**
+
+---
+
+### Test Record: ERR-06 — Unrouteable Non-Existent Domain (Hard-Bounce Handling)
+* **Objective:** Test Lumora MTA behavior when dispatching to an MX host that does not exist.
+* **Request:** `POST /v1/email/send` with `to: ["qa_bounce@thisdomaindoesnotexist999888777.com"]` (Message ID: `63d30767-7f11-44be-9a49-edd5ec44c5f9`).
+* **Delivery Log Diagnostic:**
+  - Status: `failed`
+  - Attempt: `3`
+  - SMTP Response: `550 Unrouteable address`
+  - Error: `Can't send mail - all recipients were rejected: 550 Unrouteable address`
+* **Verdict:** **PASS.** MTA captures remote SMTP 550 hard bounce accurately.
+
+---
+
+### Test Record: ERR-07 — Extreme Request Size Boundary (10MB HTML Body)
+* **Objective:** Probe maximum HTTP request payload threshold.
+* **Request:** 10MB generated HTML string sent via `POST /v1/email/send`.
+* **Response Received:**
+  ```json
+  HTTP/1.1 413 Payload Too Large
+  {
+    "error": "internal_error",
+    "message": "request entity too large"
+  }
+  ```
+* **Verdict:** **PASS.** Gateway protects against memory exhaustion with HTTP 413 (minor defect: error key is mislabeled as `internal_error`).
+
+---
+
+### Test Record: IDEM-01 — Idempotency Key Replay Protection
+* **Objective:** Validate that duplicate requests with identical `Idempotency-Key` headers prevent double dispatch.
+* **Request 1:**
+  - Header: `Idempotency-Key: 2145de5e-02fa-47ae-8147-ba4e79abc0b0`
+  - Response: `HTTP 202 Accepted` | `{"messageId":"45b1905e...","idempotentReplay":false}`
+* **Request 2 (Duplicate replay):**
+  - Header: `Idempotency-Key: 2145de5e-02fa-47ae-8147-ba4e79abc0b0`
+  - Response: `HTTP 200 OK` | `{"messageId":"45b1905e...","idempotentReplay":true}`
+* **Verdict:** **PASS.** Flawless replay suppression with status code elevation to 200.
+
+---
+
+### Test Record: ATT-01 — MIME Attachment Handling
+* **Objective:** Test transactional dispatch with base64 PDF attachment.
+* **Request:** `POST /v1/email/send` with `attachments: [{ filename: "invoice_CLN-00004.pdf", content: "<base64>", type: "application/pdf" }]` (Message ID: `6c734f33-0ef9-4e70-b82a-68bc19ac5234`).
+* **Response:** `HTTP 202 Accepted`.
+* **Verdict:** **PASS.**
+
+---
+
+### Test Record: CRM-05, CRM-06, CRM-07, CRM-08 — CRM & Audience Management
+* **CRM-05 (Audience Members Query):** `GET /v1/marketing/lists/{id}/contacts` returns member list and custom fields.
+* **CRM-06 (Batch Import Contacts):** `POST /v1/marketing/lists/{id}/contacts` with `{ "contacts": [...] }` imported 3 contacts in an atomic batch (`HTTP 201 Created`).
+* **CRM-07 (Audience Metadata Patching):** `PATCH /v1/marketing/lists/{id}` updated list description (`HTTP 200 OK`).
+* **CRM-08 (Direct Contact Lookup):** `GET /v1/marketing/contacts?email=anyichiechristopher@gmail.com` returned active contact record with custom fields (`latest_booking_ref: CLN-00004`, `frequency: one_time`, tags: `customer`, `freq-one_time`).
+* **Verdict:** **PASS.**
+
+---
+
+## 6. Functional QA Summary & Scorecard
+
+| Category | Total Tests | Passed | Failed | Defect IDs |
+| :--- | :---: | :---: | :---: | :--- |
+| **Security & Domain Gating** | 4 | 4 | 0 | None |
+| **Core Sending & Variables** | 4 | 4 | 0 | None |
+| **App Lifecycle Flows** | 5 | 5 | 0 | `BUG-LUM-01` (Dashboard false status) |
+| **Audiences & CRM Engine** | 8 | 8 | 0 | None |
+| **Observability & Analytics** | 2 | 1 | 1 | `BUG-LUM-02` (`GET /v1/messages/{id}` 500) |
+| **Resilience & Negative Testing** | 7 | 6 | 1 | `BUG-LUM-03` (`POST /v1/templates` 404) |
+| **Protocols (Idempotency & Media)**| 2 | 2 | 0 | None |
+| **Total** | **32** | **30** | **2** | **3 Platform Bugs Documented** |
 
